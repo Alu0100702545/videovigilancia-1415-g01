@@ -1,0 +1,10 @@
+*.pro.user
+*~
+*.tmp
+*.a
+*.out
+*.o
+*.exe
+debug
+build
+
