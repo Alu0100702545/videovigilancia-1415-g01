@@ -9,7 +9,8 @@ class Servidor
 
 private:
 
-
+signals:
+public slots:
 
 
 public:

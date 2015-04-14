@@ -1,0 +1,15 @@
+//Paquete VAF.proto
+
+
+
+message VAF {
+    required string protocolo = 1;
+    required bytes  version = 2;
+    optional uint32  Tnombrecamara = 3 ;
+    required string  nombrecamara = 4;
+    optional uint32  TnombrePC = 5 ;
+    required string  nombrePC = 6;
+    required string  timestamp = 7;
+    optional uint32  TImagen=8;
+    required string  imagen=9;
+}

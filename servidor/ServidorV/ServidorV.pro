@@ -4,6 +4,9 @@
 #
 #-------------------------------------------------
 
+
+PROTOS = VAF.proto
+include(protobuf.pri)
 QT       += core
 
 QT       -= gui
@@ -20,3 +23,9 @@ SOURCES += main.cpp \
 
 HEADERS += \
     servidor.h
+
+OTHER_FILES += \
+    VAF.proto \
+    protobuf.pri
+
+
