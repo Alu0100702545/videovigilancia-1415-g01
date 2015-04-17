@@ -4,7 +4,7 @@ client::client(QTcpSocket *tcpSocket, QObject *parent) : QObject(parent),
     tcpSocket_(tcpSocket)
 {
     connect(tcpSocket_, SIGNAL(readyRead()), this, SLOT(deserializacion()));
-    connect(tcpSocket_,SIGNAL(disconnected()), this, SLOT());
+    connect(tcpSocket_,SIGNAL(disconnected()), this, SLOT(borrarlista()));
 }
 client::~client()
 {
