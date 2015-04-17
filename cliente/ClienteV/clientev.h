@@ -23,35 +23,22 @@
 #include <QImageWriter>
 
 namespace Ui {
-class ProyectoVideo;
+class ClienteV;
 }
 
-class ProyectoVideo : public QMainWindow
+class ClienteV : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit ProyectoVideo(QWidget *parent = 0);
-    ~ProyectoVideo();
+    explicit ClienteV(QWidget *parent = 0);
+    ~ClienteV();
 
 private slots:
-    void on_BotonAbrir_clicked();
-
-    void on_BotonReproducir_clicked();
 
     void on_BotonCerrar_clicked();
 
-    void on_BotonParar_clicked();
-
-    void on_CheckAutoPlay_clicked();
-
-    void on_actionParar_triggered();
-
-    void on_actionAbrir_triggered();
-
     void on_actionCerrar_triggered();
-
-    void on_actionReproducir_triggered();
 
     void on_actionProyecto_Video_triggered();
 
@@ -71,14 +58,12 @@ private slots:
 
     void actualizar_IP(QString IP);
 
-    void on_BotonPausa_clicked();
-
     void on_CheckTransmitir_clicked();
+
     void video_s(const QRect &rect);
+
 private:
-    bool pause=false;
-    int frame=0;
-    Ui::ProyectoVideo *ui;
+    Ui::ClienteV *ui;
     QMovie *movie;
     QSettings settings;
     QCamera *camera;

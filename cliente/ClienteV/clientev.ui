@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ProyectoVideo</class>
- <widget class="QMainWindow" name="ProyectoVideo">
+ <class>ClienteV</class>
+ <widget class="QMainWindow" name="ClienteV">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ProyectoVideo</string>
+   <string>ClienteV</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QLabel" name="label">
@@ -36,32 +36,6 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="BotonAbrir">
-    <property name="geometry">
-     <rect>
-      <x>450</x>
-      <y>10</y>
-      <width>99</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Abrir</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="BotonParar">
-    <property name="geometry">
-     <rect>
-      <x>450</x>
-      <y>130</y>
-      <width>99</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Parar</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="BotonCerrar">
     <property name="geometry">
      <rect>
@@ -75,37 +49,11 @@
      <string>Cerrar</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="CheckAutoPlay">
-    <property name="geometry">
-     <rect>
-      <x>450</x>
-      <y>40</y>
-      <width>111</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Autoplay</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="BotonReproducir">
-    <property name="geometry">
-     <rect>
-      <x>450</x>
-      <y>70</y>
-      <width>99</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Reproducir</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="BotonCapturar">
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>180</y>
+      <y>10</y>
       <width>99</width>
       <height>27</height>
      </rect>
@@ -114,24 +62,11 @@
      <string>Capturar</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="BotonPausa">
-    <property name="geometry">
-     <rect>
-      <x>450</x>
-      <y>100</y>
-      <width>99</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Pausa</string>
-    </property>
-   </widget>
    <widget class="QCheckBox" name="CheckTransmitir">
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>160</y>
+      <y>40</y>
       <width>96</width>
       <height>22</height>
      </rect>
@@ -154,11 +89,7 @@
     <property name="title">
      <string>Menú</string>
     </property>
-    <addaction name="actionAbrir"/>
     <addaction name="actionCapturar"/>
-    <addaction name="separator"/>
-    <addaction name="actionReproducir"/>
-    <addaction name="actionParar"/>
     <addaction name="separator"/>
     <addaction name="actionCerrar"/>
     <addaction name="separator"/>
@@ -185,27 +116,12 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionProyecto_Video">
    <property name="text">
-    <string>Proyecto_Video</string>
-   </property>
-  </action>
-  <action name="actionAbrir">
-   <property name="text">
-    <string>Abrir</string>
+    <string>Acerca De...</string>
    </property>
   </action>
   <action name="actionCerrar">
    <property name="text">
     <string>Cerrar</string>
-   </property>
-  </action>
-  <action name="actionReproducir">
-   <property name="text">
-    <string>Reproducir</string>
-   </property>
-  </action>
-  <action name="actionParar">
-   <property name="text">
-    <string>Parar</string>
    </property>
   </action>
   <action name="actionOpciones">
@@ -216,11 +132,6 @@
   <action name="actionCapturar">
    <property name="text">
     <string>Capturar</string>
-   </property>
-  </action>
-  <action name="actionPausa">
-   <property name="text">
-    <string>Pausa</string>
    </property>
   </action>
  </widget>
