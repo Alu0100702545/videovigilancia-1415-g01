@@ -1,9 +1,10 @@
 #include <QCoreApplication>
-#include "VAF.pb.h"
+#include "servidor.h"
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    VAF algo;
+    Servidor server;
+    server.inicioServer();
 
 
     return a.exec();

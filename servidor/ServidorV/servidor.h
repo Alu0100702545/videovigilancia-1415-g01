@@ -2,32 +2,27 @@
 #define SERVIDOR_H
 
 #include <QTcpSocket>
-#include <QTcpSocket>
-#include "VAF.pb.h"
 #include <QTcpServer>
-#include <QString>
-#include <QByteArray>
-#include <string>
-#include <QObject>
-
+#include "client.h"
 
 class Servidor : public QObject
 {
     Q_OBJECT
 private:
-    QTcpSocket *client;
+    //QTcpSocket *cliente;
     QTcpServer *server;
-    VAF paquete;
-    qint32 Tpaquete;
+
+    QMap<qintptr,client*> clients;
 signals:
 
     void algo();
-public slots:
 
-    void deserializacion();
 public:
     Servidor();
-    void almacenamiento();
+    void inicioServer();
+public slots:
+    void conexionesPen();
+    void eliminarlista(qintptr);
 };
 
 #endif // SERVIDOR_H
