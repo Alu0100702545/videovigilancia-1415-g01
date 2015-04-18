@@ -11,11 +11,14 @@
 #include <QMap>
 #include <QImage>
 #include <QDebug>
+#include <QtSql>
+#include <QSqlQuery>
+#include <QSqlDatabase>
 class client : public QObject
 {
     Q_OBJECT
 public:
-    explicit client(QTcpSocket* tcpSocket,QObject *parent = 0);
+    explicit client(QTcpSocket* tcpSocket,QSqlDatabase *bdd,QObject *parent = 0);
     ~client();
     qintptr getsocketDescriptor();
 signals:
@@ -26,9 +29,9 @@ public slots:
     void deserializacion();
 private:
      QTcpSocket *tcpSocket_;
-     VAF paquete;
      qint32 Tpaquete;
-     void almacenamiento();
+     QSqlDatabase *bddc;
+     void almacenamiento(VAF);
 };
 
 #endif // CLIENT_H

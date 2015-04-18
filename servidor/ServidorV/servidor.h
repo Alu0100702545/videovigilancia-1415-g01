@@ -5,13 +5,14 @@
 #include <QTcpServer>
 #include "client.h"
 
+
 class Servidor : public QObject
 {
     Q_OBJECT
 private:
     //QTcpSocket *cliente;
     QTcpServer *server;
-
+    QSqlDatabase *Vdb;
     QMap<qintptr,client*> clients;
 signals:
 

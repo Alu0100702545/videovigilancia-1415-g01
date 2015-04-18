@@ -11,7 +11,11 @@ include(protobuf.pri)
 QT       += core
 
 QT       += gui
+
 QT       += network
+
+QT       +=sql
+
 TARGET = ServidorV
 CONFIG   += console
 CONFIG   -= app_bundle
@@ -74,5 +78,7 @@ unix {
  vardir.path = $$VARDIR
  vardir.commands = true
 }
+
+DISTFILES +=
 
 
