@@ -9,6 +9,8 @@ class CaptureBuffer : public QAbstractVideoSurface
     Q_OBJECT
 
 public:
+    int id=0;
+
     QList<QVideoFrame::PixelFormat> supportedPixelFormats(
             QAbstractVideoBuffer::HandleType handleType =
             QAbstractVideoBuffer::NoHandle) const
@@ -16,7 +18,7 @@ public:
         // A través de este método nos preguntan que formatos de
         // vídeo soportamos. Como vamos a guardar los frames en
         // objetos QImage nos sirve cualquiera de los formatos
-        // sorportados por dicha clase: http://kcy.me/z6pa
+        // soportados por dicha clase: http://kcy.me/z6pa
         Q_UNUSED(handleType);
         QList<QVideoFrame::PixelFormat> formats;
         formats << QVideoFrame::Format_ARGB32;
@@ -39,14 +41,14 @@ public:
                                        QVideoFrame::imageFormatFromPixelFormat(frame2.pixelFormat()));
 
         frameAsImage.copy();
-        emit s_image(frameAsImage);
+        emit s_image(frameAsImage,id);
         frame2.unmap();
         //qDebug() << "Mostramos desde capture";
         return true;
     }
 
 signals:
-  void s_image(const QImage&);
+  void s_image(const QImage&, const int&);
 public slots:
 
 };

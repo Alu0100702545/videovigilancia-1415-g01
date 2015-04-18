@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QSettings>
 #include <QCamera>
+#include <QtWidgets>
+#include <QVector>
 
 namespace Ui {
 class combobox;
@@ -18,7 +20,7 @@ public:
     ~combobox();
 
 signals:
-     void s_camera(int);
+     void s_camera(int,bool);
      void s_port(int);
      void s_IP(QString);
 
@@ -30,6 +32,7 @@ private slots:
 private:
     Ui::combobox *ui;
     QSettings settings;
+    int NCamaras=0;
 };
 
 #endif // COMBOBOX_H

@@ -8,11 +8,9 @@
 #include <QApplication>
 #include <QLabel>
 #include <QTextStream>
-#include <QFile>
+#include <QVector>
 #include <QString>
 #include <QMessageBox>
-#include <QFileDialog>
-#include <QMovie>
 #include <QTime>
 #include <QPainter>
 #include <acercade.h>
@@ -21,6 +19,11 @@
 #include <QTcpSocket>
 #include <QBuffer>
 #include <QImageWriter>
+
+struct CAM{
+    QCamera *Camera = NULL;
+    CaptureBuffer *captureBuffer = NULL;
+};
 
 namespace Ui {
 class ClienteV;
@@ -44,13 +47,13 @@ private slots:
 
     void on_actionOpciones_triggered();
 
-    void actualizar_cam(int);
+    void actualizar_cam(int,bool);
 
     void on_BotonCapturar_clicked();
 
     void on_actionCapturar_triggered();
 
-    void image_s(const QImage &);
+    void image_s(const QImage &, const int &);
 
     void emitir(const QImage &image);
 
@@ -60,16 +63,12 @@ private slots:
 
     void on_CheckTransmitir_clicked();
 
-    void video_s(const QRect &rect);
-
 private:
+    int NCamaras=-1;
     Ui::ClienteV *ui;
-    QMovie *movie;
     QSettings settings;
-    QCamera *camera;
-    QCameraViewfinder *viewfinder;
+    QVector<CAM> *ListaCamaras;
     QList<QByteArray> devices;
-    CaptureBuffer *captureBuffer;
     QTcpSocket *conexion;
 };
 

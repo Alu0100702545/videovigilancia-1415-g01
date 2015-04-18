@@ -55,7 +55,7 @@
   <widget class="QLineEdit" name="PORT">
    <property name="geometry">
     <rect>
-     <x>260</x>
+     <x>270</x>
      <y>190</y>
      <width>113</width>
      <height>29</height>
@@ -64,6 +64,17 @@
    <property name="text">
     <string>33333</string>
    </property>
+  </widget>
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>361</width>
+     <height>171</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout"/>
   </widget>
  </widget>
  <resources/>
