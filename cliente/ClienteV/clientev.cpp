@@ -83,11 +83,20 @@ void ClienteV::on_BotonCapturar_clicked()
     CAM aux;
     QString namesetting;
     int id=0;
+    int NLabels=0;
 
-    for(int i=0;i<NCamaras;i++){
+    if(NCamaras%2==0)
+        NLabels=NCamaras;
+    else
+        NLabels=NCamaras+1;
+
+    for(int i=0;i<NLabels/2;i++){
+        for(int j=0;j<NLabels/2;j++){
             QLabel* label=new QLabel;
             label->setScaledContents(true);
-            ui->gridLayout->addWidget(label);
+            ui->gridLayout->addWidget(label,i,j);
+            qDebug() << "AÑADIDO EN " << i << j;
+        }
     }
 
     for(int i=0;i<NCamaras;i++)
@@ -101,13 +110,9 @@ void ClienteV::on_BotonCapturar_clicked()
             aux.Camera=new QCamera(devices[i]);
             aux.captureBuffer=new CaptureBuffer;
             aux.captureBuffer->id=id;
-            qDebug() << "BUFFER OK";
             ListaCamaras->push_back(aux);
-            qDebug() << "PUSH OK";
             ListaCamaras->value(id).Camera->setViewfinder(ListaCamaras->value(id).captureBuffer);
-            qDebug() << "SET OK";
             ListaCamaras->value(id).Camera->start();
-            qDebug() << "START OK";
             connect(ListaCamaras->value(id).captureBuffer,SIGNAL(s_image(QImage,int)),this,SLOT(image_s(QImage,int)));
             id++;
         }
@@ -118,29 +123,39 @@ void ClienteV::on_actionCapturar_triggered()
 {
     CAM aux;
     QString namesetting;
+    int id=0;
+    int NLabels=0;
 
-    for(int i=0;i<NCamaras;i++){
+    if(NCamaras%2==0)
+        NLabels=NCamaras;
+    else
+        NLabels=NCamaras+1;
+
+    for(int i=0;i<NLabels/2;i++){
+        for(int j=0;j<NLabels/2;j++){
             QLabel* label=new QLabel;
             label->setScaledContents(true);
-            ui->gridLayout->addWidget(label);
+            ui->gridLayout->addWidget(label,i,j);
+            qDebug() << "AÑADIDO EN " << i << j;
+        }
     }
 
     for(int i=0;i<NCamaras;i++)
     {
         namesetting="indice";
         namesetting.append(i+48);
-
+        qDebug() << "CAPT NAMESETTING: " << namesetting;
         if((settings.value(namesetting))==true)
         {
+            qDebug() << "ENTRAMOS CON " << namesetting;
             aux.Camera=new QCamera(devices[i]);
             aux.captureBuffer=new CaptureBuffer;
-            aux.captureBuffer->id=i;
-
+            aux.captureBuffer->id=id;
             ListaCamaras->push_back(aux);
-            ListaCamaras->value(i).Camera->setViewfinder(ListaCamaras->value(i).captureBuffer);
-            ListaCamaras->value(i).Camera->start();
-
-            connect(ListaCamaras->value(i).captureBuffer,SIGNAL(s_image(QImage,int)),this,SLOT(image_s(QImage,int)));
+            ListaCamaras->value(id).Camera->setViewfinder(ListaCamaras->value(id).captureBuffer);
+            ListaCamaras->value(id).Camera->start();
+            connect(ListaCamaras->value(id).captureBuffer,SIGNAL(s_image(QImage,int)),this,SLOT(image_s(QImage,int)));
+            id++;
         }
     }
 }
@@ -161,6 +176,7 @@ void ClienteV::image_s(const QImage &image, const int &id)
 
   QPixmap pixmap;
   pixmap=pixmap.fromImage(image);
+  qDebug() << "MOSTRAR EN " << id;
   ((QLabel*)ui->gridLayout->itemAt(id)->widget())->setPixmap(pixmap);
   if(settings.value("transmitir")==true)
     emitir(image);
