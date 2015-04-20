@@ -19,18 +19,46 @@ server(NULL)
     Vdb.setDatabaseName("videovigilancia.sqlite");
     bool algo = Vdb.open();
     if (!algo) {
-        qDebug() << Vdb.lastError().text();;
+        qDebug() << Vdb.lastError().text();
         qDebug() << QSqlDatabase::drivers();
         //exit(1);
     }
     QSqlQuery query(Vdb);
-    query.exec("CREATE TABLE IF NOT EXISTS REGVAF "
-                "(PRO VARCHAR(5),"
-                " V VARBINARY(1),"
-                " NCAMARA VARCHAR(60) PRIMARY KEY,"
-                " NPC VARCHAR(60) PRIMARY KEY,"
-                " TIMESTAMP VARCHAR(30) PRIMARY KEY "
-                " DIRECTORIO VARCHAR(500))");
+
+    query.exec("DROP TABLE regvaf");
+    query.exec("CREATE TABLE IF NOT EXISTS regvaf "
+               "(PRO VARCHAR(5),"
+               " V VARBINARY(1),"
+               " NCAMARA VARCHAR(60),"
+               " NPC VARCHAR(60),"
+               " TIMESTAMP VARCHAR(30), "
+               " DIRECTORIO VARCHAR(500) DEFAULT NULL,"
+               " PRIMARY KEY (NCAMARA,NPC,TIMESTAMP))");
+
+    QStringList table=Vdb.tables();
+    qDebug() << table;
+
+   /* query.exec("CREATE TABLE IF NOT EXISTS contactos "
+                "(id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                " nombre VARCHAR(50))");
+
+
+    query.prepare("INSERT INTO contactos (nombre) "
+                  "VALUES (:nombre)");
+    query.bindValue(":nombre", "Jesús");
+    query.exec();
+    int contactoId = query.lastInsertId().toInt();
+    qDebug() << contactoId;
+    query.exec("SELECT * FROM contactos");
+    while (query.next()) {
+        QString nombre = query.value(1).toString();
+        qDebug() << nombre;
+    }
+*/
+
+
+
+
 }
 
 void Servidor::inicioServer()
