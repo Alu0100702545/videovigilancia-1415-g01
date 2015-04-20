@@ -16,8 +16,8 @@ ClienteV::ClienteV(QWidget *parent) :
     ListaCamaras=new QVector<CAM>;
     conexion=new QTcpSocket;
 
-    qDebug() << getenv("USERNAME");
-    qDebug() << getenv("SESSION_MANAGER");
+    //qDebug() << getenv("USERNAME");
+    //qDebug() << getenv("SESSION_MANAGER");
 
     QRegExp rx("(\\,|\\/|\\:|\\t)");
     QString sometext(getenv("SESSION_MANAGER"));
@@ -26,7 +26,7 @@ ClienteV::ClienteV(QWidget *parent) :
     NnombrePC.append("@");
     NnombrePC.append(query.at(1));
     nombrePC=NnombrePC.toStdString();
-    //qDebug() << "NombrePC: "<< nombrePC<< " size: " << sizeof(nombrePC);;
+    qDebug() << "NombrePC: "<< NnombrePC<< " size: " << sizeof(nombrePC);;
 
 }
 
@@ -190,8 +190,7 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     QByteArray bytes, bimagen;
     QBuffer buffer(&bytes);
     QImageWriter writer;
-    QString imagen;
-    std::string simagen, spaquete;
+    std::string spaquete;
     VAF paquete;
 
     paquete.set_protocolo(NPROTOCOLO);
@@ -212,18 +211,18 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     writer.setCompression(70);
     writer.write(image);
 
-    bimagen = qCompress(buffer.buffer());
+    bimagen = buffer.buffer();
 
-    imagen=bimagen.toBase64();
-    simagen=imagen.toStdString();
+    QString imagen(bimagen);
 
-    paquete.set_timagen(sizeof(simagen));
-    paquete.set_imagen(simagen);
+    paquete.set_timagen(sizeof(imagen.toStdString()));
+    paquete.set_imagen(imagen.toStdString());
 
     paquete.SerializeToString(&spaquete);
 
     QByteArray bpaquete(spaquete.c_str(),sizeof(spaquete.c_str()));
 
+    conexion->write(sizeof(bpaquete));
     conexion->write(bpaquete);
 
 }
