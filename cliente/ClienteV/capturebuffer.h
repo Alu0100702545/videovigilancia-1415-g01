@@ -9,7 +9,7 @@ class CaptureBuffer : public QAbstractVideoSurface
     Q_OBJECT
 
 public:
-    int id=0;
+    int pos=-1;
 
     QList<QVideoFrame::PixelFormat> supportedPixelFormats(
             QAbstractVideoBuffer::HandleType handleType =
@@ -41,7 +41,7 @@ public:
                                        QVideoFrame::imageFormatFromPixelFormat(frame2.pixelFormat()));
 
         frameAsImage.copy();
-        emit s_image(frameAsImage,id);
+        emit s_image(frameAsImage,pos);
         frame2.unmap();
         //qDebug() << "Mostramos desde capture";
         return true;
