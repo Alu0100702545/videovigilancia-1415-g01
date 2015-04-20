@@ -225,7 +225,7 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     QByteArray bpaquete(spaquete.c_str(),sizeof(spaquete.c_str()));
     qint32 tbpaquete = bpaquete.size();
     QByteArray btbpaquete;
-    btbpaquete.append((const char*)&tbpaquete,sizeof(tbpaquete));
+    btbpaquete.number(tbpaquete);
 
     conexion->write(btbpaquete);
     qDebug() << "sizeof mandado OK";
