@@ -28,6 +28,7 @@ ClienteV::ClienteV(QWidget *parent) :
     nombrePC=NnombrePC.toStdString();
     qDebug() << "NombrePC: "<< NnombrePC<< " size: " << sizeof(nombrePC);;
 
+
 }
 
 ClienteV::~ClienteV()
@@ -130,6 +131,7 @@ void ClienteV::on_BotonCapturar_clicked()
             pos++;
         }
     }
+    conexion->connectToHost(settings.value("IP").toString(),settings.value("PORT").toInt());
 }
 
 void ClienteV::on_actionCapturar_triggered()
@@ -172,6 +174,7 @@ void ClienteV::on_actionCapturar_triggered()
             pos++;
         }
     }
+    conexion->connectToHost(settings.value("IP").toString(),settings.value("PORT").toInt());
 }
 
 void ClienteV::emitir(const QImage &image, const int &pos){
@@ -222,7 +225,7 @@ void ClienteV::emitir(const QImage &image, const int &pos){
 
     QByteArray bpaquete(spaquete.c_str(),sizeof(spaquete.c_str()));
 
-    conexion->write(sizeof(bpaquete));
+    conexion->write((const char*)sizeof(bpaquete));
     conexion->write(bpaquete);
 
 }
