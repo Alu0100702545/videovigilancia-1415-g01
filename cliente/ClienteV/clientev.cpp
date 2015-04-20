@@ -98,6 +98,9 @@ void ClienteV::on_BotonCapturar_clicked()
     int pos=0;
     int NLabels=0;
 
+    if(settings.value("transmitir")==true)
+        conexion->connectToHost(settings.value("IP").toString(),settings.value("PORT").toInt());
+
     if(NCamaras%2==0)
         NLabels=NCamaras;
     else
@@ -139,6 +142,9 @@ void ClienteV::on_actionCapturar_triggered()
     QString namesetting;
     int pos=0;
     int NLabels=0;
+
+    if(settings.value("transmitir")==true)
+        conexion->connectToHost(settings.value("IP").toString(),settings.value("PORT").toInt());
 
     if(NCamaras%2==0)
         NLabels=NCamaras;
@@ -198,7 +204,6 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     paquete.set_version(VPROTOCOLO);
 
     std::string nombrecamara((QCamera::deviceDescription(devices[ListaCamaras->value(pos).id])).toStdString());
-    //qDebug() << "NombreCamara: " << nombrecamara << " size: " << sizeof(nombrecamara);
     paquete.set_tnombrecamara(sizeof(nombrecamara));
     paquete.set_nombrecamara(nombrecamara);
 
@@ -211,20 +216,21 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     writer.setFormat("jpeg");
     writer.setCompression(70);
     writer.write(image);
-
     bimagen = buffer.buffer();
-
     QString imagen(bimagen);
-
     paquete.set_timagen(sizeof(imagen.toStdString()));
     paquete.set_imagen(imagen.toStdString());
 
     paquete.SerializeToString(&spaquete);
-
     QByteArray bpaquete(spaquete.c_str(),sizeof(spaquete.c_str()));
+    qint32 tbpaquete = bpaquete.size();
+    QByteArray btbpaquete;
+    btbpaquete.append((const char*)&tbpaquete,sizeof(tbpaquete));
 
-    conexion->write((const char*)sizeof(bpaquete));
+    conexion->write(btbpaquete);
+    qDebug() << "sizeof mandado OK";
     conexion->write(bpaquete);
+    qDebug() << "bpaquete mandado OK";
 
 }
 
@@ -236,7 +242,7 @@ void ClienteV::image_s(const QImage &image, const int &pos)
   //qDebug() << "MOSTRAR EN " << id;
   ((QLabel*)ui->gridLayout->itemAt(pos)->widget())->setPixmap(pixmap);
   if(settings.value("transmitir")==true){
-    conexion->connectToHost(settings.value("IP").toString(),settings.value("PORT").toInt());
+    qDebug() << "CONNECT OK";
     emitir(image,pos);
   }
 }
