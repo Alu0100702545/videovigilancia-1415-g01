@@ -14,11 +14,15 @@
 #include <QtSql>
 #include <QSqlQuery>
 #include <QSqlDatabase>
+#include <sqlite3.h>
+#include <sqldb.h>
+#include <QSqlDriver>
+
 class client : public QObject
 {
     Q_OBJECT
 public:
-    explicit client(QTcpSocket* tcpSocket,QSqlDatabase *bdd,QObject *parent = 0);
+    explicit client(QTcpSocket* tcpSocket,QSqlDatabase &bdd,QObject *parent = 0);
     ~client();
     qintptr getsocketDescriptor();
 signals:
@@ -30,7 +34,7 @@ public slots:
 private:
      QTcpSocket *tcpSocket_;
      qint32 Tpaquete;
-     QSqlDatabase *bddc;
+     QSqlDatabase bddc;
      void almacenamiento(VAF);
 };
 

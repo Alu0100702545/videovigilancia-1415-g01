@@ -12,7 +12,7 @@ class Servidor : public QObject
 private:
     //QTcpSocket *cliente;
     QTcpServer *server;
-    QSqlDatabase *Vdb;
+    QSqlDatabase Vdb;
     QMap<qintptr,client*> clients;
 signals:
 

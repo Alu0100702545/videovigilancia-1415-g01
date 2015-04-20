@@ -2,21 +2,28 @@
 
 
 Servidor::Servidor():
-server(NULL),
-Vdb(NULL)
+server(NULL)
 {
     server= new QTcpServer;
     server->setMaxPendingConnections(10);
-    Vdb= new QSqlDatabase();
-    Vdb->addDatabase("QSQLITE");
-    Vdb->setDatabaseName("videovigilancia.sqlite");
-    bool algo = Vdb->open();
+
+    //Vdb= new QSqlDatabase();
+
+    Vdb=QSqlDatabase::addDatabase("QSQLITE", "SQLITE");
+    //QSqlDatabase vvdb = QSqlDatabase::addDatabase("QSQLITE", "SQLITE");
+
+    qDebug() << Vdb.connectionName();
+    qDebug() << Vdb.driverName();
+    qDebug() << Vdb.isDriverAvailable("QSQLITE");
+    qDebug() << Vdb.isValid();
+    Vdb.setDatabaseName("videovigilancia.sqlite");
+    bool algo = Vdb.open();
     if (!algo) {
-        qDebug() << Vdb->lastError().text();;
+        qDebug() << Vdb.lastError().text();;
         qDebug() << QSqlDatabase::drivers();
         //exit(1);
     }
-    QSqlQuery query(*Vdb);
+    QSqlQuery query(Vdb);
     query.exec("CREATE TABLE IF NOT EXISTS REGVAF "
                 "(PRO VARCHAR(5),"
                 " V VARBINARY(1),"

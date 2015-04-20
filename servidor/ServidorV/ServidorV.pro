@@ -79,6 +79,4 @@ unix {
  vardir.commands = true
 }
 
-DISTFILES +=
-
 

@@ -1,13 +1,13 @@
 #include "client.h"
 
-client::client(QTcpSocket *tcpSocket,QSqlDatabase *bdd, QObject *parent) : QObject(parent),
+client::client(QTcpSocket *tcpSocket,QSqlDatabase &bdd, QObject *parent) : QObject(parent),
     tcpSocket_(tcpSocket),bddc(bdd)
 {
     connect(tcpSocket_, SIGNAL(readyRead()), this, SLOT(deserializacion()));
     connect(tcpSocket_,SIGNAL(disconnected()), this, SLOT(borrarlista()));
 
 
-    if (!bddc->open()) {
+    if (!bddc.open()) {
         qDebug() <<"No se pudo acceder a los datos";
         exit(1);
     }
@@ -54,7 +54,7 @@ void client::almacenamiento(VAF paquete)
     QImage im;
     im.loadFromData(buffer, "JPEG");
     im.save("/tmp");
-    QSqlQuery query(*bddc);
+    QSqlQuery query(bddc);
     query.prepare("INSERT INTO REGVAF (PRO,V,NCAMARA,NPC,TIMESTAMP,DIRECTORIO) "
                   "VALUES (:PRO,:V,:NCAMARA,:NPC,:TIMESTAMP,:DIRECTORIO)");
 
