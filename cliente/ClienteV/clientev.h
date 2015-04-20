@@ -19,10 +19,16 @@
 #include <QTcpSocket>
 #include <QBuffer>
 #include <QImageWriter>
+#include <QHostInfo>
+#include <VAF.pb.h>
+
+#define NPROTOCOLO "VAF"
+#define VPROTOCOLO "1"
 
 struct CAM{
     QCamera *Camera = NULL;
     CaptureBuffer *captureBuffer = NULL;
+    int id=-1;
 };
 
 namespace Ui {
@@ -55,7 +61,7 @@ private slots:
 
     void image_s(const QImage &, const int &);
 
-    void emitir(const QImage &image);
+    void emitir(const QImage &image, const int &pos);
 
     void actualizar_puerto(int puerto);
 
@@ -70,6 +76,7 @@ private:
     QVector<CAM> *ListaCamaras;
     QList<QByteArray> devices;
     QTcpSocket *conexion;
+    std::string nombrePC;
 };
 
 #endif // CLIENTEV_H

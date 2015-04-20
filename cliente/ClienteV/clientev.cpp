@@ -16,6 +16,18 @@ ClienteV::ClienteV(QWidget *parent) :
     ListaCamaras=new QVector<CAM>;
     conexion=new QTcpSocket;
 
+    qDebug() << getenv("USERNAME");
+    qDebug() << getenv("SESSION_MANAGER");
+
+    QRegExp rx("(\\,|\\/|\\:|\\t)");
+    QString sometext(getenv("SESSION_MANAGER"));
+    QStringList query = sometext.split(rx);
+    QString NnombrePC(getenv("USER"));
+    NnombrePC.append("@");
+    NnombrePC.append(query.at(1));
+    nombrePC=NnombrePC.toStdString();
+    //qDebug() << "NombrePC: "<< nombrePC<< " size: " << sizeof(nombrePC);;
+
 }
 
 ClienteV::~ClienteV()
@@ -82,12 +94,21 @@ void ClienteV::on_BotonCapturar_clicked()
 {
     CAM aux;
     QString namesetting;
-    int id=0;
+    int pos=0;
+    int NLabels=0;
 
-    for(int i=0;i<NCamaras;i++){
+    if(NCamaras%2==0)
+        NLabels=NCamaras;
+    else
+        NLabels=NCamaras+1;
+
+    for(int i=0;i<NLabels/2;i++){
+        for(int j=0;j<NLabels/2;j++){
             QLabel* label=new QLabel;
             label->setScaledContents(true);
-            ui->gridLayout->addWidget(label);
+            ui->gridLayout->addWidget(label,i,j);
+            qDebug() << "AÑADIDO EN " << i << j;
+        }
     }
 
     for(int i=0;i<NCamaras;i++)
@@ -100,16 +121,13 @@ void ClienteV::on_BotonCapturar_clicked()
             qDebug() << "ENTRAMOS CON " << namesetting;
             aux.Camera=new QCamera(devices[i]);
             aux.captureBuffer=new CaptureBuffer;
-            aux.captureBuffer->id=id;
-            qDebug() << "BUFFER OK";
+            aux.captureBuffer->pos=pos;
+            aux.id=i;
             ListaCamaras->push_back(aux);
-            qDebug() << "PUSH OK";
-            ListaCamaras->value(id).Camera->setViewfinder(ListaCamaras->value(id).captureBuffer);
-            qDebug() << "SET OK";
-            ListaCamaras->value(id).Camera->start();
-            qDebug() << "START OK";
-            connect(ListaCamaras->value(id).captureBuffer,SIGNAL(s_image(QImage,int)),this,SLOT(image_s(QImage,int)));
-            id++;
+            ListaCamaras->value(pos).Camera->setViewfinder(ListaCamaras->value(pos).captureBuffer);
+            ListaCamaras->value(pos).Camera->start();
+            connect(ListaCamaras->value(pos).captureBuffer,SIGNAL(s_image(QImage,int)),this,SLOT(image_s(QImage,int)));
+            pos++;
         }
     }
 }
@@ -118,50 +136,105 @@ void ClienteV::on_actionCapturar_triggered()
 {
     CAM aux;
     QString namesetting;
+    int pos=0;
+    int NLabels=0;
 
-    for(int i=0;i<NCamaras;i++){
+    if(NCamaras%2==0)
+        NLabels=NCamaras;
+    else
+        NLabels=NCamaras+1;
+
+    for(int i=0;i<NLabels/2;i++){
+        for(int j=0;j<NLabels/2;j++){
             QLabel* label=new QLabel;
             label->setScaledContents(true);
-            ui->gridLayout->addWidget(label);
+            ui->gridLayout->addWidget(label,i,j);
+            qDebug() << "AÑADIDO EN " << i << j;
+        }
     }
 
     for(int i=0;i<NCamaras;i++)
     {
         namesetting="indice";
         namesetting.append(i+48);
-
+        qDebug() << "CAPT NAMESETTING: " << namesetting;
         if((settings.value(namesetting))==true)
         {
+            qDebug() << "ENTRAMOS CON " << namesetting;
             aux.Camera=new QCamera(devices[i]);
             aux.captureBuffer=new CaptureBuffer;
-            aux.captureBuffer->id=i;
-
+            aux.captureBuffer->pos=pos;
+            aux.id=i;
             ListaCamaras->push_back(aux);
-            ListaCamaras->value(i).Camera->setViewfinder(ListaCamaras->value(i).captureBuffer);
-            ListaCamaras->value(i).Camera->start();
-
-            connect(ListaCamaras->value(i).captureBuffer,SIGNAL(s_image(QImage,int)),this,SLOT(image_s(QImage,int)));
+            ListaCamaras->value(pos).Camera->setViewfinder(ListaCamaras->value(pos).captureBuffer);
+            ListaCamaras->value(pos).Camera->start();
+            connect(ListaCamaras->value(pos).captureBuffer,SIGNAL(s_image(QImage,int)),this,SLOT(image_s(QImage,int)));
+            pos++;
         }
     }
 }
 
-void ClienteV::emitir(const QImage &image){
-    QBuffer buffer;
+void ClienteV::emitir(const QImage &image, const int &pos){
+    /*
+    required string protocolo = 1;
+    required bytes  version = 2;
+    optional uint32  Tnombrecamara = 3 ;
+    required string  nombrecamara = 4;
+    optional uint32  TnombrePC = 5 ;
+    required string  nombrePC = 6;
+    required string  timestamp = 7;
+    optional uint32  TImagen=8;
+    required string  imagen=9;
+    */
+
+    QByteArray bytes, bimagen;
+    QBuffer buffer(&bytes);
     QImageWriter writer;
+    QString imagen;
+    std::string simagen, spaquete;
+    VAF paquete;
+
+    paquete.set_protocolo(NPROTOCOLO);
+    paquete.set_version(VPROTOCOLO);
+
+    std::string nombrecamara((QCamera::deviceDescription(devices[ListaCamaras->value(pos).id])).toStdString());
+    //qDebug() << "NombreCamara: " << nombrecamara << " size: " << sizeof(nombrecamara);
+    paquete.set_tnombrecamara(sizeof(nombrecamara));
+    paquete.set_nombrecamara(nombrecamara);
+
+    paquete.set_tnombrepc(sizeof(nombrePC));
+    paquete.set_nombrepc(nombrePC);
+
+    paquete.set_timestamp((QTime::currentTime().toString("hh:mm:ss")).toStdString());
+
     writer.setDevice(&buffer);
     writer.setFormat("jpeg");
     writer.setCompression(70);
     writer.write(image);
-    QByteArray bites=buffer.buffer();
-    conexion->write(bites);
+
+    bimagen = qCompress(buffer.buffer());
+
+    imagen=bimagen.toBase64();
+    simagen=imagen.toStdString();
+
+    paquete.set_timagen(sizeof(simagen));
+    paquete.set_imagen(simagen);
+
+    paquete.SerializeToString(&spaquete);
+
+    QByteArray bpaquete(spaquete.c_str(),sizeof(spaquete.c_str()));
+
+    conexion->write(bpaquete);
+
 }
 
-void ClienteV::image_s(const QImage &image, const int &id)
+void ClienteV::image_s(const QImage &image, const int &pos)
 {
 
   QPixmap pixmap;
   pixmap=pixmap.fromImage(image);
-  ((QLabel*)ui->gridLayout->itemAt(id)->widget())->setPixmap(pixmap);
+  //qDebug() << "MOSTRAR EN " << id;
+  ((QLabel*)ui->gridLayout->itemAt(pos)->widget())->setPixmap(pixmap);
   if(settings.value("transmitir")==true)
-    emitir(image);
+    emitir(image,pos);
 }
