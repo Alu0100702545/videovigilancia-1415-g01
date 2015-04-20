@@ -131,7 +131,6 @@ void ClienteV::on_BotonCapturar_clicked()
             pos++;
         }
     }
-    conexion->connectToHost(settings.value("IP").toString(),settings.value("PORT").toInt());
 }
 
 void ClienteV::on_actionCapturar_triggered()
@@ -174,7 +173,6 @@ void ClienteV::on_actionCapturar_triggered()
             pos++;
         }
     }
-    conexion->connectToHost(settings.value("IP").toString(),settings.value("PORT").toInt());
 }
 
 void ClienteV::emitir(const QImage &image, const int &pos){
@@ -237,6 +235,8 @@ void ClienteV::image_s(const QImage &image, const int &pos)
   pixmap=pixmap.fromImage(image);
   //qDebug() << "MOSTRAR EN " << id;
   ((QLabel*)ui->gridLayout->itemAt(pos)->widget())->setPixmap(pixmap);
-  if(settings.value("transmitir")==true)
+  if(settings.value("transmitir")==true){
+    conexion->connectToHost(settings.value("IP").toString(),settings.value("PORT").toInt());
     emitir(image,pos);
+  }
 }
