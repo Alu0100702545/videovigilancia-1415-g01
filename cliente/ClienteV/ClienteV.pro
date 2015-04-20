@@ -9,9 +9,15 @@ QT       += multimedia multimediawidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+include(QtOpenCV.pri)
+include(protobuf.pri)
+
 TARGET = ClienteV
 TEMPLATE = app
 
+add_opencv_modules(core video imgproc)
+
+PROTOS = VAF.proto
 
 SOURCES += main.cpp\
         clientev.cpp \
@@ -21,11 +27,14 @@ SOURCES += main.cpp\
 HEADERS  += clientev.h \
     acercade.h \
     capturebuffer.h \
-    combobox.h
+    combobox.h \
+    VAF.pb.h
 
 FORMS    += clientev.ui \
     acercade.ui \
     combobox.ui
+
+OTHER_FILES +=
 
 unix {
     # Variables
@@ -68,3 +77,5 @@ unix {
     vardir.path = $$VARDIR
     vardir.commands = true
 }
+
+
