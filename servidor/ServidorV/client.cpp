@@ -86,8 +86,6 @@ void client::almacenamiento(VAF paquete)
 
     int algo=paquete.imagen().size();
    qDebug() << "imagen"<< QString::fromStdString( static_cast<std::ostringstream*>(&(std::ostringstream() << algo))->str());
-
-
     QSqlQuery query(bddc);
     query.prepare("INSERT INTO REGVAF (PRO,V,NCAMARA,NPC,TIMESTAMP,DIRECTORIO) "
                   "VALUES (:PRO,:V,:NCAMARA,:NPC,:TIMESTAMP,:DIRECTORIO)");
@@ -99,15 +97,9 @@ void client::almacenamiento(VAF paquete)
     query.bindValue(":TIMESTAMP", QString::fromStdString(paquete.timestamp()));
     query.bindValue(":DIRECTORIO", "NULL");
     query.exec();
+    paquete.Clear();
 
 
-
-    qDebug() << QString::fromStdString(paquete.nombrecamara());
-    qDebug()  << QString::fromStdString(paquete.nombrepc());
-    qDebug()  << QString::fromStdString(paquete.protocolo());
-    qDebug()  << QString::fromStdString(paquete.timestamp());
-    qDebug()  << paquete.timagen();
->>>>>>> desarrollobdd
 }
 
 

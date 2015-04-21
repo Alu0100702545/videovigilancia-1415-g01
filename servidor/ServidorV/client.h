@@ -38,6 +38,7 @@ private:
      QTcpSocket *tcpSocket_;
      qint32 Tpaquete;
      QSqlDatabase bddc;
+     VAF paquete;
      void almacenamiento(VAF);
 };
 
