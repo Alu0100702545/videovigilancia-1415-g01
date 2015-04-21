@@ -65,12 +65,19 @@ void client::almacenamiento()
     //QImage im;
     //qDebug() << im.loadFromData(buffer, "JPEG");
     //qDebug() << im.save("joe.jpeg");
+
+
     qDebug() <<"nombre camara:"<< QString::fromStdString(paquete.nombrecamara());
     qDebug()  << "nombre pc:"<< QString::fromStdString(paquete.nombrepc());
     qDebug()  <<"Protocolo:" << QString::fromStdString(paquete.protocolo());
     qDebug()  << "timestamp:" << QString::fromStdString(paquete.timestamp());
     qDebug()  <<"timagen: " <<paquete.timagen();
-    qDebug() << "imagen"<< QString::fromStdString(paquete.imagen());
+
+    int algo=paquete.imagen().size();
+   // if (paquete.imagen().size()== paquete.timagen())
+
+
+        qDebug() << "imagen"<< QString::fromStdString( static_cast<std::ostringstream*>(&(std::ostringstream() << algo))->str());
 }
 
 

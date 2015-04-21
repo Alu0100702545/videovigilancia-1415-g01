@@ -11,6 +11,9 @@
 #include <QMap>
 #include <QImage>
 #include <QDebug>
+#include <sstream>
+#include <iostream>
+
 class client : public QObject
 {
     Q_OBJECT
