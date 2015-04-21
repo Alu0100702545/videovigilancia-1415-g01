@@ -27,21 +27,26 @@ void client::deserializacion()
     QString aux, aux3;
     std::string aux2;
     QByteArray algo;
+    QDataStream in(tcpSocket_);
+    in.setVersion(QDataStream::Qt_4_0);
         //qDebug() << tcpSocket_->bytesAvailable();
-     if(tcpSocket_->canReadLine()&& (Tpaquete==0))
+     if(tcpSocket_->bytesAvailable() >= (int)(sizeof(qint32))&& (Tpaquete==0))
      {
-         algo = tcpSocket_->readLine();
-         aux3 = QString ::fromLocal8Bit(algo);
-         aux3.remove('\n');
-         qDebug() <<aux3;
-         Tpaquete=aux3.toInt();
+         //algo = tcpSocket_->read(sizeof(Tpaquete));
+         //aux3 = QString ::fromLocal8Bit(algo);
+         //aux3.remove('\n');
+         //qDebug() <<aux3;
+         //Tpaquete=aux3.toInt();
+         in >> Tpaquete;
+         //qDebug() << QString::fromStdString(algo.toStdString());
+        // Tpaquete =(qint32)algo.toStdString();
          aux=QString::number(Tpaquete);
-         qDebug() << aux;
+         qDebug() <<"tamaño paquete:"<< aux;
 
      }else if ((Tpaquete !=0) && (tcpSocket_->bytesAvailable() >=Tpaquete )){
         aux=tcpSocket_->read(Tpaquete);
         aux2=aux.toStdString();
-        qDebug() << aux;
+        qDebug() << "Que me envias:"<< aux;
         paquete.ParseFromString(aux2);
         Tpaquete =0;
         almacenamiento();
@@ -53,18 +58,19 @@ void client::deserializacion()
 
 void client::almacenamiento()
 {
-    QString algo =QString::fromStdString(paquete.imagen());
-    QByteArray buffer(algo.toLocal8Bit());
+    //QString algo =QString::fromStdString(paquete.imagen());
+    //QByteArray buffer(algo.toUInt());
     //qDebug() << buffer;
-    qDebug() << "LLEGA a almacenaminto";
-    QImage im;
-    im.loadFromData(buffer, "JPEG");
-    im.save("/tmp");
-    qDebug() << QString::fromStdString(paquete.nombrecamara());
-    qDebug()  << QString::fromStdString(paquete.nombrepc());
-    qDebug()  << QString::fromStdString(paquete.protocolo());
-    qDebug()  << QString::fromStdString(paquete.timestamp());
-    qDebug()  << paquete.timagen();
+    //qDebug() << "LLEGA a almacenaminto";
+    //QImage im;
+    //qDebug() << im.loadFromData(buffer, "JPEG");
+    //qDebug() << im.save("joe.jpeg");
+    qDebug() <<"nombre camara:"<< QString::fromStdString(paquete.nombrecamara());
+    qDebug()  << "nombre pc:"<< QString::fromStdString(paquete.nombrepc());
+    qDebug()  <<"Protocolo:" << QString::fromStdString(paquete.protocolo());
+    qDebug()  << "timestamp:" << QString::fromStdString(paquete.timestamp());
+    qDebug()  <<"timagen: " <<paquete.timagen();
+    qDebug() << "imagen"<< QString::fromStdString(paquete.imagen());
 }
 
 

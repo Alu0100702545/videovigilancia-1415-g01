@@ -269,11 +269,16 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     QByteArray btbpaquete;
     btbpaquete.append((const char*)&tbpaquete,sizeof(qint32));
 //    btbpaquete.append('\n');
-
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_4_0);
     qDebug() << "Size: " << btbpaquete.toInt() << "Paquete: " << bpaquete;
-
-    conexion->write(btbpaquete);
-    conexion->write("\n");
+    out << (quint32)tbpaquete;
+    //out << tbpaquete;
+    //out.device()->seek(0);
+    //conexion->write(btbpaquete);
+    conexion ->write(block);
+    //conexion->write("\n");
     qDebug() << "sizeof mandado OK";
     conexion->write(bpaquete);
     qDebug() << "bpaquete mandado OK";
