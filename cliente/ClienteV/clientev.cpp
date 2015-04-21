@@ -254,7 +254,7 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     writer.write(image);
     QByteArray bimagen = buffer.buffer();
     //QString imagen(bimagen);
-    paquete.set_timagen((int32_t)bimagen.toStdString().size());
+    paquete.set_timagen((int32_t)sizeof(bimagen));
     paquete.set_imagen(bimagen.toStdString());
 
     qint32 dtimagen((paquete.timagen()));
