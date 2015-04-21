@@ -243,7 +243,7 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     QString dnombrepc(paquete.nombrepc().c_str());
     qDebug() << dnombrepc << dtnombrepc;
 
-    paquete.set_timestamp((QTime::currentTime().toString("hh:mm:ss")).toStdString());
+    paquete.set_timestamp((QTime::currentTime().toString("hh:mm:ss:zzz")).toStdString());
 
     QString dtime(paquete.timestamp().c_str());
     qDebug() << dtime;
