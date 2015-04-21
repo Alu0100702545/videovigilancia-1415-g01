@@ -214,8 +214,8 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     required string  imagen=9;
     */
 
-    QByteArray bytes, bimagen;
-    QBuffer buffer(&bytes);
+
+    QBuffer buffer;
     QImageWriter writer;
     std::string spaquete;
     VAF paquete;
@@ -252,12 +252,12 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     writer.setFormat("JPEG");
     writer.setCompression(70);
     writer.write(image);
-    bimagen = buffer.buffer();
-    QString imagen(bimagen);
-    paquete.set_timagen((imagen.toStdString()).length());
-    paquete.set_imagen(imagen.toStdString());
+    QByteArray bimagen = buffer.buffer();
+    //QString imagen(bimagen);
+    paquete.set_timagen((int32_t)bimagen.size());
+    paquete.set_imagen(bimagen.toStdString());
 
-    qint32 dtimagen(paquete.timagen());
+    qint32 dtimagen((paquete.timagen()));
     QString dimagen(paquete.imagen().c_str());
     qDebug() << dimagen << dtimagen;
 
