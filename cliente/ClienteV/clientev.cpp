@@ -101,10 +101,15 @@ void ClienteV::on_BotonCapturar_clicked()
     if(settings.value("transmitir")==true)
         conexion->connectToHost(settings.value("IP").toString(),settings.value("PORT").toInt());
 
+    qDebug() << NCamaras;
+
     if(NCamaras%2==0)
         NLabels=NCamaras;
+    else if(NCamaras==2)
+        NLabels=4;
     else
         NLabels=NCamaras+1;
+
 
     for(int i=0;i<NLabels/2;i++){
         for(int j=0;j<NLabels/2;j++){
@@ -229,12 +234,12 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     qDebug() << dtime;
 
     writer.setDevice(&buffer);
-    writer.setFormat("jpeg");
+    writer.setFormat("JPEG");
     writer.setCompression(70);
     writer.write(image);
     bimagen = buffer.buffer();
     QString imagen(bimagen);
-    paquete.set_timagen(sizeof(imagen.toStdString()));
+    paquete.set_timagen((imagen.toStdString()).length());
     paquete.set_imagen(imagen.toStdString());
 
     qint32 dtimagen(paquete.timagen());
@@ -264,7 +269,7 @@ void ClienteV::image_s(const QImage &image, const int &pos)
 
   QPixmap pixmap;
   pixmap=pixmap.fromImage(image);
-  //qDebug() << "MOSTRAR EN " << id;
+  qDebug() << "MOSTRAR EN " << pos;
   ((QLabel*)ui->gridLayout->itemAt(pos)->widget())->setPixmap(pixmap);
   if(settings.value("transmitir")==true){
     qDebug() << "CONNECT OK";
