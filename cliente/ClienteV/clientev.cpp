@@ -242,7 +242,7 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     qDebug() << dimagen << dtimagen;
 
     paquete.SerializeToString(&spaquete);
-    QByteArray bpaquete(spaquete.c_str(),sizeof(spaquete.c_str()));
+    QByteArray bpaquete(spaquete.c_str(),spaquete.length());
     qint32 tbpaquete = bpaquete.size();
     //qDebug() << "TBSIZE: " << tbpaquete;
     QByteArray btbpaquete;
