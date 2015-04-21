@@ -96,23 +96,28 @@ void ClienteV::on_BotonCapturar_clicked()
     CAM aux;
     QString namesetting;
     int pos=0;
-    int NLabels=0;
+    int NLabelsX=0, NLabelsY=0;
 
     if(settings.value("transmitir")==true)
         conexion->connectToHost(settings.value("IP").toString(),settings.value("PORT").toInt());
 
     qDebug() << NCamaras;
 
-    if(NCamaras%2==0)
-        NLabels=NCamaras;
-    else if(NCamaras==2)
-        NLabels=4;
-    else
-        NLabels=NCamaras+1;
+    if(NCamaras==2){
+        NLabelsY=1;
+        NLabelsX=2;
+    }
+    else if(NCamaras%2==0){
+        NLabelsX=NCamaras/2;
+        NLabelsY=NCamaras/2;
+    }
+    else{
+        NLabelsX=(NCamaras+1)/2;
+        NLabelsY=(NCamaras+1)/2;
+    }
 
-
-    for(int i=0;i<NLabels/2;i++){
-        for(int j=0;j<NLabels/2;j++){
+    for(int i=0;i<NLabelsY;i++){
+        for(int j=0;j<NLabelsX;j++){
             QLabel* label=new QLabel;
             label->setScaledContents(true);
             ui->gridLayout->addWidget(label,i,j);
@@ -146,18 +151,28 @@ void ClienteV::on_actionCapturar_triggered()
     CAM aux;
     QString namesetting;
     int pos=0;
-    int NLabels=0;
+    int NLabelsX=0, NLabelsY=0;
 
     if(settings.value("transmitir")==true)
         conexion->connectToHost(settings.value("IP").toString(),settings.value("PORT").toInt());
 
-    if(NCamaras%2==0)
-        NLabels=NCamaras;
-    else
-        NLabels=NCamaras+1;
+    qDebug() << NCamaras;
 
-    for(int i=0;i<NLabels/2;i++){
-        for(int j=0;j<NLabels/2;j++){
+    if(NCamaras==2){
+        NLabelsY=1;
+        NLabelsX=2;
+    }
+    else if(NCamaras%2==0){
+        NLabelsX=NCamaras/2;
+        NLabelsY=NCamaras/2;
+    }
+    else{
+        NLabelsX=(NCamaras+1)/2;
+        NLabelsY=(NCamaras+1)/2;
+    }
+
+    for(int i=0;i<NLabelsY;i++){
+        for(int j=0;j<NLabelsX;j++){
             QLabel* label=new QLabel;
             label->setScaledContents(true);
             ui->gridLayout->addWidget(label,i,j);
