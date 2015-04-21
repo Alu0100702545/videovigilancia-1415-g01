@@ -254,7 +254,7 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     writer.write(image);
     QByteArray bimagen = buffer.buffer();
     //QString imagen(bimagen);
-    paquete.set_timagen((int32_t)sizeof(bimagen));
+    paquete.set_timagen((int32_t)bimagen.size());
     paquete.set_imagen(bimagen.toStdString());
 
     qint32 dtimagen((paquete.timagen()));
@@ -262,11 +262,12 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     qDebug() << dimagen << dtimagen;
 
     paquete.SerializeToString(&spaquete);
+
     QByteArray bpaquete(spaquete.c_str(),spaquete.length());
     qint32 tbpaquete = bpaquete.size();
     //qDebug() << "TBSIZE: " << tbpaquete;
     QByteArray btbpaquete;
-    btbpaquete.append(QByteArray::number(tbpaquete));
+    btbpaquete.append((const char*)&tbpaquete,sizeof(qint32));
 //    btbpaquete.append('\n');
 
     qDebug() << "Size: " << btbpaquete.toInt() << "Paquete: " << bpaquete;
