@@ -11,5 +11,5 @@ message VAF {
     required string  nombrePC = 6;
     required string  timestamp = 7;
     optional uint32  TImagen=8;
-    required string  imagen=9;
+    required bytes  imagen=9;
 }
