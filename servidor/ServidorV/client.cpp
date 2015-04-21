@@ -44,10 +44,10 @@ void client::deserializacion()
          qDebug() <<"tamaño paquete:"<< aux;
 
      }else if ((Tpaquete !=0) && (tcpSocket_->bytesAvailable() >=Tpaquete )){
-        aux=tcpSocket_->read(Tpaquete);
-        aux2=aux.toStdString();
+        algo=tcpSocket_->read(Tpaquete);
+        //aux2=aux.toStdString(algo.toStdString());
         qDebug() << "Que me envias:"<< aux;
-        paquete.ParseFromString(aux2);
+        paquete.ParseFromString(algo.toStdString());
         Tpaquete =0;
         almacenamiento();
 
@@ -58,13 +58,14 @@ void client::deserializacion()
 
 void client::almacenamiento()
 {
-    //QString algo =QString::fromStdString(paquete.imagen());
-    //QByteArray buffer(algo.toUInt());
+    //QString algo(paquete.imagen().c_str());
+    QByteArray buffer;
+    buffer.append(paquete.imagen().c_str(),paquete.imagen().length());
     //qDebug() << buffer;
     //qDebug() << "LLEGA a almacenaminto";
-    //QImage im;
-    //qDebug() << im.loadFromData(buffer, "JPEG");
-    //qDebug() << im.save("joe.jpeg");
+    QImage im;
+    qDebug() << im.loadFromData(buffer, "JPEG");
+    qDebug() << im.save("joe.jpeg");
 
 
     qDebug() <<"nombre camara:"<< QString::fromStdString(paquete.nombrecamara());
@@ -74,10 +75,8 @@ void client::almacenamiento()
     qDebug()  <<"timagen: " <<paquete.timagen();
 
     int algo=paquete.imagen().size();
-   // if (paquete.imagen().size()== paquete.timagen())
-
-
-        qDebug() << "imagen"<< QString::fromStdString( static_cast<std::ostringstream*>(&(std::ostringstream() << algo))->str());
+   qDebug() << "imagen"<< QString::fromStdString( static_cast<std::ostringstream*>(&(std::ostringstream() << algo))->str());
+   paquete.Clear();
 }
 
 
