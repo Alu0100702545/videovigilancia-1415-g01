@@ -8,3 +8,4 @@
 */debug*
 */build*
 *.pro.user*
+*.autosave

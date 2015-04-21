@@ -24,7 +24,8 @@ void Servidor::conexionesPen()
         client *nuevaC =new client(clientConnection,this);
         clients[nuevaC->getsocketDescriptor()] = nuevaC;
         connect(nuevaC,SIGNAL(eliminar(qintptr)),this, SLOT(eliminarlista(qintptr)));
-
+        qDebug() << "nuevaConexion";
+        qDebug() << nuevaC;
 
     }
     if(clients.size()>=10)
