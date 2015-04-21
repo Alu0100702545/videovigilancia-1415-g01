@@ -9,7 +9,7 @@ class CaptureBuffer : public QAbstractVideoSurface
     Q_OBJECT
 
 public:
-    int pos=-1;
+    int pos=0;
 
     QList<QVideoFrame::PixelFormat> supportedPixelFormats(
             QAbstractVideoBuffer::HandleType handleType =
