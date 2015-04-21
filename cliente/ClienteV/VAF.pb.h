@@ -170,14 +170,14 @@ class VAF : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 timagen() const;
   inline void set_timagen(::google::protobuf::uint32 value);
 
-  // required string imagen = 9;
+  // required bytes imagen = 9;
   inline bool has_imagen() const;
   inline void clear_imagen();
   static const int kImagenFieldNumber = 9;
   inline const ::std::string& imagen() const;
   inline void set_imagen(const ::std::string& value);
   inline void set_imagen(const char* value);
-  inline void set_imagen(const char* value, size_t size);
+  inline void set_imagen(const void* value, size_t size);
   inline ::std::string* mutable_imagen();
   inline ::std::string* release_imagen();
   inline void set_allocated_imagen(::std::string* imagen);
@@ -648,7 +648,7 @@ inline void VAF::set_timagen(::google::protobuf::uint32 value) {
   timagen_ = value;
 }
 
-// required string imagen = 9;
+// required bytes imagen = 9;
 inline bool VAF::has_imagen() const {
   return (_has_bits_[0] & 0x00000100u) != 0;
 }
@@ -681,7 +681,7 @@ inline void VAF::set_imagen(const char* value) {
   }
   imagen_->assign(value);
 }
-inline void VAF::set_imagen(const char* value, size_t size) {
+inline void VAF::set_imagen(const void* value, size_t size) {
   set_has_imagen();
   if (imagen_ == &::google::protobuf::internal::kEmptyString) {
     imagen_ = new ::std::string;

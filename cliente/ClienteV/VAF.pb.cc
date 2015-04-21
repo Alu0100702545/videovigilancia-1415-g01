@@ -88,7 +88,7 @@ void protobuf_AddDesc_VAF_2eproto() {
     "\n\007version\030\002 \002(\014\022\025\n\rTnombrecamara\030\003 \001(\r\022\024"
     "\n\014nombrecamara\030\004 \002(\t\022\021\n\tTnombrePC\030\005 \001(\r\022"
     "\020\n\010nombrePC\030\006 \002(\t\022\021\n\ttimestamp\030\007 \002(\t\022\017\n\007"
-    "TImagen\030\010 \001(\r\022\016\n\006imagen\030\t \002(\t", 189);
+    "TImagen\030\010 \001(\r\022\016\n\006imagen\030\t \002(\014", 189);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "VAF.proto", &protobuf_RegisterTypes);
   VAF::default_instance_ = new VAF();
@@ -370,16 +370,13 @@ bool VAF::MergePartialFromCodedStream(
         break;
       }
 
-      // required string imagen = 9;
+      // required bytes imagen = 9;
       case 9: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_imagen:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_imagen()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->imagen().data(), this->imagen().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
         }
@@ -462,12 +459,9 @@ void VAF::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(8, this->timagen(), output);
   }
 
-  // required string imagen = 9;
+  // required bytes imagen = 9;
   if (has_imagen()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->imagen().data(), this->imagen().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
+    ::google::protobuf::internal::WireFormatLite::WriteBytes(
       9, this->imagen(), output);
   }
 
@@ -541,13 +535,10 @@ void VAF::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(8, this->timagen(), target);
   }
 
-  // required string imagen = 9;
+  // required bytes imagen = 9;
   if (has_imagen()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->imagen().data(), this->imagen().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
     target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
         9, this->imagen(), target);
   }
 
@@ -620,10 +611,10 @@ int VAF::ByteSize() const {
 
   }
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
-    // required string imagen = 9;
+    // required bytes imagen = 9;
     if (has_imagen()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::StringSize(
+        ::google::protobuf::internal::WireFormatLite::BytesSize(
           this->imagen());
     }
 
