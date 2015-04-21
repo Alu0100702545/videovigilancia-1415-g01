@@ -1,11 +1,18 @@
 #include "client.h"
 
-client::client(QTcpSocket *tcpSocket, QObject *parent) : QObject(parent),
-    tcpSocket_(tcpSocket)
+client::client(QTcpSocket *tcpSocket,QSqlDatabase &bdd, QObject *parent) : QObject(parent),
+    tcpSocket_(tcpSocket),bddc(bdd)
 {
      Tpaquete =0;
     connect(tcpSocket_, SIGNAL(readyRead()), this, SLOT(deserializacion()));
     connect(tcpSocket_,SIGNAL(disconnected()), this, SLOT(borrarlista()));
+
+
+    if (!bddc.open()) {
+        qDebug() <<"No se pudo acceder a los datos";
+        exit(1);
+    }
+
 }
 client::~client()
 {
@@ -24,7 +31,9 @@ void client::borrarlista()
 void client::deserializacion()
 {
 
+
     QString aux, aux3;
+
     std::string aux2;
     QByteArray algo;
     QDataStream in(tcpSocket_);
@@ -49,14 +58,14 @@ void client::deserializacion()
         qDebug() << "Que me envias:"<< aux;
         paquete.ParseFromString(algo.toStdString());
         Tpaquete =0;
-        almacenamiento();
+        almacenamiento(paquete);
 
     }else
 
     return;
 }
 
-void client::almacenamiento()
+void client::almacenamiento(VAF paquete)
 {
     //QString algo(paquete.imagen().c_str());
     QByteArray buffer;
@@ -64,6 +73,7 @@ void client::almacenamiento()
     //qDebug() << buffer;
     //qDebug() << "LLEGA a almacenaminto";
     QImage im;
+
     qDebug() << im.loadFromData(buffer, "JPEG");
     qDebug() << im.save("joe.jpeg");
 
@@ -76,7 +86,28 @@ void client::almacenamiento()
 
     int algo=paquete.imagen().size();
    qDebug() << "imagen"<< QString::fromStdString( static_cast<std::ostringstream*>(&(std::ostringstream() << algo))->str());
-   paquete.Clear();
+
+
+    QSqlQuery query(bddc);
+    query.prepare("INSERT INTO REGVAF (PRO,V,NCAMARA,NPC,TIMESTAMP,DIRECTORIO) "
+                  "VALUES (:PRO,:V,:NCAMARA,:NPC,:TIMESTAMP,:DIRECTORIO)");
+
+    query.bindValue(":PRO",QString::fromStdString(paquete.protocolo()));
+    query.bindValue(":V", QString::fromStdString(paquete.version()).toLocal8Bit());
+    query.bindValue(":NCAMARA", QString::fromStdString(paquete.nombrecamara()));
+    query.bindValue(":NPC", QString::fromStdString(paquete.nombrepc()));
+    query.bindValue(":TIMESTAMP", QString::fromStdString(paquete.timestamp()));
+    query.bindValue(":DIRECTORIO", "NULL");
+    query.exec();
+
+
+
+    qDebug() << QString::fromStdString(paquete.nombrecamara());
+    qDebug()  << QString::fromStdString(paquete.nombrepc());
+    qDebug()  << QString::fromStdString(paquete.protocolo());
+    qDebug()  << QString::fromStdString(paquete.timestamp());
+    qDebug()  << paquete.timagen();
+>>>>>>> desarrollobdd
 }
 
 

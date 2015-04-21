@@ -7,6 +7,58 @@ server(NULL)
     server= new QTcpServer;
     server->setMaxPendingConnections(10);
 
+    //Vdb= new QSqlDatabase();
+
+    Vdb=QSqlDatabase::addDatabase("QSQLITE", "SQLITE");
+    //QSqlDatabase vvdb = QSqlDatabase::addDatabase("QSQLITE", "SQLITE");
+
+    qDebug() << Vdb.connectionName();
+    qDebug() << Vdb.driverName();
+    qDebug() << Vdb.isDriverAvailable("QSQLITE");
+    qDebug() << Vdb.isValid();
+    Vdb.setDatabaseName("videovigilancia.sqlite");
+    bool algo = Vdb.open();
+    if (!algo) {
+        qDebug() << Vdb.lastError().text();
+        qDebug() << QSqlDatabase::drivers();
+        //exit(1);
+    }
+    QSqlQuery query(Vdb);
+
+    query.exec("DROP TABLE regvaf");
+    query.exec("CREATE TABLE IF NOT EXISTS regvaf "
+               "(PRO VARCHAR(5),"
+               " V VARBINARY(1),"
+               " NCAMARA VARCHAR(60),"
+               " NPC VARCHAR(60),"
+               " TIMESTAMP VARCHAR(30), "
+               " DIRECTORIO VARCHAR(500) DEFAULT NULL,"
+               " PRIMARY KEY (NCAMARA,NPC,TIMESTAMP))");
+
+    QStringList table=Vdb.tables();
+    qDebug() << table;
+
+   /* query.exec("CREATE TABLE IF NOT EXISTS contactos "
+                "(id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                " nombre VARCHAR(50))");
+
+
+    query.prepare("INSERT INTO contactos (nombre) "
+                  "VALUES (:nombre)");
+    query.bindValue(":nombre", "Jesús");
+    query.exec();
+    int contactoId = query.lastInsertId().toInt();
+    qDebug() << contactoId;
+    query.exec("SELECT * FROM contactos");
+    while (query.next()) {
+        QString nombre = query.value(1).toString();
+        qDebug() << nombre;
+    }
+*/
+
+
+
+
 }
 
 void Servidor::inicioServer()
@@ -21,7 +73,7 @@ void Servidor::conexionesPen()
     while(server->hasPendingConnections() && clients.size()<10) {
         QTcpSocket *clientConnection =
             server->nextPendingConnection();
-        client *nuevaC =new client(clientConnection,this);
+        client *nuevaC =new client(clientConnection,Vdb,this);
         clients[nuevaC->getsocketDescriptor()] = nuevaC;
         connect(nuevaC,SIGNAL(eliminar(qintptr)),this, SLOT(eliminarlista(qintptr)));
         qDebug() << "nuevaConexion";
