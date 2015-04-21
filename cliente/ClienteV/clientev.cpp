@@ -247,10 +247,12 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     //qDebug() << "TBSIZE: " << tbpaquete;
     QByteArray btbpaquete;
     btbpaquete.append(QByteArray::number(tbpaquete));
+//    btbpaquete.append('\n');
 
     qDebug() << "Size: " << btbpaquete.toInt() << "Paquete: " << bpaquete;
 
     conexion->write(btbpaquete);
+    conexion->write("\n");
     qDebug() << "sizeof mandado OK";
     conexion->write(bpaquete);
     qDebug() << "bpaquete mandado OK";
