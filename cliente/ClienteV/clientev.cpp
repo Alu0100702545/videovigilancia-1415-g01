@@ -265,9 +265,10 @@ void ClienteV::emitir(const QImage &image, const int &pos){
 
     QByteArray bpaquete(spaquete.c_str(),spaquete.length());
     qint32 tbpaquete = bpaquete.size();
-    //qDebug() << "TBSIZE: " << tbpaquete;
+    qDebug() << "TBSIZE: " << tbpaquete;
     QByteArray btbpaquete;
     btbpaquete.append((const char*)&tbpaquete,sizeof(qint32));
+    qDebug() << btbpaquete.toInt();
 //    btbpaquete.append('\n');
 
     qDebug() << "Size: " << btbpaquete.toInt() << "Paquete: " << bpaquete;
