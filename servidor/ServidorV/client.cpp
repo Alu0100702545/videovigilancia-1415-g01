@@ -24,20 +24,21 @@ void client::borrarlista()
 void client::deserializacion()
 {
 
-    QString aux;
+    QString aux, aux3;
     std::string aux2;
-    QByteArray algo, algo2;
-    qint32 tint=sizeof(qint32);
-        qDebug() << tcpSocket_->bytesAvailable();
-    if (tcpSocket_->bytesAvailable() >= sizeof(qint32) && (Tpaquete==0)){
-        algo=tcpSocket_->read(tint);
-        qDebug() <<QString ::fromLatin1(algo);
-        Tpaquete=algo.toInt();
-        aux=QString::number(Tpaquete);
-        qDebug() << aux;
+    QByteArray algo;
+        //qDebug() << tcpSocket_->bytesAvailable();
+     if(tcpSocket_->canReadLine()&& (Tpaquete==0))
+     {
+         algo = tcpSocket_->readLine();
+         aux3 = QString ::fromLocal8Bit(algo);
+         aux3.remove('\n');
+         qDebug() <<aux3;
+         Tpaquete=aux3.toInt();
+         aux=QString::number(Tpaquete);
+         qDebug() << aux;
+
      }else if ((Tpaquete !=0) && (tcpSocket_->bytesAvailable() >=Tpaquete )){
-
-
         aux=tcpSocket_->read(Tpaquete);
         aux2=aux.toStdString();
         qDebug() << aux;

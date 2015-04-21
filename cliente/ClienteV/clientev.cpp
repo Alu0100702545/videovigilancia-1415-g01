@@ -252,7 +252,7 @@ void ClienteV::emitir(const QImage &image, const int &pos){
 
     conexion->write(btbpaquete);
     qDebug() << "sizeof mandado OK";
-    //conexion->write(bpaquete);
+    conexion->write(bpaquete);
     qDebug() << "bpaquete mandado OK";
 
 }
