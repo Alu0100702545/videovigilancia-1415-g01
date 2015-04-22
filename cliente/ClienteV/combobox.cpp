@@ -57,7 +57,7 @@ void combobox::on_OkButton_clicked()
         }
     }
 
-    qDebug() << indice;
+    //qDebug() << indice;
 
     puerto=ui->PORT->text().toInt();
     IP=ui->IP->text();
