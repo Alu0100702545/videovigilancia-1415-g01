@@ -7,4 +7,5 @@
 *.exe
 */debug*
 */build*
-
+*.pro.user*
+*.autosave
