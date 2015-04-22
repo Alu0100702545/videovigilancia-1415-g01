@@ -77,7 +77,6 @@ void ClienteV::actualizar_cam(int indice,bool valor)
 
     namesetting="indice";
     namesetting.append(indice);
-    //qDebug() << "ACT NAMESETTING: " << namesetting;
     settings.setValue(namesetting,valor);
 }
 
@@ -129,7 +128,6 @@ void ClienteV::on_BotonCapturar_clicked()
     {
         namesetting="indice";
         namesetting.append(i+48);
-        //qDebug() << "CAPT NAMESETTING: " << namesetting;
         if((settings.value(namesetting))==true)
         {
             //qDebug() << "ENTRAMOS CON " << namesetting;
@@ -184,7 +182,6 @@ void ClienteV::on_actionCapturar_triggered()
     {
         namesetting="indice";
         namesetting.append(i+48);
-        //qDebug() << "CAPT NAMESETTING: " << namesetting;
         if((settings.value(namesetting))==true)
         {
             //qDebug() << "ENTRAMOS CON " << namesetting;
@@ -214,7 +211,6 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     required string  imagen=9;
     */
 
-
     QBuffer buffer;
     QImageWriter writer;
     std::string spaquete;
@@ -223,67 +219,32 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     paquete.set_protocolo(NPROTOCOLO);
     paquete.set_version(VPROTOCOLO);
 
-    QString dprotocolo(paquete.protocolo().c_str());
-    QString diversion(paquete.version().c_str());
-    //qDebug() << dprotocolo << diversion;
-
     std::string nombrecamara((QCamera::deviceDescription(devices[ListaCamaras->value(pos).id])).toStdString());
     paquete.set_tnombrecamara(sizeof(nombrecamara));
     paquete.set_nombrecamara(nombrecamara);
 
-    qint32 dtnombrecamara(paquete.tnombrecamara());
-    QString dnombrecamara(paquete.nombrecamara().c_str());
-
-    //qDebug() << dnombrecamara << dtnombrecamara;
-
     paquete.set_tnombrepc(sizeof(nombrePC));
     paquete.set_nombrepc(nombrePC);
 
-    qint32 dtnombrepc(paquete.tnombrepc());
-    QString dnombrepc(paquete.nombrepc().c_str());
-    //qDebug() << dnombrepc << dtnombrepc;
-
     paquete.set_timestamp((QTime::currentTime().toString("hh:mm:ss:zzz")).toStdString());
-
-    QString dtime(paquete.timestamp().c_str());
-    //qDebug() << dtime;
 
     writer.setDevice(&buffer);
     writer.setFormat("jpeg");
     writer.setCompression(70);
     writer.write(image);
     QByteArray bimagen = buffer.buffer();
-    qDebug()<< "imagen:"<< bimagen.size();
-    //QString imagen(bimagen);
     paquete.set_timagen(bimagen.size());
     paquete.set_imagen(bimagen.data(),bimagen.size());
 
-    qint32 dtimagen((paquete.timagen()));
-    QString dimagen(paquete.imagen().c_str());
-    //qDebug() << dimagen << dtimagen;
-
     paquete.SerializeToString(&spaquete);
 
-    QByteArray bpaquete(spaquete.c_str(),spaquete.size());
-    qint32 tbpaquete = bpaquete.size();
-    qDebug() << "TBSIZE: " << tbpaquete;
-    //QByteArray btbpaquete;
-    //btbpaquete.append((const char*)&tbpaquete,sizeof(qint32));
-//    btbpaquete.append('\n');
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_0);
-    //qDebug() << "Size: " << btbpaquete.toInt() << "Paquete: " << bpaquete;
     out << (quint32)tbpaquete;
-    //out << tbpaquete;
-    //out.device()->seek(0);
-    //conexion->write(btbpaquete);
-    conexion ->write(block);
-    //conexion->write("\n");
-    //qDebug() << "sizeof mandado OK";
-    conexion->write(bpaquete);
-    //qDebug() << "bpaquete mandado OK";
 
+    conexion ->write(block);
+    conexion->write(bpaquete);
 }
 
 void ClienteV::image_s(const QImage &image, const int &pos)
@@ -294,7 +255,6 @@ void ClienteV::image_s(const QImage &image, const int &pos)
   //qDebug() << "MOSTRAR EN " << pos;
   ((QLabel*)ui->gridLayout->itemAt(pos)->widget())->setPixmap(pixmap);
   if(settings.value("transmitir")==true){
-    //qDebug() << "CONNECT OK";
     emitir(image,pos);
   }
 }
