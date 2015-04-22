@@ -14,8 +14,9 @@ include(protobuf.pri)
 
 TARGET = ClienteV
 TEMPLATE = app
+CONFIG += c++11
 
-add_opencv_modules(core video imgproc)
+#add_opencv_modules(core video imgproc)
 
 PROTOS = VAF.proto
 

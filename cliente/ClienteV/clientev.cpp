@@ -223,29 +223,29 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     paquete.set_protocolo(NPROTOCOLO);
     paquete.set_version(VPROTOCOLO);
 
-    QString dprotocolo(paquete.protocolo().c_str());
-    QString diversion(paquete.version().c_str());
+    //QString dprotocolo(paquete.protocolo().c_str());
+    //QString diversion(paquete.version().c_str());
     //qDebug() << dprotocolo << diversion;
 
     std::string nombrecamara((QCamera::deviceDescription(devices[ListaCamaras->value(pos).id])).toStdString());
     paquete.set_tnombrecamara(sizeof(nombrecamara));
     paquete.set_nombrecamara(nombrecamara);
 
-    qint32 dtnombrecamara(paquete.tnombrecamara());
-    QString dnombrecamara(paquete.nombrecamara().c_str());
+    //qint32 dtnombrecamara(paquete.tnombrecamara());
+    //QString dnombrecamara(paquete.nombrecamara().c_str());
 
     //qDebug() << dnombrecamara << dtnombrecamara;
 
     paquete.set_tnombrepc(sizeof(nombrePC));
     paquete.set_nombrepc(nombrePC);
 
-    qint32 dtnombrepc(paquete.tnombrepc());
-    QString dnombrepc(paquete.nombrepc().c_str());
+    //qint32 dtnombrepc(paquete.tnombrepc());
+    //QString dnombrepc(paquete.nombrepc().c_str());
     //qDebug() << dnombrepc << dtnombrepc;
 
     paquete.set_timestamp((QTime::currentTime().toString("hh:mm:ss:zzz")).toStdString());
 
-    QString dtime(paquete.timestamp().c_str());
+    //QString dtime(paquete.timestamp().c_str());
     //qDebug() << dtime;
 
     writer.setDevice(&buffer);
@@ -258,8 +258,8 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     paquete.set_timagen(bimagen.size());
     paquete.set_imagen(bimagen.data(),bimagen.size());
 
-    qint32 dtimagen((paquete.timagen()));
-    QString dimagen(paquete.imagen().c_str());
+    //qint32 dtimagen((paquete.timagen()));
+    //QString dimagen(paquete.imagen().c_str());
     //qDebug() << dimagen << dtimagen;
 
     paquete.SerializeToString(&spaquete);
