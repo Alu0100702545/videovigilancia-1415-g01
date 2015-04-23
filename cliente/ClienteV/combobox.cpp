@@ -41,7 +41,7 @@ void combobox::on_OkButton_clicked()
     int puerto;
     QString IP;
     QString namesetting;
-    int indice;
+    //int indice;
 
     for(int i=0; i<NCamaras;i++){
         namesetting="indice";

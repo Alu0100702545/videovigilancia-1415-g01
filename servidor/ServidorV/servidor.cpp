@@ -25,15 +25,29 @@ server(NULL)
     }
     QSqlQuery query(Vdb);
 
+    QDir directorio;
+    directorio.remove("cosa/*.jpeg");
+    qDebug() << query.exec("Select DIRECTORIO from regvaf");
+     QString nombre;
+    while (query.next()) {
+                nombre = query.value("DIRECTORIO").toString();
+                qDebug() << nombre;
+               directorio.remove(nombre);
+    }
+
+    directorio.cleanPath("cosa");
+    directorio.rmpath(".");
+    //directorio.mkpath("cosa");
     query.exec("DROP TABLE regvaf");
     query.exec("CREATE TABLE IF NOT EXISTS regvaf "
                "(PRO VARCHAR(5),"
                " V VARBINARY(1),"
                " NCAMARA VARCHAR(60),"
                " NPC VARCHAR(60),"
+               " DATESTAMP VARCHAR(30),"
                " TIMESTAMP VARCHAR(30), "
-               " DIRECTORIO VARCHAR(500) DEFAULT NULL,"
-               " PRIMARY KEY (NCAMARA,NPC,TIMESTAMP))");
+               " DIRECTORIO VARCHAR(2000) DEFAULT NULL,"
+               " PRIMARY KEY (NCAMARA,NPC,DATESTAMP,TIMESTAMP))");
 
     QStringList table=Vdb.tables();
     qDebug() << table;

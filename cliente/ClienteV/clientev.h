@@ -1,6 +1,6 @@
 #ifndef CLIENTEV_H
 #define CLIENTEV_H
-
+#include <VAF.pb.h>
 #include <QMainWindow>
 #include <QCamera>
 #include <QCameraViewfinder>
@@ -20,7 +20,8 @@
 #include <QBuffer>
 #include <QImageWriter>
 #include <QHostInfo>
-#include <VAF.pb.h>
+
+#include <QDate>
 
 #define NPROTOCOLO "VAF"
 #define VPROTOCOLO "1"

@@ -19,7 +19,7 @@
 #include <sqlite3.h>
 #include <sqldb.h>
 #include <QSqlDriver>
-
+#include <QDir>
 
 class client : public QObject
 {

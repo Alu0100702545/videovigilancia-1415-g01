@@ -67,15 +67,14 @@ void client::deserializacion()
 
 void client::almacenamiento(VAF paquete)
 {
-    //QString algo(paquete.imagen().c_str());
+    QDir directorio;
     QByteArray buffer;
     buffer.append(paquete.imagen().c_str(),paquete.imagen().length());
-    //qDebug() << buffer;
-    //qDebug() << "LLEGA a almacenaminto";
+
     QImage im;
 
     qDebug() << im.loadFromData(buffer, "JPEG");
-    qDebug() << im.save("joe.jpeg");
+    //qDebug() << im.save("joe.jpeg");
 
 
     qDebug() <<"nombre camara:"<< QString::fromStdString(paquete.nombrecamara());
@@ -87,16 +86,26 @@ void client::almacenamiento(VAF paquete)
     int algo=paquete.imagen().size();
    qDebug() << "imagen"<< QString::fromStdString( static_cast<std::ostringstream*>(&(std::ostringstream() << algo))->str());
     QSqlQuery query(bddc);
-    query.prepare("INSERT INTO REGVAF (PRO,V,NCAMARA,NPC,TIMESTAMP) "
-                  "VALUES (:PRO,:V,:NCAMARA,:NPC,:TIMESTAMP)");
+    query.prepare("INSERT INTO REGVAF (PRO,V,NCAMARA,NPC,DATESTAMP,TIMESTAMP,DIRECTORIO) "
+                  "VALUES (:PRO,:V,:NCAMARA,:NPC,:DATESTAMP,:TIMESTAMP,:DIRECTORIO)");
 
     query.bindValue(":PRO",QString::fromStdString(paquete.protocolo()));
     query.bindValue(":V", QString::fromStdString(paquete.version()));
     query.bindValue(":NCAMARA", QString::fromStdString(paquete.nombrecamara()));
     query.bindValue(":NPC", QString::fromStdString(paquete.nombrepc()));
     query.bindValue(":TIMESTAMP", QString::fromStdString(paquete.timestamp()));
-    //query.bindValue(":DIRECTORIO", "NULL");
+    query.bindValue(":DATESTAMP", QString::fromStdString(paquete.datestamp()));
+    QString pc=QString::fromStdString(QString::fromStdString(paquete.nombrepc()).toUtf8().toHex().toStdString());
+    QString camara=QString::fromStdString(QString::fromStdString(paquete.nombrecamara()).toUtf8().toHex().toStdString());
+    QString date=QString::fromStdString(QString::fromStdString(paquete.datestamp()).toUtf8().toHex().toStdString());
+    QString time= QString::fromStdString(QString::fromStdString(paquete.timestamp()).toUtf8().toHex().toStdString());
+    QString direct=pc+"/"+camara+"/"+date+"/"+time+".jpeg";
+    query.bindValue(":DIRECTORIO",direct);
     qDebug() << query.exec();
+    directorio.mkpath(pc+"/"+camara+"/"+date);
+    qDebug() << im.save(direct);
+
+
     paquete.Clear();
 
 

@@ -248,6 +248,7 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     //QString dtime(paquete.timestamp().c_str());
     //qDebug() << dtime;
 
+    paquete.set_datestamp((QDate::currentDate().toString("dd.MM.yyyy")).toStdString());
     writer.setDevice(&buffer);
     writer.setFormat("jpeg");
     writer.setCompression(70);

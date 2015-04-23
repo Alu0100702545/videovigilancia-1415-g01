@@ -3,14 +3,13 @@
 # Project created by QtCreator 2015-04-17T12:45:16
 #
 #-------------------------------------------------
-
+PROTOS = VAF.proto
+include(protobuf.pri)
+#include(QtOpenCV.pri)
 QT       += core gui
 QT       += multimedia multimediawidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-#include(QtOpenCV.pri)
-include(protobuf.pri)
 
 TARGET = ClienteV
 TEMPLATE = app
@@ -18,7 +17,6 @@ CONFIG += c++11
 
 #add_opencv_modules(core video imgproc)
 
-PROTOS = VAF.proto
 
 SOURCES += main.cpp\
         clientev.cpp \
@@ -29,7 +27,7 @@ HEADERS  += clientev.h \
     acercade.h \
     capturebuffer.h \
     combobox.h \
-    VAF.pb.h
+
 
 FORMS    += clientev.ui \
     acercade.ui \
