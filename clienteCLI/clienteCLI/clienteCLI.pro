@@ -3,18 +3,21 @@
 # Project created by QtCreator 2015-04-22T08:08:22
 #
 #-------------------------------------------------
+include(protobuf.pri)
+PROTOS = VAF.proto
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-#include(QtOpenCV.pri)
-include(protobuf.pri)
+include(QtOpenCV.pri)
+
 
 QT       += core
-
+QT       += multimedia multimediawidgets
 QT       -= gui
 
 TARGET = clienteCLI
 CONFIG   += console
+CONFIG += c++11
 CONFIG   -= app_bundle
 
 TEMPLATE = app
@@ -22,16 +25,11 @@ TEMPLATE = app
 
 add_opencv_modules(core video imgproc)
 
-PROTOS = VAF.proto
-
 SOURCES += main.cpp\
-        clientecli.cpp \
-    clientecli.cpp
+        clientecli.cpp
 
 HEADERS  += clientecli.h \
-    capturebuffer.h \
-    VAF.pb.h \
-    clientecli.h
+    capturebuffer.h
 
 unix {
     # Variables

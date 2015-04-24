@@ -1,7 +1,6 @@
 #ifndef CLIENTECLI_H
 #define CLIENTECLI_H
 
-#include <QMainWindow>
 #include <QCamera>
 #include <QCameraViewfinder>
 #include <QSettings>
@@ -28,26 +27,29 @@ struct CAM{
     CaptureBuffer *captureBuffer = NULL;
 };
 
-class ClienteCLI
+class ClienteCLI: public QObject
 {
+    Q_OBJECT
+
 public:
     ClienteCLI();
     ~ClienteCLI();
 
-private slots:
-    void goku();
-
-    void actualizar();
+    void debug();
 
     void actualizar_cam(int,bool);
-
-    void image_s(const QImage &, const int &);
-
-    void emitir(const QImage &image, const int &pos);
 
     void actualizar_puerto(int puerto);
 
     void actualizar_IP(QString IP);
+
+    void actualizar();
+
+    void capturar();
+
+private slots:
+
+   void emitir(const QImage &image, int id);
 
 private:
     int NCamaras=-1;

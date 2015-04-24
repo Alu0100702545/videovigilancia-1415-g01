@@ -12,4 +12,5 @@ message VAF {
     required string  timestamp = 7;
     optional uint32  TImagen=8;
     required bytes  imagen=9;
+    optional string datestamp=10;
 }
