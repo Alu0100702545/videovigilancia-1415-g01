@@ -143,6 +143,7 @@ void ClienteCLI::emitir(const QImage &image, int id){
     //qDebug() << dnombrepc << dtnombrepc;
 
     paquete.set_timestamp((QTime::currentTime().toString("hh:mm:ss:zzz")).toStdString());
+    paquete.set_datestamp((QDate::currentDate().toString("dd.MM.yyyy")).toStdString());
 
     //QString dtime(paquete.timestamp().c_str());
     //qDebug() << dtime;

@@ -1,6 +1,7 @@
 #ifndef CLIENTECLI_H
 #define CLIENTECLI_H
 
+#include <VAF.pb.h>
 #include <QCamera>
 #include <QCameraViewfinder>
 #include <QSettings>
@@ -17,7 +18,7 @@
 #include <QBuffer>
 #include <QImageWriter>
 #include <QHostInfo>
-#include <VAF.pb.h>
+
 
 #define NPROTOCOLO "VAF"
 #define VPROTOCOLO "1"
