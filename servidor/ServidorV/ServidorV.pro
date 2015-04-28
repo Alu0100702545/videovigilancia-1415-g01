@@ -58,7 +58,7 @@ unix {
 
  # Install
  #
- INSTALLS += target config desktop icon32 vardir
+ INSTALLS += target config desktop vardir
  ## Instalar ejecutable
  target.path = $$BINDIR
 
@@ -71,11 +71,12 @@ unix {
  desktop.files += $${TARGET}.desktop
 
  ## Instalar icono de aplicación
- icon32.path = $$DATADIR/icons/hicolor/32x32/apps
- icon32.files += ./data/32x32/$${TARGET}.png
+ ##icon32.path = $$DATADIR/icons/hicolor/32x32/apps
+ ##icon32.files += ./data/32x32/$${TARGET}.png
 
  ## Crear directorio de archivos variables
  vardir.path = $$VARDIR
+ vardir.extra = mkdir -p $$VARDIR/clientes && mkdir -p $$VARDIR/BDD
  vardir.commands = true
 }
 

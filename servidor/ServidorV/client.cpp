@@ -99,8 +99,9 @@ void client::almacenamiento(VAF paquete)
     QString camara=QString::fromStdString(QString::fromStdString(paquete.nombrecamara()).toUtf8().toHex().toStdString());
     QString date=QString::fromStdString(QString::fromStdString(paquete.datestamp()).toUtf8().toHex().toStdString());
     QString time= QString::fromStdString(QString::fromStdString(paquete.timestamp()).toUtf8().toHex().toStdString());
-    QString direct=pc+"/"+camara+"/"+date+"/"+time+".jpeg";
+    QString direct= pc+"/"+camara+"/"+date+"/"+time+".jpeg";
     query.bindValue(":DIRECTORIO",direct);
+    //directorio.cd(APP_VARDIR);
     qDebug() << query.exec();
     directorio.mkpath(pc+"/"+camara+"/"+date);
     qDebug() << im.save(direct);

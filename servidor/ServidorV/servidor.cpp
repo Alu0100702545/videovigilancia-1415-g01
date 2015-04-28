@@ -11,7 +11,7 @@ server(NULL)
 
     Vdb=QSqlDatabase::addDatabase("QSQLITE", "SQLITE");
     //QSqlDatabase vvdb = QSqlDatabase::addDatabase("QSQLITE", "SQLITE");
-
+    qDebug() << getenv("APP_VARDIR");
     qDebug() << Vdb.connectionName();
     qDebug() << Vdb.driverName();
     qDebug() << Vdb.isDriverAvailable("QSQLITE");
