@@ -62,11 +62,10 @@ void client::almacenamiento(VAF paquete)
     QByteArray buffer;
     buffer.append(paquete.imagen().c_str(),paquete.imagen().length());
     QImage im;
-
+    
     im.loadFromData(buffer, "JPEG");
 
-
-    //control de paquetes
+   //control de paquetes
     qDebug() <<"nombre camara:"<< QString::fromStdString(paquete.nombrecamara());
     qDebug()  << "nombre pc:"<< QString::fromStdString(paquete.nombrepc());
     qDebug()  <<"Protocolo:" << QString::fromStdString(paquete.protocolo());
@@ -86,11 +85,23 @@ void client::almacenamiento(VAF paquete)
     query.bindValue(":DATESTAMP", QString::fromStdString(paquete.datestamp()));
 
     //Hayando la ruta de la foto
-    QString pc=QString::fromStdString(QString::fromStdString(paquete.nombrepc()).toUtf8().toHex().toStdString());
-    QString camara=QString::fromStdString(QString::fromStdString(paquete.nombrecamara()).toUtf8().toHex().toStdString());
-    QString date=QString::fromStdString(QString::fromStdString(paquete.datestamp()).toUtf8().toHex().toStdString());
-    QString time= QString::fromStdString(QString::fromStdString(paquete.timestamp()).toUtf8().toHex().toStdString());
-    QString direct= QString(APP_VARDIR) +"/"+"clientes/" +pc+"/"+camara+"/"+date+"/"+time+".jpeg";
+    QString pc=QString::fromStdString(
+                QString::fromStdString(paquete.nombrepc()).toUtf8().toHex().toStdString());
+    QString camara=QString::fromStdString(
+                QString::fromStdString(paquete.nombrecamara()).toUtf8().toHex().toStdString());
+    QString date=QString::fromStdString(
+                QString::fromStdString(paquete.datestamp()).toUtf8().toHex().toStdString());
+    QString time= QString::fromStdString(
+                .-;
+    QTime stamp =QTime::fromString(time,"hh:mm:ss:zzz");
+    QString hora= QString::from;
+    QString minutos;
+    QString segundos;
+
+
+    QString direct= QString(APP_VARDIR) +
+            "/"+"clientes/" +pc+"/"+camara+"/"+date+"/"+
+            "/"+"/"+"/"+".jpeg";
     query.bindValue(":DIRECTORIO",direct);
     qDebug() << query.exec();
     directorio.mkpath(QString(APP_VARDIR) +"/"+"clientes/" +pc+"/"+camara+"/"+date);
