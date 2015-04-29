@@ -51,7 +51,7 @@ unix {
     }
 
     DEFINES += APP_DATADIR="$$DATADIR"
-    DEFINES += APP_VARDIR="$$VARDIR"
+    DEFINES += APP_VARDIR='"$$VARDIR"'
     DEFINES += APP_CONFFILE="$$CONFDIR/$${TARGET}.ini"
 
     # Install

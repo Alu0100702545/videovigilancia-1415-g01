@@ -12,7 +12,7 @@ MAKEFILE      = Makefile
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DAPP_DATADIR=/usr/local/share -DAPP_VARDIR=/var/lib/ServidorV -DAPP_CONFFILE=/etc/ServidorV.ini -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_NETWORK_LIB -DQT_GUI_LIB -DQT_CORE_LIB
+DEFINES       = -DAPP_DATADIR=/usr/local/share -DAPP_VARDIR=\"/var/lib/ServidorV\" -DAPP_CONFFILE=/etc/ServidorV.ini -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_NETWORK_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -m64 -pipe -O2 -Wall -W -D_REENTRANT -fPIE $(DEFINES)
 CXXFLAGS      = -m64 -pipe -O2 -std=c++0x -Wall -W -D_REENTRANT -fPIE $(DEFINES)
 INCPATH       = -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I. -I/usr/include/qt5 -I/usr/include/qt5/QtSql -I/usr/include/qt5/QtNetwork -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I.
@@ -1710,7 +1710,7 @@ uninstall_target: FORCE
 
 install_vardir: first FORCE
 	@test -d $(INSTALL_ROOT)/var/lib/ServidorV || mkdir -p $(INSTALL_ROOT)/var/lib/ServidorV
-	mkdir -p /var/lib/ServidorV/clientes && /var/lib/ServidorV/BDD
+	mkdir -p /var/lib/ServidorV/clientes && mkdir -p /var/lib/ServidorV/BDD
 
 
 install:  install_target install_vardir  FORCE

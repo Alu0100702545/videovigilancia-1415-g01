@@ -20,6 +20,7 @@
 #include <sqldb.h>
 #include <QSqlDriver>
 #include <QDir>
+#include <iostream>
 
 class client : public QObject
 {

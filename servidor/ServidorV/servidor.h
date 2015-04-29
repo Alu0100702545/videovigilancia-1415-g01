@@ -19,6 +19,7 @@ signals:
     void algo();
 
 public:
+    void OpcionesLimpieza();
     Servidor();
     void inicioServer();
 public slots:
