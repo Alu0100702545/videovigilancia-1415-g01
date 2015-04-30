@@ -29,6 +29,8 @@ public:
     explicit client(QTcpSocket* tcpSocket,QSqlDatabase &bdd,QObject *parent = 0);
     ~client();
     qintptr getsocketDescriptor();
+    void limpiarbuffer();
+
 signals:
     void eliminar(qintptr);
 

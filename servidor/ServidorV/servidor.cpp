@@ -87,6 +87,7 @@ void Servidor::conexionesPen()
         connect(nuevaC,SIGNAL(eliminar(qintptr)),this, SLOT(eliminarlista(qintptr)));
         qDebug() << "nuevaConexion";
         qDebug() << nuevaC;
+        qDebug() <<clients.size();
 
     }
     if(clients.size()>=10)
@@ -99,8 +100,10 @@ void Servidor::conexionesPen()
 
 void Servidor::eliminarlista(qintptr sock)
 {
-
     QMap<qintptr, client*>::iterator i= clients.find(sock);
-    if (i != clients.end())
+    qDebug() <<clients.size();
+    if (i != clients.end()){
+        i.value()->limpiarbuffer();
         clients.erase(i);
+     }
 }

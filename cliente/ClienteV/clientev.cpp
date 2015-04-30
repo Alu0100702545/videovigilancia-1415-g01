@@ -38,11 +38,13 @@ ClienteV::~ClienteV()
 
 void ClienteV::on_BotonCerrar_clicked()
 {
+    conexion->disconnectFromHost();
     qApp->quit();
 }
 
 void ClienteV::on_actionCerrar_triggered()
 {
+    conexion->disconnectFromHost();
     qApp->quit();
 }
 
@@ -245,7 +247,7 @@ void ClienteV::emitir(const QImage &image, const int &pos){
 
     paquete.set_timestamp((QTime::currentTime().toString("hh:mm:ss:zzz")).toStdString());
 
-    //QString dtime(paquete.timestamp().c_str());
+    QString dtime(paquete.timestamp().c_str());
     //qDebug() << dtime;
 
     paquete.set_datestamp((QDate::currentDate().toString("dd.MM.yyyy")).toStdString());

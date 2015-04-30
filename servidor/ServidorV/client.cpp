@@ -7,7 +7,6 @@ client::client(QTcpSocket *tcpSocket,QSqlDatabase &bdd, QObject *parent) : QObje
     connect(tcpSocket_, SIGNAL(readyRead()), this, SLOT(deserializacion()));
     connect(tcpSocket_,SIGNAL(disconnected()), this, SLOT(borrarlista()));
 
-
     if (!bddc.open()) {
         qDebug() <<"No se pudo acceder a los datos";
         exit(1);
@@ -22,6 +21,36 @@ client::~client()
 qintptr client::getsocketDescriptor()
 {
     return tcpSocket_->socketDescriptor();
+}
+
+void client::limpiarbuffer()
+{
+    tcpSocket_->readAll();
+    /* while(tcpSocket_->bytesAvailable() > 0){
+
+         QString aux, aux3;
+
+         std::string aux2;
+         QByteArray algo;
+         QDataStream in(tcpSocket_);
+         in.setVersion(QDataStream::Qt_4_0);
+             //Recojiendo en tamaño del paquete
+          if(tcpSocket_->bytesAvailable() >= (int)(sizeof(qint32))&& (Tpaquete==0))
+          {
+              in >> Tpaquete;
+              aux=QString::number(Tpaquete);
+              qDebug() <<"tamaño paquete:"<< aux;
+             //Teniendo el tamaño de paquete lo leemos del buffer
+          }else if ((Tpaquete !=0) && (tcpSocket_->bytesAvailable() >=Tpaquete )){
+             algo=tcpSocket_->read(Tpaquete);
+             paquete.ParseFromString(algo.toStdString());
+             Tpaquete =0;
+             almacenamiento(paquete);
+
+         }else
+            tcpSocket_->readAll();
+
+     }*/
 }
 
 void client::borrarlista()
@@ -87,24 +116,37 @@ void client::almacenamiento(VAF paquete)
     //Hayando la ruta de la foto
     QString pc=QString::fromStdString(
                 QString::fromStdString(paquete.nombrepc()).toUtf8().toHex().toStdString());
+
     QString camara=QString::fromStdString(
                 QString::fromStdString(paquete.nombrecamara()).toUtf8().toHex().toStdString());
+
     QString date=QString::fromStdString(
                 QString::fromStdString(paquete.datestamp()).toUtf8().toHex().toStdString());
-    QString time= QString::fromStdString(
-                .-;
-    QTime stamp =QTime::fromString(time,"hh:mm:ss:zzz");
-    QString hora= QString::from;
-    QString minutos;
-    QString segundos;
+
+    std::string time= QString::fromStdString(paquete.timestamp()).toUtf8().toHex().toStdString();
+
+    qDebug() <<QString::fromStdString(paquete.timestamp());
+    qDebug() << QString::fromStdString(time);
+
+    QString hora= QString::fromStdString(
+                time.substr(0,6));
+
+    QString minutos= QString::fromStdString(
+                time.substr(6,6));
+
+    QString segundos=QString::fromStdString(
+                time.substr(12,6));
+    QString segundosMs=QString::fromStdString(
+                time.substr(18,time.size()-18));
 
 
     QString direct= QString(APP_VARDIR) +
-            "/"+"clientes/" +pc+"/"+camara+"/"+date+"/"+
-            "/"+"/"+"/"+".jpeg";
+            "/"+"clientes/" +pc+"/"+camara+"/"+date+"/"+hora+
+            "/"+ minutos+"/"+segundos+"/" +segundosMs +".jpeg";
     query.bindValue(":DIRECTORIO",direct);
     qDebug() << query.exec();
-    directorio.mkpath(QString(APP_VARDIR) +"/"+"clientes/" +pc+"/"+camara+"/"+date);
+    directorio.mkpath(QString(APP_VARDIR) +"/"+"clientes/" +pc+"/"+camara+"/"+date+"/"+hora+
+                      "/"+ minutos+"/"+segundos);
     qDebug() << im.save(direct);
     //Limpieza del paquete
     paquete.Clear();
