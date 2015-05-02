@@ -15,9 +15,13 @@ server::server(QSqlDatabase &bdd, QObject *parent):QTcpServer(parent),
 void server::incomingConnection(qintptr socketDescriptor)
 {
         clienteT *thread = new clienteT(socketDescriptor,bddc, this);
+        //connect(thread, SIGNAL(finished()), this, SLOT(eliminarlista()));
         connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-        clients[socketDescriptor] = thread;
+        //clients[socketDescriptor] = thread;
+        qDebug() <<"NuevoCliente" <<socketDescriptor;
+        //qDebug() <<clients.size();
         thread->start();
 
 }
+
 

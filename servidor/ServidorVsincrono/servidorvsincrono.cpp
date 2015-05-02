@@ -7,10 +7,10 @@ servidorvsincrono::servidorvsincrono(QObject *parent) : QObject(parent),serverS(
 
     QDir directorio;
     Vdb=QSqlDatabase::addDatabase("QSQLITE", "SQLITE");
-    //directorio.mkpath(QString(APP_VARDIR)+"/BDD");
-    //directorio.mkpath(QString(APP_VARDIR)+ "/clientes");
-    //Vdb.setDatabaseName(QString(APP_VARDIR)+"/BDD/"+"videovigilancia.sqlite");
-    Vdb.setDatabaseName("videovigilancia.sqlite");
+    directorio.mkpath(QString(APP_VARDIR)+"/BDD");
+    directorio.mkpath(QString(APP_VARDIR)+ "/clientes");
+    Vdb.setDatabaseName(QString(APP_VARDIR)+"/BDD/"+"videovigilancia.sqlite");
+    //Vdb.setDatabaseName("videovigilancia.sqlite");
     bool algo = Vdb.open();
     if (!algo) {
         //qDebug() << Vdb.lastError();
@@ -44,4 +44,38 @@ void servidorvsincrono::inicioServer()
     serverS->listen(QHostAddress::AnyIPv4,33333);
     //connect(server,SIGNAL(newConnection()),this,SLOT(conexionesPen()));
 
+}
+void servidorvsincrono::OpcionesLimpieza()
+{
+    int limpieza=0;
+    std::cout <<"Desea hacer limpieza del directorio variable(1 caso afirmativo)"<< std::endl;
+    std::cin >> limpieza;
+    QDir directorio;
+    if (limpieza==1){
+    //qDebug() << ;
+        QSqlQuery query(Vdb);
+        query.exec("Select DIRECTORIO from regvaf");
+        while (query.next()) {
+                QString nombre = query.value("DIRECTORIO").toString();
+                //qDebug() << nombre;
+               directorio.remove(nombre);
+
+        }
+        query.exec("DROP TABLE regvaf");
+        directorio.remove(QString(APP_VARDIR)+"/BDD/"+"videovigilancia.sqlite");
+        QStringList all_dirs;
+        all_dirs << APP_VARDIR;
+        QDirIterator directories(APP_VARDIR, QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+        while(directories.hasNext()){
+            directories.next();
+            all_dirs << directories.filePath();
+        }
+        //qDebug()<< all_dirs;
+        while(!all_dirs.empty()){
+            directorio.rmpath(all_dirs.back());
+            all_dirs.pop_back();
+
+        }
+     exit(0);
+    }
 }

@@ -5,7 +5,8 @@ client::client(QTcpSocket *tcpSocket,QSqlDatabase &bdd, QObject *parent) : QObje
 {
      Tpaquete =0;
     connect(tcpSocket_, SIGNAL(readyRead()), this, SLOT(deserializacion()));
-    connect(tcpSocket_,SIGNAL(disconnected()), this, SLOT(borrarlista()));
+    //connect(tcpSocket_,SIGNAL(), this, SLOT(borrarlista()));
+    connect(tcpSocket_,SIGNAL(disconnected()), this, SLOT(limpiarbuffer()));
 
     if (!bddc.open()) {
         qDebug() <<"No se pudo acceder a los datos";
@@ -18,6 +19,11 @@ client::~client()
 
 }
 
+QTcpSocket* client::get_tcp()
+{
+    return tcpSocket_;
+}
+
 qintptr client::getsocketDescriptor()
 {
     return tcpSocket_->socketDescriptor();
@@ -25,8 +31,8 @@ qintptr client::getsocketDescriptor()
 
 void client::limpiarbuffer()
 {
-    tcpSocket_->readAll();
-    /* while(tcpSocket_->bytesAvailable() > 0){
+    //tcpSocket_->readAll();
+     while(tcpSocket_->bytesAvailable() > 0){
 
          QString aux, aux3;
 
@@ -41,7 +47,7 @@ void client::limpiarbuffer()
               aux=QString::number(Tpaquete);
               qDebug() <<"tamaño paquete:"<< aux;
              //Teniendo el tamaño de paquete lo leemos del buffer
-          }else if ((Tpaquete !=0) && (tcpSocket_->bytesAvailable() >=Tpaquete )){
+          } if ((Tpaquete !=0) && (tcpSocket_->bytesAvailable() >=Tpaquete )){
              algo=tcpSocket_->read(Tpaquete);
              paquete.ParseFromString(algo.toStdString());
              Tpaquete =0;
@@ -50,7 +56,7 @@ void client::limpiarbuffer()
          }else
             tcpSocket_->readAll();
 
-     }*/
+     }
 }
 
 void client::borrarlista()
@@ -72,9 +78,9 @@ void client::deserializacion()
      {
          in >> Tpaquete;
          aux=QString::number(Tpaquete);
-         qDebug() <<"tamaño paquete:"<< aux;
+         //qDebug() <<"tamaño paquete:"<< aux;
         //Teniendo el tamaño de paquete lo leemos del buffer
-     }else if ((Tpaquete !=0) && (tcpSocket_->bytesAvailable() >=Tpaquete )){
+     }if ((Tpaquete !=0) && (tcpSocket_->bytesAvailable() >=Tpaquete )){
         algo=tcpSocket_->read(Tpaquete);
         paquete.ParseFromString(algo.toStdString());
         Tpaquete =0;
@@ -95,11 +101,11 @@ void client::almacenamiento(VAF paquete)
     im.loadFromData(buffer, "JPEG");
 
    //control de paquetes
-    qDebug() <<"nombre camara:"<< QString::fromStdString(paquete.nombrecamara());
+    /*qDebug() <<"nombre camara:"<< QString::fromStdString(paquete.nombrecamara());
     qDebug()  << "nombre pc:"<< QString::fromStdString(paquete.nombrepc());
     qDebug()  <<"Protocolo:" << QString::fromStdString(paquete.protocolo());
     qDebug()  << "timestamp:" << QString::fromStdString(paquete.timestamp());
-    qDebug()  <<"timagen: " <<paquete.timagen();
+    qDebug()  <<"timagen: " <<paquete.timagen();*/
 
     //introducciendo en la Base de Datos
     QSqlQuery query(bddc);
@@ -125,8 +131,8 @@ void client::almacenamiento(VAF paquete)
 
     std::string time= QString::fromStdString(paquete.timestamp()).toUtf8().toHex().toStdString();
 
-    qDebug() <<QString::fromStdString(paquete.timestamp());
-    qDebug() << QString::fromStdString(time);
+    //qDebug() <<QString::fromStdString(paquete.timestamp());
+    //qDebug() << QString::fromStdString(time);
 
     QString hora= QString::fromStdString(
                 time.substr(0,6));
@@ -144,10 +150,10 @@ void client::almacenamiento(VAF paquete)
             "/"+"clientes/" +pc+"/"+camara+"/"+date+"/"+hora+
             "/"+ minutos+"/"+segundos+"/" +segundosMs +".jpeg";
     query.bindValue(":DIRECTORIO",direct);
-    qDebug() << query.exec();
+    /*qDebug() <<*/ query.exec();
     directorio.mkpath(QString(APP_VARDIR) +"/"+"clientes/" +pc+"/"+camara+"/"+date+"/"+hora+
                       "/"+ minutos+"/"+segundos);
-    qDebug() << im.save(direct);
+    /*qDebug() <<*/ im.save(direct);
     //Limpieza del paquete
     paquete.Clear();
 

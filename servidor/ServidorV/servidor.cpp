@@ -84,26 +84,34 @@ void Servidor::conexionesPen()
             server->nextPendingConnection();
         client *nuevaC =new client(clientConnection,Vdb,this);
         clients[nuevaC->getsocketDescriptor()] = nuevaC;
-        connect(nuevaC,SIGNAL(eliminar(qintptr)),this, SLOT(eliminarlista(qintptr)));
+
         qDebug() << "nuevaConexion";
         qDebug() << nuevaC;
-        qDebug() <<clients.size();
+        //qDebug() <<clients.size();
 
     }
     if(clients.size()>=10)
-        server->close();
+        if(eliminarlista()==false)
+            server->close();
     if (!server->isListening()&& clients.size() <10){
         server->listen(QHostAddress::AnyIPv4,33333);
         connect(server,SIGNAL(newConnection()),this,SLOT(conexionesPen()));
+
     }
 }
 
-void Servidor::eliminarlista(qintptr sock)
+bool Servidor::eliminarlista()
 {
-    QMap<qintptr, client*>::iterator i= clients.find(sock);
-    qDebug() <<clients.size();
-    if (i != clients.end()){
-        i.value()->limpiarbuffer();
-        clients.erase(i);
-     }
+    QMap<qintptr, client*>::iterator i/*= clients.find(sock)*/;
+
+    for(i=clients.begin();i != clients.end();i++){
+        qDebug() <<"pene"<<clients.size() <<i.value()->get_tcp()->isValid();
+        if (i.value()->get_tcp()->isValid()==false){
+            clients.erase(i);
+            qDebug() <<clients.size();
+            return true;
+        }
+    }
+    return false;
+
 }

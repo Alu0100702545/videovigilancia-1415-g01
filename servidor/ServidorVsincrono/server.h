@@ -14,10 +14,11 @@ public:
     //~server();
 protected:
     void incomingConnection(qintptr socketDescriptor);
+
 private:
      QSqlDatabase bddc;
-     QMap<qintptr,clienteT*> clients;
-
+     //QMap<qintptr,clienteT*> clients;
+public slots:
 
 };
 

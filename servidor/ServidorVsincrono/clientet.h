@@ -9,6 +9,8 @@
 #include <QDir>
 #include <QImage>
 #include <QBuffer>
+#include <QDirIterator>
+#include <iostream>
 class clienteT : public QThread
 {
 
@@ -22,6 +24,7 @@ public:
     void almacenamiento(VAF &paquete);
 signals:
     void error(QTcpSocket::SocketError socketError);
+    void eliminacion();
 
 private:
     qintptr socketDescriptor_;

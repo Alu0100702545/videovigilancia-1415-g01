@@ -28,8 +28,8 @@ class client : public QObject
 public:
     explicit client(QTcpSocket* tcpSocket,QSqlDatabase &bdd,QObject *parent = 0);
     ~client();
+    QTcpSocket *get_tcp();
     qintptr getsocketDescriptor();
-    void limpiarbuffer();
 
 signals:
     void eliminar(qintptr);
@@ -37,12 +37,14 @@ signals:
 public slots:
     void borrarlista();
     void deserializacion();
+    void limpiarbuffer();
 private:
      QTcpSocket *tcpSocket_;
      qint32 Tpaquete;
      QSqlDatabase bddc;
      VAF paquete;
      void almacenamiento(VAF);
+     qintptr socket;
 };
 
 #endif // CLIENT_H

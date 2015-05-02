@@ -24,7 +24,7 @@ public:
     void inicioServer();
 public slots:
     void conexionesPen();
-    void eliminarlista(qintptr);
+    bool eliminarlista();
 };
 
 #endif // SERVIDOR_H

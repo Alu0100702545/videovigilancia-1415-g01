@@ -4,7 +4,9 @@
 #include <QObject>
 
 #include "server.h"
-
+#include <QSql>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 class servidorvsincrono : public QObject
 {
     Q_OBJECT
@@ -13,6 +15,7 @@ public:
     ~servidorvsincrono();
     void inicioServer();
 
+    void OpcionesLimpieza();
 signals:
 
 public slots:

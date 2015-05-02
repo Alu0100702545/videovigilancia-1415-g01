@@ -28,38 +28,62 @@ void clienteT::run()
             return;
         }
        do {
-        tcpSocket.waitForReadyRead(100);
-            while(tcpSocket.bytesAvailable() > 0){
+        tcpSocket.waitForReadyRead();
+
+            //while(tcpSocket.bytesAvailable() > 0 ){
+                //qDebug() <<"bytes disp"<< tcpSocket.bytesAvailable() ;
                 deserializacion(&tcpSocket);
+           //}
 
+
+        }while(tcpSocket.isValid());
+         while(tcpSocket.bytesAvailable() > 0){
+
+             QString aux;
+             QByteArray algo;
+             QDataStream in(&tcpSocket);
+             in.setVersion(QDataStream::Qt_4_0);
+                 //Recojiendo en tamaño del paquete
+              if(tcpSocket.bytesAvailable() >= (int)(sizeof(qint32))&& (Tpaquete==0))
+              {
+                  in >> Tpaquete;
+                  aux=QString::number(Tpaquete);
+                  qDebug() <<"tamaño paquete:"<< aux;
+                 //Teniendo el tamaño de paquete lo leemos del buffer
+              } if ((Tpaquete !=0) && (tcpSocket.bytesAvailable() >=Tpaquete )){
+                 algo=tcpSocket.read(Tpaquete);
+                 paquete.ParseFromString(algo.toStdString());
+                 Tpaquete =0;
+                 almacenamiento(paquete);
+
+             }else{
+
+                tcpSocket.readAll();
             }
+         }
 
-
-
-
-        }while( tcpSocket.waitForDisconnected(100)==false);
-
+        tcpSocket.disconnectFromHost();
+        tcpSocket.waitForDisconnected(100);
  }
 
 void clienteT::deserializacion(QTcpSocket *tcpSocket_)
 {
 
-
     QString aux, aux3;
-
     std::string aux2;
     QByteArray algo;
-
     QDataStream in(tcpSocket_);
     in.setVersion(QDataStream::Qt_4_0);
         //Recojiendo en tamaño del paquete
+    //qDebug() <<"bytes disponibles"<< tcpSocket_->bytesAvailable() ;
      if(tcpSocket_->bytesAvailable() >= (int)(sizeof(qint32))&& (Tpaquete==0))
      {
          in >> Tpaquete;
          aux=QString::number(Tpaquete);
          qDebug() <<"tamaño paquete:"<< aux;
         //Teniendo el tamaño de paquete lo leemos del buffer
-     }else if ((Tpaquete !=0) && (tcpSocket_->bytesAvailable() >=Tpaquete )){
+     }
+     if ((Tpaquete !=0) && (tcpSocket_->bytesAvailable() >=Tpaquete )){
         algo=tcpSocket_->read(Tpaquete);
         paquete.ParseFromString(algo.toStdString());
         Tpaquete =0;
@@ -99,7 +123,7 @@ void clienteT::almacenamiento(VAF &paquete)
     query.bindValue(":DATESTAMP", QString::fromStdString(paquete.datestamp()));
 
     //Hayando la ruta de la foto
-    /*QString pc=QString::fromStdString(
+    QString pc=QString::fromStdString(
                 QString::fromStdString(paquete.nombrepc()).toUtf8().toHex().toStdString());
 
     QString camara=QString::fromStdString(
@@ -129,10 +153,14 @@ void clienteT::almacenamiento(VAF &paquete)
             "/"+"clientes/" +pc+"/"+camara+"/"+date+"/"+hora+
             "/"+ minutos+"/"+segundos+"/" +segundosMs +".jpeg";
     query.bindValue(":DIRECTORIO",direct);
-    qDebug() << query.exec();
+
     directorio.mkpath(QString(APP_VARDIR) +"/"+"clientes/" +pc+"/"+camara+"/"+date+"/"+hora+
-                      "/"+ minutos+"/"+segundos);*/
-    qDebug() << im.save("algo.jpeg");
+                      "/"+ minutos+"/"+segundos);
+
+
+    //query.bindValue(":DIRECTORIO","algo");
+    qDebug() << query.exec();
+    qDebug() << im.save(direct);
     //Limpieza del paquete
     paquete.Clear();
 
