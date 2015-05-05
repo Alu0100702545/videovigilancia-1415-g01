@@ -4,7 +4,8 @@
 clienteT::clienteT(qintptr socketDescriptor, QSqlDatabase &bdd,QObject *parent):
     QThread(parent),
     socketDescriptor_(socketDescriptor),
-    bddc(bdd)
+    bddc(bdd),
+    contador(0)
 {
     Tpaquete =0;
     paquete.Clear();
@@ -97,18 +98,18 @@ void clienteT::deserializacion(QTcpSocket *tcpSocket_)
 void clienteT::almacenamiento(VAF &paquete)
 {
     QDir directorio;
+    contador++;
     QByteArray buffer;
     buffer.append(paquete.imagen().c_str(),paquete.imagen().length());
     QImage im;
-
     im.loadFromData(buffer, "JPEG");
 
    //control de paquetes
-    qDebug() <<"nombre camara:"<< QString::fromStdString(paquete.nombrecamara());
-    qDebug()  << "nombre pc:"<< QString::fromStdString(paquete.nombrepc());
-    qDebug()  <<"Protocolo:" << QString::fromStdString(paquete.protocolo());
-    qDebug()  << "timestamp:" << QString::fromStdString(paquete.timestamp());
-    qDebug()  <<"timagen: " <<paquete.timagen();
+    //qDebug() <<"nombre camara:"<< QString::fromStdString(paquete.nombrecamara());
+    //qDebug()  << "nombre pc:"<< QString::fromStdString(paquete.nombrepc());
+    //qDebug()  <<"Protocolo:" << QString::fromStdString(paquete.protocolo());
+    //qDebug()  << "timestamp:" << QString::fromStdString(paquete.timestamp());
+    //qDebug()  <<"timagen: " <<paquete.timagen();
 
     //introducciendo en la Base de Datos
     QSqlQuery query(bddc);
@@ -134,8 +135,8 @@ void clienteT::almacenamiento(VAF &paquete)
 
     std::string time= QString::fromStdString(paquete.timestamp()).toUtf8().toHex().toStdString();
 
-    qDebug() <<QString::fromStdString(paquete.timestamp());
-    qDebug() << QString::fromStdString(time);
+    //qDebug() <<QString::fromStdString(paquete.timestamp());
+    //qDebug() << QString::fromStdString(time);
 
     QString hora= QString::fromStdString(
                 time.substr(0,6));

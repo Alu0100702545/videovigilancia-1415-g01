@@ -31,9 +31,7 @@ private:
     qint32 Tpaquete;
     QSqlDatabase bddc;
     VAF paquete;
-
-
-
+    qint64 contador;
 };
 
 #endif // CLIENTET_H
