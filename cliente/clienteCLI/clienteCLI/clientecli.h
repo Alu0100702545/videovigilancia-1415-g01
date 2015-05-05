@@ -18,6 +18,11 @@
 #include <QBuffer>
 #include <QImageWriter>
 #include <QHostInfo>
+#include <QSocketNotifier>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 
 #define NPROTOCOLO "VAF"
@@ -34,6 +39,9 @@ class ClienteCLI: public QObject
 
 public:
     ClienteCLI();
+
+    ClienteCLI(int argc, char *argv[]);
+
     ~ClienteCLI();
 
     void debug();
@@ -48,9 +56,17 @@ public:
 
     void capturar();
 
+    void delete_all();
+
+    void termSignalHandler(int unused);
+
+
 private slots:
 
    void emitir(const QImage &image, int id);
+
+public slots:
+   void handleSigTerm();
 
 private:
     int NCamaras=-1;
@@ -59,6 +75,9 @@ private:
     QList<QByteArray> devices;
     QTcpSocket *conexion;
     std::string nombrePC;
+    int sigTermSd[2];
+    // Objeto para monitorizar uno de los sockets de sigTermSd[2]
+    QSocketNotifier *sigTermNotifier;
 };
 
 #endif // CLIENTECLI_H

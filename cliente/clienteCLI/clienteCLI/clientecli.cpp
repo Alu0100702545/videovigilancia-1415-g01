@@ -14,6 +14,18 @@ ClienteCLI::ClienteCLI()
     NnombrePC.append("@");
     NnombrePC.append(query.at(1));
     nombrePC=NnombrePC.toStdString();
+
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, sigTermSd))
+        qFatal("Couldn't create TERM socketpair");
+    // Crear el objeto para monitorizar el segundo socket
+    // de la pareja.
+    sigTermNotifier = new QSocketNotifier(sigTermSd[1],
+        QSocketNotifier::Read, this);
+    // Conectar la señal activated() del objeto QSocketNotifier
+    // con el slot handleSigTerm() para manejar la señal. Esta
+    // señal será emitida cuando hayan datos para ser leidos en
+    // el socket monitorizado.
+    connect(sigTermNotifier, SIGNAL(activated(int)), this, SLOT(handleSigTerm()));
     /*
     //qDebug() << getenv("USERNAME");
     //qDebug() << getenv("SESSION_MANAGER");
@@ -21,13 +33,34 @@ ClienteCLI::ClienteCLI()
    */
 }
 
+void ClienteCLI::termSignalHandler(int)
+{
+    char a = 1; // Con enviar un byte es suficiente
+    write(sigTermSd[0], &a, sizeof(a));
+    //qDebug() << "termSignalHanlder";
+}
+
+void ClienteCLI::handleSigTerm()
+{
+    // Desactivar la monitorización del socket para que por
+    // el momento no lleguen más señales de Qt
+    //termNotifier->setEnabled(false);
+    // Leer y desechar el byte enviado por
+    // MyDaemon::termSignalHandler()
+    //qDebug() << "handleSigTerm";
+    char tmp;
+    read(sigTermSd[1], &tmp, sizeof(tmp));
+    //MI CODIGO
+    delete_all();
+    // Activar la monitorización para que vuelvan a llegar
+    // señales de Qt
+    qApp->quit();
+    //termNotifier->setEnabled(true);
+}
+
 ClienteCLI::~ClienteCLI()
 {
 
-}
-
-void ClienteCLI::debug(){
-    qDebug() << "HOLA";
 }
 
 void ClienteCLI::actualizar_cam(int indice,bool valor)
@@ -35,14 +68,14 @@ void ClienteCLI::actualizar_cam(int indice,bool valor)
     QString namesetting;
 
     namesetting="indice";
-    namesetting.append(indice);
+    namesetting.append(indice+48);
     //qDebug() << "ACT NAMESETTING: " << namesetting;
     settings.setValue(namesetting,valor);
 }
 
 void ClienteCLI::actualizar_puerto(int puerto)
 {
-    settings.setValue("puerto",puerto);
+    settings.setValue("PORT",puerto);
 }
 
 void ClienteCLI::actualizar_IP(QString IP)
@@ -55,16 +88,22 @@ void ClienteCLI::actualizar(){
      * LECTURA DESDE FICHERO DE LAS CAMARAS, IP Y PUERTO
      */
     QVector<int> activas;
-    int indice=0,port;
-    QString IP;
-    bool todas=false;
+    int indice=0, port;
+    QString* IP;
+    bool todas=true;
 
+    IP=new QString("127.0.0.1");
+    port=33333;
     //LEER DE FICHERO LAS CAMARAS
     //PUSH DE LOS INDICES, SI HAY UN -1 SON TODAS ACTIVAS
 
+    if(todas)
+        qDebug() << "TODAS";
+
     for(int i=0; i<NCamaras;i++){
-        if(todas)
+        if(todas){
             actualizar_cam(i,true);
+        }
         else if(i==activas.at(indice)){
             actualizar_cam(i,true);
             indice++;
@@ -76,7 +115,7 @@ void ClienteCLI::actualizar(){
     }
 
     actualizar_puerto(port);
-    actualizar_IP(IP);
+    actualizar_IP(*IP);
 }
 
 void ClienteCLI::capturar()
@@ -84,6 +123,7 @@ void ClienteCLI::capturar()
     CAM aux;
     QString namesetting;
 
+    qDebug() << "IP: " << settings.value("IP").toString() << " PORT: " << settings.value("PORT").toInt();
     conexion->connectToHost(settings.value("IP").toString(),settings.value("PORT").toInt());
 
     for(int i=0;i<NCamaras;i++)
@@ -182,4 +222,19 @@ void ClienteCLI::emitir(const QImage &image, int id){
     conexion->write(bpaquete);
     //qDebug() << "bpaquete mandado OK";
 
+}
+
+void ClienteCLI::delete_all(){
+    QString namesetting;
+    for(int i=0;i<NCamaras;i++)
+    {
+        namesetting="indice";
+        namesetting.append(i+48);
+        if((settings.value(namesetting))==true){
+            ListaCamaras->value(i).Camera->stop();
+            qDebug() << "Camara " << i << " eliminada!";
+            ListaCamaras->remove(i);
+        }
+    }
+    ListaCamaras->clear();
 }

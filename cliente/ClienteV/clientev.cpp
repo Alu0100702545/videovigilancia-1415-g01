@@ -5,7 +5,7 @@ ClienteV::ClienteV(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ClienteV)
 {
-    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    //this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     ui->setupUi(this);
 
     if(settings.value("transmitir")==true)
@@ -120,7 +120,7 @@ void ClienteV::on_BotonCapturar_clicked()
         for(int j=0;j<NLabelsX;j++){
             QLabel* label=new QLabel;
             label->setScaledContents(true);
-            ui->gridLayout->addWidget(label,i,j);
+            ui->MatrizCamaras->addWidget(label,i,j);
             //qDebug() << "AÑADIDO EN " << i << j;
         }
     }
@@ -175,7 +175,7 @@ void ClienteV::on_actionCapturar_triggered()
         for(int j=0;j<NLabelsX;j++){
             QLabel* label=new QLabel;
             label->setScaledContents(true);
-            ui->gridLayout->addWidget(label,i,j);
+            ui->MatrizCamaras->addWidget(label,i,j);
             //qDebug() << "AÑADIDO EN " << i << j;
         }
     }
@@ -248,7 +248,7 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     //QString dtime(paquete.timestamp().c_str());
     //qDebug() << dtime;
 
-    paquete.set_datestamp((QDate::currentDate().toString("dd.MM.yyyy")).toStdString());
+    //paquete.set_datestamp((QDate::currentDate().toString("dd.MM.yyyy")).toStdString());
     writer.setDevice(&buffer);
     writer.setFormat("jpeg");
     writer.setCompression(70);
@@ -293,7 +293,7 @@ void ClienteV::image_s(const QImage &image, const int &pos)
   QPixmap pixmap;
   pixmap=pixmap.fromImage(image);
   //qDebug() << "MOSTRAR EN " << pos;
-  ((QLabel*)ui->gridLayout->itemAt(pos)->widget())->setPixmap(pixmap);
+  ((QLabel*)ui->MatrizCamaras->itemAt(pos)->widget())->setPixmap(pixmap);
   if(settings.value("transmitir")==true){
     //qDebug() << "CONNECT OK";
     emitir(image,pos);
