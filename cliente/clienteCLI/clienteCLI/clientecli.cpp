@@ -10,10 +10,10 @@ ClienteCLI::ClienteCLI()
     QRegExp rx("(\\,|\\/|\\:|\\t)");
     QString sometext(getenv("SESSION_MANAGER"));
     QStringList query = sometext.split(rx);
-    QString NnombrePC(getenv("USER"));
-    NnombrePC.append("@");
-    NnombrePC.append(query.at(1));
-    nombrePC=NnombrePC.toStdString();
+
+    NombrePC=new QString(getenv("USER"));
+    NombrePC->append("@");
+    NombrePC->append(query.at(1));
 
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, sigTermSd))
         qFatal("Couldn't create TERM socketpair");
@@ -44,7 +44,7 @@ void ClienteCLI::handleSigTerm()
 {
     // Desactivar la monitorización del socket para que por
     // el momento no lleguen más señales de Qt
-    //termNotifier->setEnabled(false);
+    sigTermNotifier->setEnabled(false);
     // Leer y desechar el byte enviado por
     // MyDaemon::termSignalHandler()
     //qDebug() << "handleSigTerm";
@@ -55,7 +55,7 @@ void ClienteCLI::handleSigTerm()
     // Activar la monitorización para que vuelvan a llegar
     // señales de Qt
     qApp->quit();
-    //termNotifier->setEnabled(true);
+    sigTermNotifier->setEnabled(true);
 }
 
 ClienteCLI::~ClienteCLI()
@@ -84,38 +84,56 @@ void ClienteCLI::actualizar_IP(QString IP)
 }
 
 void ClienteCLI::actualizar(){
-    /*
-     * LECTURA DESDE FICHERO DE LAS CAMARAS, IP Y PUERTO
-     */
-    QVector<int> activas;
-    int indice=0, port;
-    QString* IP;
-    bool todas=true;
+    if(parametros==false){
+        QString *IP, *camaras;
 
-    IP=new QString("127.0.0.1");
-    port=33333;
-    //LEER DE FICHERO LAS CAMARAS
-    //PUSH DE LOS INDICES, SI HAY UN -1 SON TODAS ACTIVAS
+        camaras=new QString("ALL");
+        IP=new QString("127.0.0.1");
+        int port=33333;
 
-    if(todas)
-        qDebug() << "TODAS";
-
-    for(int i=0; i<NCamaras;i++){
-        if(todas){
-            actualizar_cam(i,true);
-        }
-        else if(i==activas.at(indice)){
-            actualizar_cam(i,true);
-            indice++;
-        }
-        else{
+        for(int i=0; i<NCamaras;i++){
             actualizar_cam(i,false);
-
         }
-    }
 
-    actualizar_puerto(port);
-    actualizar_IP(*IP);
+        QFile file("cliente.conf");
+        if (file.open(QIODevice::ReadOnly)){
+            qDebug() << "Leyendo configuracion desde fichero...";
+            QTextStream configuracion(&file);
+
+            camaras= new QString(configuracion.readLine());
+
+            QRegExp rx("(\\,)");
+            QStringList query = (*camaras).split(rx);
+
+            if(*camaras!="ALL"){
+                for(int i=0; i<query.size(); i++){
+                    for(int j=0; j<NCamaras;j++){
+                        if(devices[j]==query.at(i)){
+                            qDebug() << "Camara " << devices[j] << " detectada";
+                            actualizar_cam(j,true);
+                        }
+                    }
+                }
+            }
+
+            IP=new QString(configuracion.readLine());
+            port=(configuracion.readLine()).toInt();
+        }
+        else
+            qDebug() << "Error al acceder al fichero cliente.conf! Cargando configuración por defecto...";
+
+        file.close();
+
+        if(*camaras=="ALL"){
+            for(int i=0; i<NCamaras;i++){
+                    actualizar_cam(i,true);
+                }
+        }
+        actualizar_puerto(port);
+        actualizar_IP(*IP);
+    }
+    else
+        qDebug() << "Procesados parametros por terminal";
 }
 
 void ClienteCLI::capturar()
@@ -138,6 +156,7 @@ void ClienteCLI::capturar()
             ListaCamaras->push_back(aux);
             ListaCamaras->value(i).Camera->setViewfinder(ListaCamaras->value(i).captureBuffer);
             ListaCamaras->value(i).Camera->start();
+            qDebug() << "Transmitiendo de " << QCamera::deviceDescription(devices[i]) << "(" << devices[i] << ")";
             connect(ListaCamaras->value(i).captureBuffer,SIGNAL(s_image(QImage,int)),this,SLOT(emitir(QImage,int)));
         }
     }
@@ -175,8 +194,8 @@ void ClienteCLI::emitir(const QImage &image, int id){
     //QString dnombrecamara(paquete.nombrecamara().c_str());
     //qDebug() << dnombrecamara << dtnombrecamara;
 
-    paquete.set_tnombrepc(sizeof(nombrePC));
-    paquete.set_nombrepc(nombrePC);
+    paquete.set_tnombrepc(sizeof(NombrePC->toStdString()));
+    paquete.set_nombrepc(NombrePC->toStdString());
 
     //qint32 dtnombrepc(paquete.tnombrepc());
     //QString dnombrepc(paquete.nombrepc().c_str());
@@ -187,7 +206,6 @@ void ClienteCLI::emitir(const QImage &image, int id){
 
     //QString dtime(paquete.timestamp().c_str());
     //qDebug() << dtime;
-
     writer.setDevice(&buffer);
     writer.setFormat("jpeg");
     writer.setCompression(70);
@@ -226,14 +244,14 @@ void ClienteCLI::emitir(const QImage &image, int id){
 
 void ClienteCLI::delete_all(){
     QString namesetting;
-    for(int i=0;i<NCamaras;i++)
+    for(int i=0;i<ListaCamaras->size();i++)
     {
         namesetting="indice";
         namesetting.append(i+48);
         if((settings.value(namesetting))==true){
-            ListaCamaras->value(i).Camera->stop();
-            qDebug() << "Camara " << i << " eliminada!";
+            ListaCamaras->value(i).Camera->stop();   
             ListaCamaras->remove(i);
+            qDebug() << "Camara " << i << " eliminada!";
         }
     }
     ListaCamaras->clear();

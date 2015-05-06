@@ -9,6 +9,7 @@
 #include <QLabel>
 #include <QTextStream>
 #include <QVector>
+#include <QFile>
 #include <QString>
 #include <QMessageBox>
 #include <QTime>
@@ -38,6 +39,8 @@ class ClienteCLI: public QObject
     Q_OBJECT
 
 public:
+    bool parametros=false;
+
     ClienteCLI();
 
     ClienteCLI(int argc, char *argv[]);
@@ -74,9 +77,8 @@ private:
     QVector<CAM> *ListaCamaras;
     QList<QByteArray> devices;
     QTcpSocket *conexion;
-    std::string nombrePC;
+    QString* NombrePC;
     int sigTermSd[2];
-    // Objeto para monitorizar uno de los sockets de sigTermSd[2]
     QSocketNotifier *sigTermNotifier;
 };
 
