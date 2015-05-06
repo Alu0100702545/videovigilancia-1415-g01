@@ -42,27 +42,26 @@ int main(int argc, char *argv[])
 
     //======================================================================
 
-    QRegExp rx("(\\,|\\/|\\:|\\t)");
-    QStringList query = parser.value(CamerasOption).split(rx);
-
     w = new ClienteCLI;
 
     if(parser.isSet(CamerasOption)){
+        QRegExp rx("(\\,|\\/|\\:|\\t)");
+        QStringList query = parser.value(CamerasOption).split(rx);
         for(int i=0; i<query.size(); i++){
-            qDebug() << "INDICE " << i << ": " << query.at(i).toInt();
+            //qDebug() << "INDICE " << i << ": " << query.at(i).toInt();
             w->actualizar_cam((query.at(i)).toInt(),true);
         }
         w->parametros=true;
     }
 
     if(parser.isSet(IPOption)){
-        qDebug() << "IP: " << parser.value(IPOption);
+        //qDebug() << "IP: " << parser.value(IPOption);
         w->actualizar_IP(parser.value(IPOption));
         w->parametros=true;
     }
 
     if(parser.isSet(PortOption)){
-        qDebug() << "Puerto: " << parser.value(PortOption).toInt();
+        //qDebug() << "Puerto: " << parser.value(PortOption).toInt();
         w->actualizar_puerto(parser.value(PortOption).toInt());
         w->parametros=true;
     }
