@@ -3,8 +3,8 @@
 # Project created by QtCreator 2015-04-17T12:45:16
 #
 #-------------------------------------------------
-#PROTOS = VAF.proto
-#include(protobuf.pri)
+PROTOS = VAF.proto
+include(protobuf.pri)
 include(QtOpenCV.pri)
 add_opencv_modules(core video imgproc)
 
