@@ -1,7 +1,4 @@
 //Paquete VAF.proto
-
-
-
 message VAF {
     required string protocolo = 1;
     required bytes  version = 2;

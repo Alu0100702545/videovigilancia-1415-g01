@@ -32,7 +32,7 @@ void protobuf_AssignDesc_VAF_2eproto() {
       "VAF.proto");
   GOOGLE_CHECK(file != NULL);
   VAF_descriptor_ = file->message_type(0);
-  static const int VAF_offsets_[9] = {
+  static const int VAF_offsets_[10] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VAF, protocolo_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VAF, version_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VAF, tnombrecamara_),
@@ -42,6 +42,7 @@ void protobuf_AssignDesc_VAF_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VAF, timestamp_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VAF, timagen_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VAF, imagen_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VAF, datestamp_),
   };
   VAF_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -84,11 +85,12 @@ void protobuf_AddDesc_VAF_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\tVAF.proto\"\257\001\n\003VAF\022\021\n\tprotocolo\030\001 \002(\t\022\017"
+    "\n\tVAF.proto\"\302\001\n\003VAF\022\021\n\tprotocolo\030\001 \002(\t\022\017"
     "\n\007version\030\002 \002(\014\022\025\n\rTnombrecamara\030\003 \001(\r\022\024"
     "\n\014nombrecamara\030\004 \002(\t\022\021\n\tTnombrePC\030\005 \001(\r\022"
     "\020\n\010nombrePC\030\006 \002(\t\022\021\n\ttimestamp\030\007 \002(\t\022\017\n\007"
-    "TImagen\030\010 \001(\r\022\016\n\006imagen\030\t \002(\014", 189);
+    "TImagen\030\010 \001(\r\022\016\n\006imagen\030\t \002(\014\022\021\n\tdatesta"
+    "mp\030\n \001(\t", 208);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "VAF.proto", &protobuf_RegisterTypes);
   VAF::default_instance_ = new VAF();
@@ -115,11 +117,13 @@ const int VAF::kNombrePCFieldNumber;
 const int VAF::kTimestampFieldNumber;
 const int VAF::kTImagenFieldNumber;
 const int VAF::kImagenFieldNumber;
+const int VAF::kDatestampFieldNumber;
 #endif  // !_MSC_VER
 
 VAF::VAF()
   : ::google::protobuf::Message() {
   SharedCtor();
+  // @@protoc_insertion_point(constructor:VAF)
 }
 
 void VAF::InitAsDefaultInstance() {
@@ -129,44 +133,51 @@ VAF::VAF(const VAF& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:VAF)
 }
 
 void VAF::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
-  protocolo_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  version_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  protocolo_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  version_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   tnombrecamara_ = 0u;
-  nombrecamara_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  nombrecamara_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   tnombrepc_ = 0u;
-  nombrepc_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  timestamp_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  nombrepc_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  timestamp_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   timagen_ = 0u;
-  imagen_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  imagen_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  datestamp_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
 VAF::~VAF() {
+  // @@protoc_insertion_point(destructor:VAF)
   SharedDtor();
 }
 
 void VAF::SharedDtor() {
-  if (protocolo_ != &::google::protobuf::internal::kEmptyString) {
+  if (protocolo_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     delete protocolo_;
   }
-  if (version_ != &::google::protobuf::internal::kEmptyString) {
+  if (version_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     delete version_;
   }
-  if (nombrecamara_ != &::google::protobuf::internal::kEmptyString) {
+  if (nombrecamara_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     delete nombrecamara_;
   }
-  if (nombrepc_ != &::google::protobuf::internal::kEmptyString) {
+  if (nombrepc_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     delete nombrepc_;
   }
-  if (timestamp_ != &::google::protobuf::internal::kEmptyString) {
+  if (timestamp_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     delete timestamp_;
   }
-  if (imagen_ != &::google::protobuf::internal::kEmptyString) {
+  if (imagen_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     delete imagen_;
+  }
+  if (datestamp_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete datestamp_;
   }
   if (this != default_instance_) {
   }
@@ -194,64 +205,86 @@ VAF* VAF::New() const {
 }
 
 void VAF::Clear() {
-  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+#define OFFSET_OF_FIELD_(f) (reinterpret_cast<char*>(      \
+  &reinterpret_cast<VAF*>(16)->f) - \
+   reinterpret_cast<char*>(16))
+
+#define ZR_(first, last) do {                              \
+    size_t f = OFFSET_OF_FIELD_(first);                    \
+    size_t n = OFFSET_OF_FIELD_(last) - f + sizeof(last);  \
+    ::memset(&first, 0, n);                                \
+  } while (0)
+
+  if (_has_bits_[0 / 32] & 255) {
+    ZR_(tnombrecamara_, tnombrepc_);
     if (has_protocolo()) {
-      if (protocolo_ != &::google::protobuf::internal::kEmptyString) {
+      if (protocolo_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
         protocolo_->clear();
       }
     }
     if (has_version()) {
-      if (version_ != &::google::protobuf::internal::kEmptyString) {
+      if (version_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
         version_->clear();
       }
     }
-    tnombrecamara_ = 0u;
     if (has_nombrecamara()) {
-      if (nombrecamara_ != &::google::protobuf::internal::kEmptyString) {
+      if (nombrecamara_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
         nombrecamara_->clear();
       }
     }
-    tnombrepc_ = 0u;
     if (has_nombrepc()) {
-      if (nombrepc_ != &::google::protobuf::internal::kEmptyString) {
+      if (nombrepc_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
         nombrepc_->clear();
       }
     }
     if (has_timestamp()) {
-      if (timestamp_ != &::google::protobuf::internal::kEmptyString) {
+      if (timestamp_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
         timestamp_->clear();
       }
     }
     timagen_ = 0u;
   }
-  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+  if (_has_bits_[8 / 32] & 768) {
     if (has_imagen()) {
-      if (imagen_ != &::google::protobuf::internal::kEmptyString) {
+      if (imagen_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
         imagen_->clear();
       }
     }
+    if (has_datestamp()) {
+      if (datestamp_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        datestamp_->clear();
+      }
+    }
   }
+
+#undef OFFSET_OF_FIELD_
+#undef ZR_
+
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
 
 bool VAF::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  while ((tag = input->ReadTag()) != 0) {
+  // @@protoc_insertion_point(parse_start:VAF)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // required string protocolo = 1;
       case 1: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+        if (tag == 10) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_protocolo()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
             this->protocolo().data(), this->protocolo().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "protocolo");
         } else {
-          goto handle_uninterpreted;
+          goto handle_unusual;
         }
         if (input->ExpectTag(18)) goto parse_version;
         break;
@@ -259,13 +292,12 @@ bool VAF::MergePartialFromCodedStream(
 
       // required bytes version = 2;
       case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+        if (tag == 18) {
          parse_version:
           DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_version()));
         } else {
-          goto handle_uninterpreted;
+          goto handle_unusual;
         }
         if (input->ExpectTag(24)) goto parse_Tnombrecamara;
         break;
@@ -273,15 +305,14 @@ bool VAF::MergePartialFromCodedStream(
 
       // optional uint32 Tnombrecamara = 3;
       case 3: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+        if (tag == 24) {
          parse_Tnombrecamara:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &tnombrecamara_)));
           set_has_tnombrecamara();
         } else {
-          goto handle_uninterpreted;
+          goto handle_unusual;
         }
         if (input->ExpectTag(34)) goto parse_nombrecamara;
         break;
@@ -289,16 +320,16 @@ bool VAF::MergePartialFromCodedStream(
 
       // required string nombrecamara = 4;
       case 4: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+        if (tag == 34) {
          parse_nombrecamara:
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_nombrecamara()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
             this->nombrecamara().data(), this->nombrecamara().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "nombrecamara");
         } else {
-          goto handle_uninterpreted;
+          goto handle_unusual;
         }
         if (input->ExpectTag(40)) goto parse_TnombrePC;
         break;
@@ -306,15 +337,14 @@ bool VAF::MergePartialFromCodedStream(
 
       // optional uint32 TnombrePC = 5;
       case 5: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+        if (tag == 40) {
          parse_TnombrePC:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &tnombrepc_)));
           set_has_tnombrepc();
         } else {
-          goto handle_uninterpreted;
+          goto handle_unusual;
         }
         if (input->ExpectTag(50)) goto parse_nombrePC;
         break;
@@ -322,16 +352,16 @@ bool VAF::MergePartialFromCodedStream(
 
       // required string nombrePC = 6;
       case 6: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+        if (tag == 50) {
          parse_nombrePC:
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_nombrepc()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
             this->nombrepc().data(), this->nombrepc().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "nombrepc");
         } else {
-          goto handle_uninterpreted;
+          goto handle_unusual;
         }
         if (input->ExpectTag(58)) goto parse_timestamp;
         break;
@@ -339,16 +369,16 @@ bool VAF::MergePartialFromCodedStream(
 
       // required string timestamp = 7;
       case 7: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+        if (tag == 58) {
          parse_timestamp:
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_timestamp()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
             this->timestamp().data(), this->timestamp().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "timestamp");
         } else {
-          goto handle_uninterpreted;
+          goto handle_unusual;
         }
         if (input->ExpectTag(64)) goto parse_TImagen;
         break;
@@ -356,15 +386,14 @@ bool VAF::MergePartialFromCodedStream(
 
       // optional uint32 TImagen = 8;
       case 8: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+        if (tag == 64) {
          parse_TImagen:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &timagen_)));
           set_has_timagen();
         } else {
-          goto handle_uninterpreted;
+          goto handle_unusual;
         }
         if (input->ExpectTag(74)) goto parse_imagen;
         break;
@@ -372,23 +401,40 @@ bool VAF::MergePartialFromCodedStream(
 
       // required bytes imagen = 9;
       case 9: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+        if (tag == 74) {
          parse_imagen:
           DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_imagen()));
         } else {
-          goto handle_uninterpreted;
+          goto handle_unusual;
         }
-        if (input->ExpectAtEnd()) return true;
+        if (input->ExpectTag(82)) goto parse_datestamp;
+        break;
+      }
+
+      // optional string datestamp = 10;
+      case 10: {
+        if (tag == 82) {
+         parse_datestamp:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_datestamp()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->datestamp().data(), this->datestamp().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "datestamp");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
         break;
       }
 
       default: {
-      handle_uninterpreted:
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          return true;
+          goto success;
         }
         DO_(::google::protobuf::internal::WireFormat::SkipField(
               input, tag, mutable_unknown_fields()));
@@ -396,24 +442,31 @@ bool VAF::MergePartialFromCodedStream(
       }
     }
   }
+success:
+  // @@protoc_insertion_point(parse_success:VAF)
   return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:VAF)
+  return false;
 #undef DO_
 }
 
 void VAF::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:VAF)
   // required string protocolo = 1;
   if (has_protocolo()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
       this->protocolo().data(), this->protocolo().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "protocolo");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
       1, this->protocolo(), output);
   }
 
   // required bytes version = 2;
   if (has_version()) {
-    ::google::protobuf::internal::WireFormatLite::WriteBytes(
+    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
       2, this->version(), output);
   }
 
@@ -424,10 +477,11 @@ void VAF::SerializeWithCachedSizes(
 
   // required string nombrecamara = 4;
   if (has_nombrecamara()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
       this->nombrecamara().data(), this->nombrecamara().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "nombrecamara");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
       4, this->nombrecamara(), output);
   }
 
@@ -438,19 +492,21 @@ void VAF::SerializeWithCachedSizes(
 
   // required string nombrePC = 6;
   if (has_nombrepc()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
       this->nombrepc().data(), this->nombrepc().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "nombrepc");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
       6, this->nombrepc(), output);
   }
 
   // required string timestamp = 7;
   if (has_timestamp()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
       this->timestamp().data(), this->timestamp().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "timestamp");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
       7, this->timestamp(), output);
   }
 
@@ -461,23 +517,36 @@ void VAF::SerializeWithCachedSizes(
 
   // required bytes imagen = 9;
   if (has_imagen()) {
-    ::google::protobuf::internal::WireFormatLite::WriteBytes(
+    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
       9, this->imagen(), output);
+  }
+
+  // optional string datestamp = 10;
+  if (has_datestamp()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->datestamp().data(), this->datestamp().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "datestamp");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      10, this->datestamp(), output);
   }
 
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
   }
+  // @@protoc_insertion_point(serialize_end:VAF)
 }
 
 ::google::protobuf::uint8* VAF::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:VAF)
   // required string protocolo = 1;
   if (has_protocolo()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
       this->protocolo().data(), this->protocolo().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "protocolo");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         1, this->protocolo(), target);
@@ -497,9 +566,10 @@ void VAF::SerializeWithCachedSizes(
 
   // required string nombrecamara = 4;
   if (has_nombrecamara()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
       this->nombrecamara().data(), this->nombrecamara().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "nombrecamara");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         4, this->nombrecamara(), target);
@@ -512,9 +582,10 @@ void VAF::SerializeWithCachedSizes(
 
   // required string nombrePC = 6;
   if (has_nombrepc()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
       this->nombrepc().data(), this->nombrepc().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "nombrepc");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         6, this->nombrepc(), target);
@@ -522,9 +593,10 @@ void VAF::SerializeWithCachedSizes(
 
   // required string timestamp = 7;
   if (has_timestamp()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
       this->timestamp().data(), this->timestamp().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "timestamp");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         7, this->timestamp(), target);
@@ -542,10 +614,22 @@ void VAF::SerializeWithCachedSizes(
         9, this->imagen(), target);
   }
 
+  // optional string datestamp = 10;
+  if (has_datestamp()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->datestamp().data(), this->datestamp().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "datestamp");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        10, this->datestamp(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
   }
+  // @@protoc_insertion_point(serialize_to_array_end:VAF)
   return target;
 }
 
@@ -618,6 +702,13 @@ int VAF::ByteSize() const {
           this->imagen());
     }
 
+    // optional string datestamp = 10;
+    if (has_datestamp()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->datestamp());
+    }
+
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -674,6 +765,9 @@ void VAF::MergeFrom(const VAF& from) {
     if (from.has_imagen()) {
       set_imagen(from.imagen());
     }
+    if (from.has_datestamp()) {
+      set_datestamp(from.datestamp());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -707,6 +801,7 @@ void VAF::Swap(VAF* other) {
     std::swap(timestamp_, other->timestamp_);
     std::swap(timagen_, other->timagen_);
     std::swap(imagen_, other->imagen_);
+    std::swap(datestamp_, other->datestamp_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

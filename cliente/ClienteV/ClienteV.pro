@@ -3,8 +3,10 @@
 # Project created by QtCreator 2015-04-17T12:45:16
 #
 #-------------------------------------------------
-PROTOS = VAF.proto
-include(protobuf.pri)
+#PROTOS = VAF.proto
+#include(protobuf.pri)
+include(QtOpenCV.pri)
+add_opencv_modules(core video imgproc)
 
 QT       += core gui
 QT       += multimedia multimediawidgets
@@ -12,12 +14,8 @@ CONFIG += c++11
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-include(QtOpenCV.pri)
-
 TARGET = ClienteV
 TEMPLATE = app
-
-add_opencv_modules(core video imgproc)
 
 SOURCES += main.cpp\
         clientev.cpp \
@@ -76,5 +74,6 @@ unix {
     vardir.path = $$VARDIR
     vardir.commands = true
 }
+
 
 

@@ -21,6 +21,11 @@
 #include <QImageWriter>
 #include <QHostInfo>
 #include <VAF.pb.h>
+#include <cvmatandqimage.h>
+#include <opencv2/core/core.hpp>
+#include <opencv2/video/video.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #define NPROTOCOLO "VAF"
 #define VPROTOCOLO "1"
@@ -77,6 +82,7 @@ private:
     QList<QByteArray> devices;
     QTcpSocket *conexion;
     std::string nombrePC;
+    cv::BackgroundSubtractorMOG2 backgroundSubtractor;
 };
 
 #endif // CLIENTEV_H
