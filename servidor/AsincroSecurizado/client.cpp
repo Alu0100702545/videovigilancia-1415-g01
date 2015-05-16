@@ -6,7 +6,7 @@ client::client(QSslSocket *tcpSocket,QSqlDatabase &bdd, QObject *parent) : QObje
      Tpaquete =0;
       qDebug()<<"socket:"<<tcpSocket_->socketDescriptor();
      //tcpSocket_->setProtocol(QSsl::SslV3);
-
+connect(tcpSocket_, SIGNAL(encrypted()),this, SLOT(fallos()));
     connect(tcpSocket_, SIGNAL(readyRead()), this, SLOT(deserializacion()));
     //connect(tcpSocket_,SIGNAL(), this, SLOT(borrarlista()));
     connect(tcpSocket_,SIGNAL(disconnected()), this, SLOT(limpiarbuffer()));
@@ -164,3 +164,7 @@ void client::almacenamiento(VAF paquete)
 }
 
 
+void client::fallos()
+{
+    qDebug() <<"ENCRIPTADO";
+}

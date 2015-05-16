@@ -17,10 +17,12 @@
 #include <capturebuffer.h>
 #include <combobox.h>
 #include <QTcpSocket>
+#include <QSslSocket>
 #include <QBuffer>
 #include <QImageWriter>
 #include <QHostInfo>
-#include <QSslSocket>
+#include <openssl/ssl.h>
+
 #include <QDate>
 
 #define NPROTOCOLO "VAF"
@@ -44,6 +46,8 @@ public:
     explicit ClienteV(QWidget *parent = 0);
     ~ClienteV();
 
+public slots:
+    void error(QAbstractSocket::SocketError algo);
 private slots:
 
     void on_BotonCerrar_clicked();

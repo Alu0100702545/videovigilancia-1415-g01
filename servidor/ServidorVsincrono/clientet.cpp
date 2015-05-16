@@ -22,70 +22,70 @@ clienteT::clienteT(qintptr socketDescriptor, QSqlDatabase &bdd,QObject *parent):
 
 void clienteT::run()
 {
-        QTcpSocket tcpSocket;
+        QSslSocket sslsocket;
         // Inicializarlo con el socket nativo de la conexión con el cliente
-        if (!tcpSocket.setSocketDescriptor(socketDescriptor_)) {
-            emit error(tcpSocket.error());
+        if (!sslsocket.setSocketDescriptor(socketDescriptor_)) {
+            emit error(sslsocket.error());
             return;
         }
        do {
-        tcpSocket.waitForReadyRead();
+        sslsocket.waitForReadyRead();
 
-            //while(tcpSocket.bytesAvailable() > 0 ){
-                //qDebug() <<"bytes disp"<< tcpSocket.bytesAvailable() ;
-                deserializacion(&tcpSocket);
+            //while(sslsocket.bytesAvailable() > 0 ){
+                //qDebug() <<"bytes disp"<< sslsocket.bytesAvailable() ;
+                deserializacion(&sslsocket);
            //}
 
 
-        }while(tcpSocket.isValid());
-         while(tcpSocket.bytesAvailable() > 0){
+        }while(sslsocket.isValid());
+         while(sslsocket.bytesAvailable() > 0){
 
              QString aux;
              QByteArray algo;
-             QDataStream in(&tcpSocket);
+             QDataStream in(&sslsocket);
              in.setVersion(QDataStream::Qt_4_0);
                  //Recojiendo en tamaño del paquete
-              if(tcpSocket.bytesAvailable() >= (int)(sizeof(qint32))&& (Tpaquete==0))
+              if(sslsocket.bytesAvailable() >= (int)(sizeof(qint32))&& (Tpaquete==0))
               {
                   in >> Tpaquete;
                   aux=QString::number(Tpaquete);
                   qDebug() <<"tamaño paquete:"<< aux;
                  //Teniendo el tamaño de paquete lo leemos del buffer
-              } if ((Tpaquete !=0) && (tcpSocket.bytesAvailable() >=Tpaquete )){
-                 algo=tcpSocket.read(Tpaquete);
+              } if ((Tpaquete !=0) && (sslsocket.bytesAvailable() >=Tpaquete )){
+                 algo=sslsocket.read(Tpaquete);
                  paquete.ParseFromString(algo.toStdString());
                  Tpaquete =0;
                  almacenamiento(paquete);
 
              }else{
 
-                tcpSocket.readAll();
+                sslsocket.readAll();
             }
          }
 
-        tcpSocket.disconnectFromHost();
-        tcpSocket.waitForDisconnected(100);
+        sslsocket.disconnectFromHost();
+        sslsocket.waitForDisconnected(100);
  }
 
-void clienteT::deserializacion(QTcpSocket *tcpSocket_)
+void clienteT::deserializacion(Qsslsocket *sslsocket_)
 {
 
     QString aux, aux3;
     std::string aux2;
     QByteArray algo;
-    QDataStream in(tcpSocket_);
+    QDataStream in(sslsocket_);
     in.setVersion(QDataStream::Qt_4_0);
         //Recojiendo en tamaño del paquete
-    //qDebug() <<"bytes disponibles"<< tcpSocket_->bytesAvailable() ;
-     if(tcpSocket_->bytesAvailable() >= (int)(sizeof(qint32))&& (Tpaquete==0))
+    //qDebug() <<"bytes disponibles"<< sslsocket_->bytesAvailable() ;
+     if(sslsocket_->bytesAvailable() >= (int)(sizeof(qint32))&& (Tpaquete==0))
      {
          in >> Tpaquete;
          aux=QString::number(Tpaquete);
          qDebug() <<"tamaño paquete:"<< aux;
         //Teniendo el tamaño de paquete lo leemos del buffer
      }
-     if ((Tpaquete !=0) && (tcpSocket_->bytesAvailable() >=Tpaquete )){
-        algo=tcpSocket_->read(Tpaquete);
+     if ((Tpaquete !=0) && (sslsocket_->bytesAvailable() >=Tpaquete )){
+        algo=sslsocket_->read(Tpaquete);
         paquete.ParseFromString(algo.toStdString());
         Tpaquete =0;
         almacenamiento(paquete);

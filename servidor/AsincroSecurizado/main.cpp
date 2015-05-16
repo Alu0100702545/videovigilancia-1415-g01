@@ -7,16 +7,6 @@ int main(int argc, char *argv[])
     Servidor server;
     server.inicioServer();
     server.OpcionesLimpieza();
-    /*QRegExp rx("(\\,|\\/|\\:|\\t)");
-    QString sometext(getenv("SESSION_MANAGER"));
-    QStringList query = sometext.split(rx);
-    QString nombrePC(getenv("USER"));
-    nombrePC.append("@");
-    nombrePC.append(query.at(1));
-    qDebug()<< nombrePC;
-    qDebug() << query.at(1);
-    qDebug() << getenv("USERNAME");
-    qDebug() << getenv("USER");*/
 
     return a.exec();
 }

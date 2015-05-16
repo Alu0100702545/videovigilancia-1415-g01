@@ -11,6 +11,7 @@
 #include <QBuffer>
 #include <QDirIterator>
 #include <iostream>
+#include <QSslSocket>
 class clienteT : public QThread
 {
 
@@ -20,10 +21,10 @@ public:
         //: QThread(parent), socketDescriptor_(socketDescriptor){}
     void run();
     //~clienteT();
-    void deserializacion(QTcpSocket * tcpSocket_);
+    void deserializacion(QSslSocket * tcpSocket_);
     void almacenamiento(VAF &paquete);
 signals:
-    void error(QTcpSocket::SocketError socketError);
+    void error(QSslSocket::SocketError socketError);
     void eliminacion();
 
 private:

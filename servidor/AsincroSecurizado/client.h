@@ -22,6 +22,8 @@
 #include <QDir>
 #include <iostream>
 #include <QSslSocket>
+#include <openssl/ssl.h>
+
 
 class client : public QObject
 {
@@ -39,6 +41,8 @@ public slots:
     void borrarlista();
     void deserializacion();
     void limpiarbuffer();
+
+    void fallos();
 private:
      QSslSocket *tcpSocket_;
      qint32 Tpaquete;
@@ -46,6 +50,7 @@ private:
      VAF paquete;
      void almacenamiento(VAF);
      qintptr socket;
+
 };
 
 #endif // CLIENT_H

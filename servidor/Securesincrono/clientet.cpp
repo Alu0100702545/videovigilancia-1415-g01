@@ -22,19 +22,54 @@ clienteT::clienteT(qintptr socketDescriptor, QSqlDatabase &bdd,QObject *parent):
 
 void clienteT::run()
 {
-        QTcpSocket tcpSocket;
+        QSslSocket tcpSocket;
         // Inicializarlo con el socket nativo de la conexión con el cliente
-        if (!tcpSocket.setSocketDescriptor(socketDescriptor_)) {
+        if (tcpSocket.setSocketDescriptor(socketDescriptor_)) {
+             QFile fileCert("~/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.crt");
+          connect(&tcpSocket,SIGNAL(sslErrors(QList<QSslError>)),&tcpSocket,SLOT(ignoreSslErrors()));
+
+          qDebug() <<"existe pem:"<<QFile::exists("~/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.crt");
+          qDebug() <<" ceritifado abierto: " <<fileCert.open(QIODevice::ReadOnly);
+          fileCert.close();
+          QFile algo("~/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.key");
+          qDebug() <<" Key abierta: " <<algo.open(QIODevice::ReadOnly);
+          algo.close();
+          tcpSocket.setProtocol(QSsl::AnyProtocol);
+          tcpSocket.ignoreSslErrors();
+          //tcpSocket.addDefaultCaCertificates("")
+          tcpSocket.setPrivateKey("~/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.key");
+          tcpSocket.setPeerVerifyMode(QSslSocket::QueryPeer);
+          tcpSocket.addCaCertificates("~/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.crt");
+          tcpSocket.setLocalCertificate("~/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.crt");
+          tcpSocket.startServerEncryption();
+          qDebug() <<"certificado es nulo ?: "<<tcpSocket.localCertificate().isNull();
+          qDebug() <<"soy valido ?: "<<tcpSocket.isValid();
+          qDebug() <<"estoy encriptado ?: "<<tcpSocket.isEncrypted();
+          qDebug() << "nuevaConexion";
+          tcpSocket.waitForEncrypted();
+          qDebug() <<"estoy encriptado ?: "<<tcpSocket.isEncrypted();
+
+        } else {
             emit error(tcpSocket.error());
             return;
+
         }
        do {
-        tcpSocket.waitForReadyRead();
+        //qDebug() <<"ESPERANDO PARA LEER";
 
+        tcpSocket.waitForReadyRead();
+        //qDebug() <<"LEEMOS";
             //while(tcpSocket.bytesAvailable() > 0 ){
                 //qDebug() <<"bytes disp"<< tcpSocket.bytesAvailable() ;
-                deserializacion(&tcpSocket);
-           //}
+
+            if (tcpSocket.isEncrypted()){
+                //qDebug() << "ESTOY ENCRIPTADO!!!";
+                   deserializacion(&tcpSocket);
+
+            }else{
+                qDebug() << "O NO T_T";
+                return;
+            }
 
 
         }while(tcpSocket.isValid());
@@ -67,8 +102,10 @@ void clienteT::run()
         tcpSocket.waitForDisconnected(100);
  }
 
-void clienteT::deserializacion(QTcpSocket *tcpSocket_)
+void clienteT::deserializacion(QSslSocket *tcpSocket_)
 {
+
+    qDebug() << "DESERIALIZANDO";
 
     QString aux, aux3;
     std::string aux2;

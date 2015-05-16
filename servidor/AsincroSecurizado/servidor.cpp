@@ -39,8 +39,7 @@ void Servidor::OpcionesLimpieza()
 Servidor::Servidor():
 server(NULL)
 {
-    server= new QTcpServer;
-    server->setMaxPendingConnections(10);
+
 
     QDir directorio;
     Vdb=QSqlDatabase::addDatabase("QSQLITE", "SQLITE");
@@ -53,6 +52,8 @@ server(NULL)
         qDebug() << QSqlDatabase::drivers();
         exit(1);
     }
+    server= new QSslServer(this,Vdb);
+    server->setMaxPendingConnections(10);
     QSqlQuery query(Vdb);
 
     query.exec("CREATE TABLE IF NOT EXISTS regvaf "
@@ -73,54 +74,11 @@ server(NULL)
 void Servidor::inicioServer()
 {
     server->listen(QHostAddress::AnyIPv4,33333);
-    connect(server,SIGNAL(newConnection()),this,SLOT(conexionesPen()));
+    //connect(server,SIGNAL(newConnection()),this,SLOT(conexionesPen()));
+    //connect(server,SIGNAL(newConnection()),this,SLOT(fallos()));
+    qDebug() << "ESCUCHANDO";
 
 }
 
-void Servidor::conexionesPen()
-{
-    while(server->hasPendingConnections() && clients.size()<10) {
-        QTcpSocket *clientConnection =
-            server->nextPendingConnection();
-        QSslSocket *cliente= (QSslSocket*)clientConnection;
-        cliente->setLocalCertificate("videovigilancia.pem");
-        cliente->setPrivateKey("videovigilancia.key");
-        qDebug() <<"certificado valido ?: "<<cliente->localCertificate().isNull();
-        /*QSslKey eso=cliente->privateKey();
-        qDebug() <<"soy valido ?: "<<eso;
-        */
 
-        client *nuevaC =new client(cliente,Vdb,this);
-        clients[nuevaC->getsocketDescriptor()] = nuevaC;
-        qDebug() <<"soy valido ?: "<<cliente->isValid();
-        qDebug() <<"estoy encriptado ?: "<<cliente->isEncrypted();
-        qDebug() << "nuevaConexion";
-        qDebug() << nuevaC;
-        //qDebug() <<clients.size();
 
-    }
-    if(clients.size()>=10)
-        if(eliminarlista()==false)
-            server->close();
-    if (!server->isListening()&& clients.size() <10){
-        server->listen(QHostAddress::AnyIPv4,33333);
-        connect(server,SIGNAL(newConnection()),this,SLOT(conexionesPen()));
-
-    }
-}
-
-bool Servidor::eliminarlista()
-{
-    QMap<qintptr, client*>::iterator i/*= clients.find(sock)*/;
-
-    for(i=clients.begin();i != clients.end();i++){
-        qDebug() <<"pene"<<clients.size() <<i.value()->get_tcp()->isValid();
-        if (i.value()->get_tcp()->isValid()==false){
-            clients.erase(i);
-            qDebug() <<clients.size();
-            return true;
-        }
-    }
-    return false;
-
-}

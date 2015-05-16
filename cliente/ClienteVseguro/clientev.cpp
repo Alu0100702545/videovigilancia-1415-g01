@@ -14,14 +14,15 @@ ClienteV::ClienteV(QWidget *parent) :
     devices = QCamera::availableDevices();
     NCamaras=devices.size();
     ListaCamaras=new QVector<CAM>;
-    qputenv("QT_LOGGING_RULES", "qt.network.ssl.warning=false");
     conexion=new QSslSocket;
+    QList<QSslError> errors;
     conexion->setProtocol(QSsl::SslV3);
-    QList <QSslError> errores;
-    errores.append(QSslError::SelfSignedCertificate);
-    conexion->ignoreSslErrors(errores);
+    errors.append(QSslError::SelfSignedCertificate);
+    connect(conexion,SIGNAL(sslErrors(QList<QSslError>)),conexion,SLOT(ignoreSslErrors()));
+     connect(conexion,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(error(QAbstractSocket::SocketError)));
 
-    //qDebug() << getenv("USERNAME");
+
+     //qDebug() << getenv("USERNAME");
     //qDebug() << getenv("SESSION_MANAGER");
 
     QRegExp rx("(\\,|\\/|\\:|\\t)");
@@ -105,11 +106,22 @@ void ClienteV::on_BotonCapturar_clicked()
     int pos=0;
     int NLabelsX=0, NLabelsY=0;
 
-    if(settings.value("transmitir")==true)
-        conexion->connectToHostEncrypted(settings.value("IP").toString(),settings.value("PORT").toInt());
+    if(settings.value("transmitir")==true){
+        conexion->ignoreSslErrors();
+        conexion->setPeerVerifyMode(QSslSocket::VerifyPeer);
+        if (QSslSocket::supportsSsl()) {
 
+           //connect(socket, SIGNAL(encrypted()), this, SLOT(ready()));
+          conexion->connectToHostEncrypted(settings.value("IP").toString(),settings.value("PORT").toInt());
+         } else {
+           QMessageBox::critical(this, "No SSL Support",
+             "SSL is not supported by your version of Qt. You must obtain a version of Qt"
+             "that has SSL support enabled. If you believe that your version of Qt has"
+             "SSL support enabled, you may need to install the OpenSSL run-time libraries.");
+         }
+    }
     //qDebug() << NCamaras;
-
+    //qDebug() << "conexion" <<conexion->errorString();
     if(NCamaras==2){
         NLabelsY=1;
         NLabelsX=2;
@@ -160,11 +172,22 @@ void ClienteV::on_actionCapturar_triggered()
     int pos=0;
     int NLabelsX=0, NLabelsY=0;
 
-    if(settings.value("transmitir")==true)
-        conexion->connectToHostEncrypted(settings.value("IP").toString(),settings.value("PORT").toInt());
+    if(settings.value("transmitir")==true){
 
-    //qDebug() << NCamaras;
+        conexion->setPeerVerifyMode(QSslSocket::VerifyPeer);
+        if (QSslSocket::supportsSsl()) {
 
+           //connect(socket, SIGNAL(encrypted()), this, SLOT(ready()));
+
+            connect(conexion, SIGNAL(sslErrors(QList<QSslError>)),conexion,SLOT(ignoreSslErrors()));
+            conexion->connectToHostEncrypted(settings.value("IP").toString(),settings.value("PORT").toInt());
+         } else {
+           QMessageBox::critical(this, "No SSL Support",
+             "SSL is not supported by your version of Qt. You must obtain a version of Qt"
+             "that has SSL support enabled. If you believe that your version of Qt has"
+             "SSL support enabled, you may need to install the OpenSSL run-time libraries.");
+         }
+    }
     if(NCamaras==2){
         NLabelsY=1;
         NLabelsX=2;
@@ -288,9 +311,9 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     //conexion->write(btbpaquete);
     conexion ->write(block);
     //conexion->write("\n");
-    qDebug() << "sizeof mandado OK";
+    //qDebug() << "sizeof mandado OK";
     conexion->write(bpaquete);
-    qDebug() << "bpaquete mandado OK";
+    //qDebug() << "bpaquete mandado OK";
 
 }
 
@@ -299,11 +322,20 @@ void ClienteV::image_s(const QImage &image, const int &pos)
 
   QPixmap pixmap;
   pixmap=pixmap.fromImage(image);
-  qDebug() <<"encripted= "<<conexion->isEncrypted();
-  //qDebug() << "MOSTRAR EN " << pos;
+
   ((QLabel*)ui->gridLayout->itemAt(pos)->widget())->setPixmap(pixmap);
   if(settings.value("transmitir")==true){
-    //if(conexion->isEncrypted())
-        //emitir(image,pos);
+    //qDebug() << "CONNECT OK";
+      if(conexion->isEncrypted())
+        emitir(image,pos);
   }
 }
+void ClienteV::error(QAbstractSocket::SocketError algo)
+{
+
+
+    conexion->ignoreSslErrors();
+    int i= algo;
+    qDebug() << "que Error"<< conexion->errorString();
+    qDebug() <<"error"<< i;
+};
