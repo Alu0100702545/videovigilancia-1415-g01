@@ -28,6 +28,15 @@ servidorvsincrono::servidorvsincrono(QObject *parent) : QObject(parent),serverS(
                " TIMESTAMP VARCHAR(30), "
                " DIRECTORIO VARCHAR(2000) DEFAULT NULL,"
                " PRIMARY KEY (NCAMARA,NPC,DATESTAMP,TIMESTAMP))");
+    query.exec("CREATE TABLE IF NOT EXISTS ROI "
+               "("
+               " DIRECTORIO VARCHAR(2000),"
+               " ANCHO INT(4),"
+               " ALTO  INT(4),"
+               " CRX  INT(4),"
+               " CRY  INT(4),"
+               " PRIMARY KEY (DIRECTORIO,ANCHO,ALTO,CRX,CRY),"
+               " FOREIGN KEY (DIRECTORIO) REFERENCES regvaf ON DELETE CASCADE)");
 
     QStringList table=Vdb.tables();
     qDebug() << table;

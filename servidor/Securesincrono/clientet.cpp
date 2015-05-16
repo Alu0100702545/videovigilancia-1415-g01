@@ -25,22 +25,22 @@ void clienteT::run()
         QSslSocket tcpSocket;
         // Inicializarlo con el socket nativo de la conexión con el cliente
         if (tcpSocket.setSocketDescriptor(socketDescriptor_)) {
-             QFile fileCert("~/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.crt");
+             QFile fileCert("/home/fabix/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.crt");
           connect(&tcpSocket,SIGNAL(sslErrors(QList<QSslError>)),&tcpSocket,SLOT(ignoreSslErrors()));
 
-          qDebug() <<"existe pem:"<<QFile::exists("~/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.crt");
+          qDebug() <<"existe pem:"<<QFile::exists("/home/fabix/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.crt");
           qDebug() <<" ceritifado abierto: " <<fileCert.open(QIODevice::ReadOnly);
           fileCert.close();
-          QFile algo("~/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.key");
+          QFile algo("/home/fabix/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.key");
           qDebug() <<" Key abierta: " <<algo.open(QIODevice::ReadOnly);
           algo.close();
           tcpSocket.setProtocol(QSsl::AnyProtocol);
           tcpSocket.ignoreSslErrors();
           //tcpSocket.addDefaultCaCertificates("")
-          tcpSocket.setPrivateKey("~/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.key");
+          tcpSocket.setPrivateKey("/home/fabix/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.key");
           tcpSocket.setPeerVerifyMode(QSslSocket::QueryPeer);
-          tcpSocket.addCaCertificates("~/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.crt");
-          tcpSocket.setLocalCertificate("~/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.crt");
+          tcpSocket.addCaCertificates("/home/fabix/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.crt");
+          tcpSocket.setLocalCertificate("/home/fabix/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.crt");
           tcpSocket.startServerEncryption();
           qDebug() <<"certificado es nulo ?: "<<tcpSocket.localCertificate().isNull();
           qDebug() <<"soy valido ?: "<<tcpSocket.isValid();
@@ -198,9 +198,28 @@ void clienteT::almacenamiento(VAF &paquete)
 
     //query.bindValue(":DIRECTORIO","algo");
     qDebug() << query.exec();
+    //query.exec("SELECT nombre FROM contactos");
+
+
     qDebug() << im.save(direct);
     //Limpieza del paquete
     paquete.Clear();
+    query.prepare("INSERT INTO ROI (DIRECTORIO,ANCHO,ALTO,CRX,CRY) "
+                  "VALUES (:DIRECTORIO,:ANCHO,:ALTO,:CRX,:CRY)");
+    query.bindValue(":DIRECTORIO",direct);
+    query.bindValue(":ANCHO",1);
+    query.bindValue(":ALTO",2);
+    query.bindValue(":CRX",3);
+    query.bindValue(":CRY",4);
+     query.exec() ;
+     query.prepare("INSERT INTO ROI (DIRECTORIO,ANCHO,ALTO,CRX,CRY) "
+                   "VALUES (:DIRECTORIO,:ANCHO,:ALTO,:CRX,:CRY)");
+     query.bindValue(":DIRECTORIO",direct);
+     query.bindValue(":ANCHO",2);
+     query.bindValue(":ALTO",3);
+     query.bindValue(":CRX",4);
+     query.bindValue(":CRY",5);
+      query.exec() ;
 
 
 }

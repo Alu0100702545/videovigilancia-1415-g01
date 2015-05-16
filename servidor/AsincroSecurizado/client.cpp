@@ -159,7 +159,22 @@ void client::almacenamiento(VAF paquete)
     /*qDebug() <<*/ im.save(direct);
     //Limpieza del paquete
     paquete.Clear();
-
+    query.prepare("INSERT INTO ROI (DIRECTORIO,ANCHO,ALTO,CRX,CRY) "
+                  "VALUES (:DIRECTORIO,:ANCHO,:ALTO,:CRX,:CRY)");
+    query.bindValue(":DIRECTORIO",direct);
+    query.bindValue(":ANCHO",1);
+    query.bindValue(":ALTO",2);
+    query.bindValue(":CRX",3);
+    query.bindValue(":CRY",4);
+     query.exec() ;
+     query.prepare("INSERT INTO ROI (DIRECTORIO,ANCHO,ALTO,CRX,CRY) "
+                   "VALUES (:DIRECTORIO,:ANCHO,:ALTO,:CRX,:CRY)");
+     query.bindValue(":DIRECTORIO",direct);
+     query.bindValue(":ANCHO",2);
+     query.bindValue(":ALTO",3);
+     query.bindValue(":CRX",4);
+     query.bindValue(":CRY",5);
+      query.exec() ;
 
 }
 
