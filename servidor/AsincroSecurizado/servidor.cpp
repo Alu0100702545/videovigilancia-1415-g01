@@ -39,8 +39,7 @@ void Servidor::OpcionesLimpieza()
 Servidor::Servidor():
 server(NULL)
 {
-    server= new QTcpServer;
-    server->setMaxPendingConnections(10);
+
 
     QDir directorio;
     Vdb=QSqlDatabase::addDatabase("QSQLITE", "SQLITE");
@@ -53,10 +52,13 @@ server(NULL)
         qDebug() << QSqlDatabase::drivers();
         exit(1);
     }
+    server= new QSslServer(this,Vdb);
+    server->setMaxPendingConnections(10);
     QSqlQuery query(Vdb);
 
     query.exec("CREATE TABLE IF NOT EXISTS regvaf "
-               "(PRO VARCHAR(5),"
+               "("
+               " PRO VARCHAR(5),"
                " V VARBINARY(1),"
                " NCAMARA VARCHAR(60),"
                " NPC VARCHAR(60),"
@@ -64,6 +66,17 @@ server(NULL)
                " TIMESTAMP VARCHAR(30), "
                " DIRECTORIO VARCHAR(2000) DEFAULT NULL,"
                " PRIMARY KEY (NCAMARA,NPC,DATESTAMP,TIMESTAMP))");
+    query.exec("CREATE TABLE IF NOT EXISTS ROI "
+               "("
+               " DIRECTORIO VARCHAR(2000),"
+               " ANCHO INT(4),"
+               " ALTO  INT(4),"
+               " CRX  INT(4),"
+               " CRY  INT(4),"
+               " PRIMARY KEY (DIRECTORIO,ANCHO,ALTO,CRX,CRY),"
+               " FOREIGN KEY (DIRECTORIO) REFERENCES regvaf ON DELETE CASCADE)");
+
+
 
     QStringList table=Vdb.tables();
     qDebug() << table;
@@ -73,45 +86,11 @@ server(NULL)
 void Servidor::inicioServer()
 {
     server->listen(QHostAddress::AnyIPv4,33333);
-    connect(server,SIGNAL(newConnection()),this,SLOT(conexionesPen()));
+    //connect(server,SIGNAL(newConnection()),this,SLOT(conexionesPen()));
+    //connect(server,SIGNAL(newConnection()),this,SLOT(fallos()));
+    qDebug() << "ESCUCHANDO";
 
 }
 
-void Servidor::conexionesPen()
-{
-    while(server->hasPendingConnections() && clients.size()<10) {
-        QTcpSocket *clientConnection =
-            server->nextPendingConnection();
-        client *nuevaC =new client(clientConnection,Vdb,this);
-        clients[nuevaC->getsocketDescriptor()] = nuevaC;
 
-        qDebug() << "nuevaConexion";
-        qDebug() << nuevaC;
-        //qDebug() <<clients.size();
 
-    }
-    if(clients.size()>=10)
-        if(eliminarlista()==false)
-            server->close();
-    if (!server->isListening()&& clients.size() <10){
-        server->listen(QHostAddress::AnyIPv4,33333);
-        connect(server,SIGNAL(newConnection()),this,SLOT(conexionesPen()));
-
-    }
-}
-
-bool Servidor::eliminarlista()
-{
-    QMap<qintptr, client*>::iterator i/*= clients.find(sock)*/;
-
-    for(i=clients.begin();i != clients.end();i++){
-        qDebug() <<"pene"<<clients.size() <<i.value()->get_tcp()->isValid();
-        if (i.value()->get_tcp()->isValid()==false){
-            clients.erase(i);
-            qDebug() <<clients.size();
-            return true;
-        }
-    }
-    return false;
-
-}

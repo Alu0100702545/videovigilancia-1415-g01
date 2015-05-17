@@ -1,13 +1,10 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2015-04-07T13:28:24
+# Project created by QtCreator 2015-05-02T09:59:41
 #
 #-------------------------------------------------
-
-
 PROTOS = VAF.proto
 include(protobuf.pri)
-
 QT       += core
 
 QT       += gui
@@ -24,17 +21,18 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    servidor.cpp \
-    client.cpp
+    servidorvsincrono.cpp \
+    server.cpp \
+    clientet.cpp
+
+DISTFILES += \
+    protobuf.pri \
+    VAF.proto
 
 HEADERS += \
-    servidor.h \
-    client.h
-
-OTHER_FILES += \
-    VAF.proto \
-    protobuf.pri
-
+    servidorvsincrono.h \
+    server.h \
+    clientet.h
 
 
 unix {
@@ -79,5 +77,3 @@ unix {
  vardir.extra = mkdir -p $$VARDIR/clientes && mkdir -p $$VARDIR/BDD
  vardir.commands = true
 }
-
-

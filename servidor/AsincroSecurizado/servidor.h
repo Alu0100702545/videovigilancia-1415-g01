@@ -4,14 +4,14 @@
 #include <QTcpSocket>
 #include <QTcpServer>
 #include "client.h"
-
+#include "qsslserver.h"
 
 class Servidor : public QObject
 {
     Q_OBJECT
 private:
     //QTcpSocket *cliente;
-    QTcpServer *server;
+    QSslServer *server;
     QSqlDatabase Vdb;
     QMap<qintptr,client*> clients;
 signals:
@@ -22,9 +22,8 @@ public:
     void OpcionesLimpieza();
     Servidor();
     void inicioServer();
-public slots:
-    void conexionesPen();
-    bool eliminarlista();
+
+
 };
 
 #endif // SERVIDOR_H

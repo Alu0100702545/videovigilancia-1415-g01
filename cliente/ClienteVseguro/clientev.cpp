@@ -1,15 +1,11 @@
 #include "clientev.h"
 #include "ui_clientev.h"
 
-typedef std::vector<cv::Mat> ImagesType;
-typedef std::vector<std::vector<cv::Point> > ContoursType;
-
 ClienteV::ClienteV(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::ClienteV),
-    backgroundSubtractor(500,15,false)
+    ui(new Ui::ClienteV)
 {
-    //this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     ui->setupUi(this);
 
     if(settings.value("transmitir")==true)
@@ -18,10 +14,15 @@ ClienteV::ClienteV(QWidget *parent) :
     devices = QCamera::availableDevices();
     NCamaras=devices.size();
     ListaCamaras=new QVector<CAM>;
-    conexion=new QTcpSocket;
+    conexion=new QSslSocket;
+    QList<QSslError> errors;
+    conexion->setProtocol(QSsl::SslV3);
+    errors.append(QSslError::SelfSignedCertificate);
+    connect(conexion,SIGNAL(sslErrors(QList<QSslError>)),conexion,SLOT(ignoreSslErrors()));
+     connect(conexion,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(error(QAbstractSocket::SocketError)));
 
 
-    //qDebug() << getenv("USERNAME");
+     //qDebug() << getenv("USERNAME");
     //qDebug() << getenv("SESSION_MANAGER");
 
     QRegExp rx("(\\,|\\/|\\:|\\t)");
@@ -105,11 +106,22 @@ void ClienteV::on_BotonCapturar_clicked()
     int pos=0;
     int NLabelsX=0, NLabelsY=0;
 
-    if(settings.value("transmitir")==true)
-        conexion->connectToHost(settings.value("IP").toString(),settings.value("PORT").toInt());
+    if(settings.value("transmitir")==true){
+        conexion->ignoreSslErrors();
+        conexion->setPeerVerifyMode(QSslSocket::VerifyPeer);
+        if (QSslSocket::supportsSsl()) {
 
+           //connect(socket, SIGNAL(encrypted()), this, SLOT(ready()));
+          conexion->connectToHostEncrypted(settings.value("IP").toString(),settings.value("PORT").toInt());
+         } else {
+           QMessageBox::critical(this, "No SSL Support",
+             "SSL is not supported by your version of Qt. You must obtain a version of Qt"
+             "that has SSL support enabled. If you believe that your version of Qt has"
+             "SSL support enabled, you may need to install the OpenSSL run-time libraries.");
+         }
+    }
     //qDebug() << NCamaras;
-
+    //qDebug() << "conexion" <<conexion->errorString();
     if(NCamaras==2){
         NLabelsY=1;
         NLabelsX=2;
@@ -127,7 +139,7 @@ void ClienteV::on_BotonCapturar_clicked()
         for(int j=0;j<NLabelsX;j++){
             QLabel* label=new QLabel;
             label->setScaledContents(true);
-            ui->MatrizCamaras->addWidget(label,i,j);
+            ui->gridLayout->addWidget(label,i,j);
             //qDebug() << "AÑADIDO EN " << i << j;
         }
     }
@@ -160,11 +172,22 @@ void ClienteV::on_actionCapturar_triggered()
     int pos=0;
     int NLabelsX=0, NLabelsY=0;
 
-    if(settings.value("transmitir")==true)
-        conexion->connectToHost(settings.value("IP").toString(),settings.value("PORT").toInt());
+    if(settings.value("transmitir")==true){
 
-    //qDebug() << NCamaras;
+        conexion->setPeerVerifyMode(QSslSocket::VerifyPeer);
+        if (QSslSocket::supportsSsl()) {
 
+           //connect(socket, SIGNAL(encrypted()), this, SLOT(ready()));
+
+            connect(conexion, SIGNAL(sslErrors(QList<QSslError>)),conexion,SLOT(ignoreSslErrors()));
+            conexion->connectToHostEncrypted(settings.value("IP").toString(),settings.value("PORT").toInt());
+         } else {
+           QMessageBox::critical(this, "No SSL Support",
+             "SSL is not supported by your version of Qt. You must obtain a version of Qt"
+             "that has SSL support enabled. If you believe that your version of Qt has"
+             "SSL support enabled, you may need to install the OpenSSL run-time libraries.");
+         }
+    }
     if(NCamaras==2){
         NLabelsY=1;
         NLabelsX=2;
@@ -182,7 +205,7 @@ void ClienteV::on_actionCapturar_triggered()
         for(int j=0;j<NLabelsX;j++){
             QLabel* label=new QLabel;
             label->setScaledContents(true);
-            ui->MatrizCamaras->addWidget(label,i,j);
+            ui->gridLayout->addWidget(label,i,j);
             //qDebug() << "AÑADIDO EN " << i << j;
         }
     }
@@ -221,6 +244,7 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     required string  imagen=9;
     */
 
+
     QBuffer buffer;
     QImageWriter writer;
     std::string spaquete;
@@ -251,13 +275,10 @@ void ClienteV::emitir(const QImage &image, const int &pos){
 
     paquete.set_timestamp((QTime::currentTime().toString("hh:mm:ss:zzz")).toStdString());
 
-    //QString dtime(paquete.timestamp().c_str());
+    QString dtime(paquete.timestamp().c_str());
     //qDebug() << dtime;
 
-    //paquete.set_datestamp((QDate::currentDate().toString("dd.MM.yyyy")).toStdString());
-
     paquete.set_datestamp((QDate::currentDate().toString("dd.MM.yyyy")).toStdString());
-
     writer.setDevice(&buffer);
     writer.setFormat("jpeg");
     writer.setCompression(70);
@@ -294,60 +315,27 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     conexion->write(bpaquete);
     //qDebug() << "bpaquete mandado OK";
 
-
 }
 
 void ClienteV::image_s(const QImage &image, const int &pos)
 {
-    // Instancia de la clase del sustractor de fondo
-    // cv::BackgroundSubtractorMOG2(history=500,
-    //                              varThreshold=16,
-    //                              bShadowDetection=true)
-    cv::Mat imagen;
-    imagen=QtOcv::image2Mat(image);
-    //backgroundSubtractor.nmixtures = 3;
-    //for (ImagesTypes::const_iterator i = images.begin(); i < images.end(); ++i) {
-        // Sustracción del fondo:
-        //  1. El objeto sustractor compara la imagen en i con su
-        //     estimación del fondo y devuelve en foregroundMask una
-        //     máscara (imagen binaria) con un 1 en los píxeles de
-        //     primer plano.
-        //  2. El objeto sustractor actualiza su estimación del fondo
-        //     usando la imagen en i.
-        cv::Mat foregroundMask;
-        backgroundSubtractor(imagen, foregroundMask);
-        // Operaciones morfolóficas para eliminar las regiones de
-        // pequeño tamaño. Erode() las encoge y dilate() las vuelve a
-        // agrandar.
-        cv::erode(foregroundMask, foregroundMask, cv::Mat());
-        cv::dilate(foregroundMask, foregroundMask, cv::Mat());
-        // Obtener los contornos que bordean las regiones externas
-        // (CV_RETR_EXTERNAL) encontradas. Cada contorno es un vector
-        // de puntos y se devuelve uno por región en la máscara.
-        ContoursType contours;
-        cv::findContours(foregroundMask, contours, CV_RETR_EXTERNAL,
-                         CV_CHAIN_APPROX_NONE);
-        // Aquí va el código ódigo que usa los contornos encontrados...
-        // P. ej. usar cv::boundingRect() para obtener el cuadro
-        // delimitador de cada uno y pintarlo en la imagen original
-        for(int i=0; i<contours.size();i++){
-            cv::Rect rect=cv::boundingRect(contours[i]);
-            cv::Point pt1, pt2;
-            pt1.x = rect.x;
-            pt1.y = rect.y;
-            pt2.x = rect.x + rect.width;
-            pt2.y = rect.y + rect.height;
-            // Draws the rect in the original image and show it
-            cv::rectangle(imagen, pt1, pt2, CV_RGB(255,0,0), 1);
-        }
-    //}
 
   QPixmap pixmap;
-  pixmap=pixmap.fromImage(QtOcv::mat2Image(imagen));
-  //qDebug() << "MOSTRAR EN " << pos;
-  ((QLabel*)ui->MatrizCamaras->itemAt(pos)->widget())->setPixmap(pixmap);
+  pixmap=pixmap.fromImage(image);
+
+  ((QLabel*)ui->gridLayout->itemAt(pos)->widget())->setPixmap(pixmap);
   if(settings.value("transmitir")==true){
     //qDebug() << "CONNECT OK";
-    emitir(image,pos);
+      if(conexion->isEncrypted())
+        emitir(image,pos);
   }
 }
+void ClienteV::error(QAbstractSocket::SocketError algo)
+{
+
+
+    conexion->ignoreSslErrors();
+    int i= algo;
+    qDebug() << "que Error"<< conexion->errorString();
+    qDebug() <<"error"<< i;
+};

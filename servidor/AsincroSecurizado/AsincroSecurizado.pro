@@ -25,11 +25,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     servidor.cpp \
-    client.cpp
+    client.cpp \
+    qsslserver.cpp
 
 HEADERS += \
     servidor.h \
-    client.h
+    client.h \
+    qsslserver.h
 
 OTHER_FILES += \
     VAF.proto \

@@ -6,6 +6,7 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     Servidor server;
     server.inicioServer();
+    server.OpcionesLimpieza();
     /*QRegExp rx("(\\,|\\/|\\:|\\t)");
     QString sometext(getenv("SESSION_MANAGER"));
     QStringList query = sometext.split(rx);

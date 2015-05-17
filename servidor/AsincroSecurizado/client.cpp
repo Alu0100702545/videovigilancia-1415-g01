@@ -1,9 +1,12 @@
 #include "client.h"
 
-client::client(QTcpSocket *tcpSocket,QSqlDatabase &bdd, QObject *parent) : QObject(parent),
+client::client(QSslSocket *tcpSocket,QSqlDatabase &bdd, QObject *parent) : QObject(parent),
     tcpSocket_(tcpSocket),bddc(bdd)
 {
      Tpaquete =0;
+      qDebug()<<"socket:"<<tcpSocket_->socketDescriptor();
+     //tcpSocket_->setProtocol(QSsl::SslV3);
+connect(tcpSocket_, SIGNAL(encrypted()),this, SLOT(fallos()));
     connect(tcpSocket_, SIGNAL(readyRead()), this, SLOT(deserializacion()));
     //connect(tcpSocket_,SIGNAL(), this, SLOT(borrarlista()));
     connect(tcpSocket_,SIGNAL(disconnected()), this, SLOT(limpiarbuffer()));
@@ -19,7 +22,7 @@ client::~client()
 
 }
 
-QTcpSocket* client::get_tcp()
+QSslSocket* client::get_tcp()
 {
     return tcpSocket_;
 }
@@ -156,8 +159,27 @@ void client::almacenamiento(VAF paquete)
     /*qDebug() <<*/ im.save(direct);
     //Limpieza del paquete
     paquete.Clear();
-
+    query.prepare("INSERT INTO ROI (DIRECTORIO,ANCHO,ALTO,CRX,CRY) "
+                  "VALUES (:DIRECTORIO,:ANCHO,:ALTO,:CRX,:CRY)");
+    query.bindValue(":DIRECTORIO",direct);
+    query.bindValue(":ANCHO",1);
+    query.bindValue(":ALTO",2);
+    query.bindValue(":CRX",3);
+    query.bindValue(":CRY",4);
+     query.exec() ;
+     query.prepare("INSERT INTO ROI (DIRECTORIO,ANCHO,ALTO,CRX,CRY) "
+                   "VALUES (:DIRECTORIO,:ANCHO,:ALTO,:CRX,:CRY)");
+     query.bindValue(":DIRECTORIO",direct);
+     query.bindValue(":ANCHO",2);
+     query.bindValue(":ALTO",3);
+     query.bindValue(":CRX",4);
+     query.bindValue(":CRY",5);
+      query.exec() ;
 
 }
 
 
+void client::fallos()
+{
+    qDebug() <<"ENCRIPTADO";
+}

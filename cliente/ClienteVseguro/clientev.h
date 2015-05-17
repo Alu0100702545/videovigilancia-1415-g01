@@ -17,16 +17,13 @@
 #include <capturebuffer.h>
 #include <combobox.h>
 #include <QTcpSocket>
+#include <QSslSocket>
 #include <QBuffer>
 #include <QImageWriter>
 #include <QHostInfo>
-#include <cvmatandqimage.h>
-#include <opencv2/core/core.hpp>
-#include <opencv2/video/video.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <QDate>
+#include <openssl/ssl.h>
 
+#include <QDate>
 
 #define NPROTOCOLO "VAF"
 #define VPROTOCOLO "1"
@@ -49,6 +46,8 @@ public:
     explicit ClienteV(QWidget *parent = 0);
     ~ClienteV();
 
+public slots:
+    void error(QAbstractSocket::SocketError algo);
 private slots:
 
     void on_BotonCerrar_clicked();
@@ -81,9 +80,8 @@ private:
     QSettings settings;
     QVector<CAM> *ListaCamaras;
     QList<QByteArray> devices;
-    QTcpSocket *conexion;
+    QSslSocket *conexion;
     std::string nombrePC;
-    cv::BackgroundSubtractorMOG2 backgroundSubtractor;
 };
 
 #endif // CLIENTEV_H

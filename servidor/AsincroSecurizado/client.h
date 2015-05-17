@@ -21,14 +21,17 @@
 #include <QSqlDriver>
 #include <QDir>
 #include <iostream>
+#include <QSslSocket>
+#include <openssl/ssl.h>
+
 
 class client : public QObject
 {
     Q_OBJECT
 public:
-    explicit client(QTcpSocket* tcpSocket,QSqlDatabase &bdd,QObject *parent = 0);
+    explicit client(QSslSocket* tcpSocket,QSqlDatabase &bdd,QObject *parent = 0);
     ~client();
-    QTcpSocket *get_tcp();
+    QSslSocket *get_tcp();
     qintptr getsocketDescriptor();
 
 signals:
@@ -38,13 +41,16 @@ public slots:
     void borrarlista();
     void deserializacion();
     void limpiarbuffer();
+
+    void fallos();
 private:
-     QTcpSocket *tcpSocket_;
+     QSslSocket *tcpSocket_;
      qint32 Tpaquete;
      QSqlDatabase bddc;
      VAF paquete;
      void almacenamiento(VAF);
      qintptr socket;
+
 };
 
 #endif // CLIENT_H

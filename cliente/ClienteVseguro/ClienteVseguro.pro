@@ -5,18 +5,18 @@
 #-------------------------------------------------
 PROTOS = VAF.proto
 include(protobuf.pri)
-include(QtOpenCV.pri)
-add_opencv_modules(core video imgproc)
-
+#include(QtOpenCV.pri)
 QT       += core gui
 QT       += multimedia multimediawidgets
-CONFIG += c++11
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = ClienteV
 TEMPLATE = app
 CONFIG += c++11
+
+#add_opencv_modules(core video imgproc)
+
 
 SOURCES += main.cpp\
         clientev.cpp \
@@ -26,9 +26,7 @@ SOURCES += main.cpp\
 HEADERS  += clientev.h \
     acercade.h \
     capturebuffer.h \
-
-    combobox.h
-
+    combobox.h \
 
 
 FORMS    += clientev.ui \
@@ -78,6 +76,5 @@ unix {
     vardir.path = $$VARDIR
     vardir.commands = true
 }
-
 
 
