@@ -3,6 +3,7 @@
 
 #include <QTcpSocket>
 #include <QTcpServer>
+#include <syslog.h>
 #include "client.h"
 
 
