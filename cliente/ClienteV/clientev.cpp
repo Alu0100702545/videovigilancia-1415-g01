@@ -7,7 +7,7 @@ typedef std::vector<std::vector<cv::Point> > ContoursType;
 ClienteV::ClienteV(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ClienteV),
-    backgroundSubtractor(500,15,false)
+    backgroundSubtractor(1000,15,false)
 {
     //this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     ui->setupUi(this);
@@ -220,7 +220,6 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     optional uint32  TImagen=8;
     required string  imagen=9;
     */
-
     QBuffer buffer;
     QImageWriter writer;
     std::string spaquete;
@@ -294,7 +293,6 @@ void ClienteV::emitir(const QImage &image, const int &pos){
     conexion->write(bpaquete);
     //qDebug() << "bpaquete mandado OK";
 
-
 }
 
 void ClienteV::image_s(const QImage &image, const int &pos)
@@ -319,8 +317,8 @@ void ClienteV::image_s(const QImage &image, const int &pos)
         // Operaciones morfolóficas para eliminar las regiones de
         // pequeño tamaño. Erode() las encoge y dilate() las vuelve a
         // agrandar.
-        cv::erode(foregroundMask, foregroundMask, cv::Mat());
-        cv::dilate(foregroundMask, foregroundMask, cv::Mat());
+        cv::erode(foregroundMask, foregroundMask, cv::Mat(),cv::Point(-1,-1),10);
+        cv::dilate(foregroundMask, foregroundMask, cv::Mat(),cv::Point(-1,-1),10);
         // Obtener los contornos que bordean las regiones externas
         // (CV_RETR_EXTERNAL) encontradas. Cada contorno es un vector
         // de puntos y se devuelve uno por región en la máscara.
@@ -332,13 +330,7 @@ void ClienteV::image_s(const QImage &image, const int &pos)
         // delimitador de cada uno y pintarlo en la imagen original
         for(int i=0; i<contours.size();i++){
             cv::Rect rect=cv::boundingRect(contours[i]);
-            cv::Point pt1, pt2;
-            pt1.x = rect.x;
-            pt1.y = rect.y;
-            pt2.x = rect.x + rect.width;
-            pt2.y = rect.y + rect.height;
-            // Draws the rect in the original image and show it
-            cv::rectangle(imagen, pt1, pt2, CV_RGB(255,0,0), 1);
+            cv::rectangle(imagen, rect, CV_RGB(255,0,0));
         }
     //}
 

@@ -3,9 +3,10 @@
 
 void Servidor::OpcionesLimpieza()
 {
-    int limpieza=0;
-    std::cout <<"Desea hacer limpieza del directorio variable(1 caso afirmativo)"<< std::endl;
-    std::cin >> limpieza;
+    int limpieza=1;
+    //syslog(LOG_ERR, "LIMPIANDO");
+    //std::cout <<"Desea hacer limpieza del directorio variable(1 caso afirmativo)"<< std::endl;
+    //std::cin >> limpieza;
     QDir directorio;
     if (limpieza==1){
     //qDebug() << ;
@@ -32,16 +33,17 @@ void Servidor::OpcionesLimpieza()
             all_dirs.pop_back();
 
         }
-     exit(0);
     }
+    //syslog(LOG_ERR, "LIMPIO!");
 }
 
 Servidor::Servidor():
 server(NULL)
 {
+    syslog(LOG_ERR, "CONSTRUYENDO UNA COSA GUAPA AHI");
     server= new QTcpServer;
     server->setMaxPendingConnections(10);
-
+    syslog(LOG_ERR, "CHACHO Y LAS CONEXIONES");
     QDir directorio;
     Vdb=QSqlDatabase::addDatabase("QSQLITE", "SQLITE");
     directorio.mkpath(QString(APP_VARDIR)+"/BDD");
@@ -49,6 +51,7 @@ server(NULL)
     Vdb.setDatabaseName(QString(APP_VARDIR)+"/BDD/"+"videovigilancia.sqlite");
     bool algo = Vdb.open();
     if (!algo) {
+        syslog(LOG_ERR, "ERROR AL ABRIR LA BBDD");
         qDebug() << Vdb.lastError().text();
         qDebug() << QSqlDatabase::drivers();
         exit(1);
@@ -67,18 +70,21 @@ server(NULL)
 
     QStringList table=Vdb.tables();
     qDebug() << table;
+    syslog(LOG_ERR, "CHAS ESA BASEDATOS ES LA");
 
 }
 
 void Servidor::inicioServer()
 {
     server->listen(QHostAddress::AnyIPv4,33333);
+    //syslog(LOG_ERR, "LISEN TU MI");
     connect(server,SIGNAL(newConnection()),this,SLOT(conexionesPen()));
 
 }
 
 void Servidor::conexionesPen()
 {
+    //syslog(LOG_ERR, "CONEXIONESPEN");
     while(server->hasPendingConnections() && clients.size()<10) {
         QTcpSocket *clientConnection =
             server->nextPendingConnection();
@@ -102,10 +108,11 @@ void Servidor::conexionesPen()
 
 bool Servidor::eliminarlista()
 {
+    //syslog(LOG_ERR, "ELIMINAR LISTA");
     QMap<qintptr, client*>::iterator i/*= clients.find(sock)*/;
 
     for(i=clients.begin();i != clients.end();i++){
-        qDebug() <<"pene"<<clients.size() <<i.value()->get_tcp()->isValid();
+        qDebug() <<clients.size() <<i.value()->get_tcp()->isValid();
         if (i.value()->get_tcp()->isValid()==false){
             clients.erase(i);
             qDebug() <<clients.size();

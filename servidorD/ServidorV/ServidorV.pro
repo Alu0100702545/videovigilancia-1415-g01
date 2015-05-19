@@ -22,7 +22,6 @@ CONFIG   -= app_bundle
 CONFIG   += c++11
 TEMPLATE = app
 
-
 SOURCES += main.cpp \
     servidor.cpp \
     client.cpp
@@ -34,7 +33,6 @@ HEADERS += \
 OTHER_FILES += \
     VAF.proto \
     protobuf.pri
-
 
 
 unix {
