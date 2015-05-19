@@ -11,6 +11,7 @@
 #include <QBuffer>
 #include <QDirIterator>
 #include <iostream>
+#include <QSslSocket>
 class clienteT : public QThread
 {
 

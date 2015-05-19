@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
         exit(0);
     }
     //HIJO
+
     umask(0);
     close(STDIN_FILENO); // fd 0
     close(STDOUT_FILENO); // fd 1
@@ -60,6 +61,7 @@ int main(int argc, char *argv[])
     int fd1 = open("/dev/null", O_WRONLY); // fd0 == 1
     int fd2 = open("/dev/null", O_WRONLY); // fd0 == 2
     //syslog(LOG_ERR, "PASADOS A FICHERO");
+    servidorvsincrono server;
     pid_t sid;
     // Intentar crear una nueva sesión
     sid = setsid();
@@ -89,6 +91,8 @@ int main(int argc, char *argv[])
         syslog(LOG_ERR, "No existe el grupo");
 
     passwd* user = getpwnam("midemonio");
+    const char* myChar = QString(APP_VARDIR).toStdString().c_str();
+    chown(myChar, user->pw_uid,group->gr_gid);
     syslog(LOG_ERR, "GETPWNAM?");
     if (user!=NULL){
         if(seteuid(user->pw_uid)!=0){
@@ -104,7 +108,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setSetuidAllowed(true);
     QCoreApplication a(argc, argv);
     syslog(LOG_ERR, "BUCLE DE MENSAJES");
-    servidorvsincrono server;
+
     //server.OpcionesLimpieza();
     server.inicioServer();
     signal(SIGHUP,Signal_Handler); /* hangup signal */

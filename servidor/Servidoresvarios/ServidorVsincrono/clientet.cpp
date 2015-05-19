@@ -22,7 +22,7 @@ clienteT::clienteT(qintptr socketDescriptor, QSqlDatabase &bdd,QObject *parent):
 
 void clienteT::run()
 {
-        QSslSocket sslsocket;
+        QTcpSocket sslsocket;
         // Inicializarlo con el socket nativo de la conexión con el cliente
         if (!sslsocket.setSocketDescriptor(socketDescriptor_)) {
             emit error(sslsocket.error());
@@ -67,7 +67,7 @@ void clienteT::run()
         sslsocket.waitForDisconnected(100);
  }
 
-void clienteT::deserializacion(Qsslsocket *sslsocket_)
+void clienteT::deserializacion(QTcpSocket *sslsocket_)
 {
 
     QString aux, aux3;

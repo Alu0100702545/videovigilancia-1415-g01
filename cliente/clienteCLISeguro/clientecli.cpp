@@ -6,9 +6,11 @@ ClienteCLI::ClienteCLI()
     NCamaras=devices.size();
     ListaCamaras=new QVector<CAM>;
     conexion=new QSslSocket;
+    //QList<QSslError> errors;
     conexion->setProtocol(QSsl::SslV3);
+    //errors.append(QSslError::SelfSignedCertificate);
     connect(conexion,SIGNAL(sslErrors(QList<QSslError>)),conexion,SLOT(ignoreSslErrors()));
-    connect(conexion,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(error(QAbstractSocket::SocketError)));
+
     QRegExp rx("(\\,|\\/|\\:|\\t)");
     QString sometext(getenv("SESSION_MANAGER"));
     QStringList query = sometext.split(rx);
@@ -144,20 +146,18 @@ void ClienteCLI::capturar()
     QString namesetting;
 
     qDebug() << "IP: " << settings.value("IP").toString() << " PORT: " << settings.value("PORT").toInt();
-    //conexion->connectToHost(settings.value("IP").toString(),settings.value("PORT").toInt());
-    //conexion->ignoreSslErrors();
-    conexion->ignoreSslErrors();
     conexion->setPeerVerifyMode(QSslSocket::VerifyPeer);
     if (QSslSocket::supportsSsl()) {
-        connect(conexion, SIGNAL(sslErrors(QList<QSslError>)),conexion,SLOT(ignoreSslErrors()));
+       // connect(conexion, SIGNAL(sslErrors(QList<QSslError>)),conexion,SLOT(ignoreSslErrors()));
        //connect(socket, SIGNAL(encrypted()), this, SLOT(ready()));
       conexion->connectToHostEncrypted(settings.value("IP").toString(),settings.value("PORT").toInt());
      } else {
-       qDebug() << "No SSL Support"
+       qDebug()<< "No SSL Support"
          "SSL is not supported by your version of Qt. You must obtain a version of Qt"
          "that has SSL support enabled. If you believe that your version of Qt has"
          "SSL support enabled, you may need to install the OpenSSL run-time libraries.";
      }
+
     for(int i=0;i<NCamaras;i++)
     {
         namesetting="indice";
@@ -187,9 +187,7 @@ void ClienteCLI::emitir(const QImage &image, int id){
     //required string  timestamp = 7;
     //optional uint32  TImagen=8;
     //required string  imagen=9;
-     qDebug() << "llegue a llamar a emitir";
-if (conexion->isEncrypted() && conexion->isValid() && conexion->isOpen()){
-    qDebug()<<"estoy encriptado!!";
+if (conexion->isEncrypted()){
     QBuffer buffer;
     QImageWriter writer;
     std::string spaquete;
@@ -228,7 +226,7 @@ if (conexion->isEncrypted() && conexion->isValid() && conexion->isOpen()){
     writer.write(image);
     QByteArray bimagen = buffer.buffer();
     //qDebug()<< "imagen:"<< bimagen.size();
-    //QString imagen(bimagen);
+    QString imagen(bimagen);
     paquete.set_timagen(bimagen.size());
     paquete.set_imagen(bimagen.data(),bimagen.size());
 
@@ -244,13 +242,11 @@ if (conexion->isEncrypted() && conexion->isValid() && conexion->isOpen()){
     //QByteArray btbpaquete;
     //btbpaquete.append((const char*)&tbpaquete,sizeof(qint32));
     //btbpaquete.append('\n');
-
+    //qDebug() << "paquete VAF"<< QString::fromStdString(spaquete);
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_0);
     out << (quint32)tbpaquete;
-    out << tbpaquete;
-
     conexion ->write(block);
     //qDebug() << "sizeof mandado OK";
     conexion->write(bpaquete);
@@ -272,14 +268,3 @@ void ClienteCLI::delete_all(){
     }
     ListaCamaras->clear();
 }
-
-void ClienteCLI::error(QAbstractSocket::SocketError algo)
-{
-
-
-    //conexion->ignoreSslErrors();
-    int i= algo;
-    qDebug() << "que Error"<< conexion->errorString();
-    qDebug() <<"error"<< i;
-    exit(1);
-};

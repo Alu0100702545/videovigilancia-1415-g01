@@ -26,7 +26,6 @@ SOURCES += main.cpp\
 HEADERS  += clientev.h \
     acercade.h \
     capturebuffer.h \
-
     combobox.h
 
 

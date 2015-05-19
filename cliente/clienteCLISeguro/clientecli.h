@@ -72,14 +72,13 @@ private slots:
 public slots:
    void handleSigTerm();
 
-   void error(QAbstractSocket::SocketError algo);
 private:
     int NCamaras=-1;
     QSettings settings;
     QVector<CAM> *ListaCamaras;
     QList<QByteArray> devices;
     QSslSocket *conexion;
-    QString *NombrePC;
+    QString* NombrePC;
     int sigTermSd[2];
     QSocketNotifier *sigTermNotifier;
 };
