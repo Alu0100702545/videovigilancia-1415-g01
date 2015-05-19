@@ -13,22 +13,40 @@
 #include <unistd.h>
 #include <grp.h>
 
-void Signal_Handler(int sig) /* signal handler function */
+/*void Signal_Handler(int sig) /* signal handler function
     {
         switch(sig){
             case SIGHUP:
-                /* rehash the server */
+                /* rehash the server
                 syslog(LOG_ERR, "SIGHUP");
                 break;
             case SIGTERM:
-                /* finalize the server */
+                /* finalize the server
                 syslog(LOG_ERR, "SIGTERM");
                 exit(0);
                 break;
         }
-    }
+    }*/
 
-
+Servidor *server;
+void Signal_Handler(int sig) /* signal handler function */
+ {
+     switch(sig){
+         case SIGHUP:
+             /* rehash the server */
+             server->OpcionesLimpieza();
+             delete server;
+             server =new Servidor;
+             server->inicioServer();
+             syslog(LOG_ERR, "SIGHUP");
+         break;
+         case SIGTERM:
+             /* finalize the server */
+             syslog(LOG_ERR, "SIGTERM");
+             exit(0);
+         break;
+     }
+ }
 int main(int argc, char *argv[])
 {
     openlog(argv[0], LOG_NOWAIT | LOG_PID, LOG_USER);
@@ -59,9 +77,8 @@ int main(int argc, char *argv[])
     int fd1 = open("/dev/null", O_WRONLY); // fd0 == 1
     int fd2 = open("/dev/null", O_WRONLY); // fd0 == 2
     //syslog(LOG_ERR, "PASADOS A FICHERO");
-    Servidor server;
-
-
+    QDir directorio;
+    directorio.mkpath(QString(APP_VARDIR));
     pid_t sid;
     // Intentar crear una nueva sesión
     sid = setsid();
@@ -80,6 +97,7 @@ int main(int argc, char *argv[])
 
     // Cambiar el grupo efectivo del proceso a 'midemonio'
     group* group = getgrnam("midemonio");
+
     //syslog(LOG_ERR, "GETGRNAM?");
     if(group!=NULL){
         if(setegid(group->gr_gid)!=0){
@@ -105,13 +123,14 @@ int main(int argc, char *argv[])
 
     syslog(LOG_ERR, "TUTU");
     //===============================================================
+    server=new Servidor;
     QCoreApplication::setSetuidAllowed(true);
     QCoreApplication a(argc, argv);
     syslog(LOG_ERR, "BUCLE DE MENSAJES");
 
-    syslog(LOG_ERR, "En serio tienes problema aqui?");
+    //syslog(LOG_ERR, "En serio tienes problema aqui?");
     //server.OpcionesLimpieza();
-    server.inicioServer();
+    server->inicioServer();
     signal(SIGHUP,Signal_Handler); /* hangup signal */
     signal(SIGTERM,Signal_Handler); /* software termination signal from kill */
 

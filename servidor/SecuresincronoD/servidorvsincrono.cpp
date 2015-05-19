@@ -4,7 +4,6 @@ servidorvsincrono::servidorvsincrono(QObject *parent) : QObject(parent),serverS(
 {
 
     //server->setMaxPendingConnections(10);
-
     QDir directorio;
     Vdb=QSqlDatabase::addDatabase("QSQLITE", "SQLITE");
     directorio.mkpath(QString(APP_VARDIR)+"/BDD");
@@ -41,6 +40,8 @@ servidorvsincrono::servidorvsincrono(QObject *parent) : QObject(parent),serverS(
     QStringList table=Vdb.tables();
     qDebug() << table;
     serverS= new server(Vdb,this);
+
+
 }
 
 servidorvsincrono::~servidorvsincrono()
@@ -50,13 +51,17 @@ servidorvsincrono::~servidorvsincrono()
 
 void servidorvsincrono::inicioServer()
 {
+
+
+
+
     serverS->listen(QHostAddress::AnyIPv4,33333);
     //connect(server,SIGNAL(newConnection()),this,SLOT(conexionesPen()));
 
 }
 void servidorvsincrono::OpcionesLimpieza()
 {
-    int limpieza=0;
+    int limpieza=1;
     std::cout <<"Desea hacer limpieza del directorio variable(1 caso afirmativo)"<< std::endl;
     std::cin >> limpieza;
     QDir directorio;
@@ -81,10 +86,13 @@ void servidorvsincrono::OpcionesLimpieza()
         }
         //qDebug()<< all_dirs;
         while(!all_dirs.empty()){
+            if (all_dirs.back()== APP_VARDIR)
+                all_dirs.pop_back();
+            else{
             directorio.rmpath(all_dirs.back());
             all_dirs.pop_back();
-
+            }
         }
-     exit(0);
+     //exit(0);
     }
 }

@@ -3,7 +3,7 @@
 
 void Servidor::OpcionesLimpieza()
 {
-    int limpieza=0;
+    int limpieza=1;
     std::cout <<"Desea hacer limpieza del directorio variable(1 caso afirmativo)"<< std::endl;
     std::cin >> limpieza;
     QDir directorio;
@@ -28,11 +28,14 @@ void Servidor::OpcionesLimpieza()
         }
         //qDebug()<< all_dirs;
         while(!all_dirs.empty()){
+            if (all_dirs.back()== APP_VARDIR)
+                all_dirs.pop_back();
+            else{
             directorio.rmpath(all_dirs.back());
             all_dirs.pop_back();
-
+            }
         }
-     exit(0);
+     //exit(0);
     }
 }
 
