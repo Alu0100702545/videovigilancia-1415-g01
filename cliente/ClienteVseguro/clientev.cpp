@@ -107,10 +107,10 @@ void ClienteV::on_BotonCapturar_clicked()
     int NLabelsX=0, NLabelsY=0;
 
     if(settings.value("transmitir")==true){
-        conexion->ignoreSslErrors();
+
         conexion->setPeerVerifyMode(QSslSocket::VerifyPeer);
         if (QSslSocket::supportsSsl()) {
-
+           // connect(conexion, SIGNAL(sslErrors(QList<QSslError>)),conexion,SLOT(ignoreSslErrors()));
            //connect(socket, SIGNAL(encrypted()), this, SLOT(ready()));
           conexion->connectToHostEncrypted(settings.value("IP").toString(),settings.value("PORT").toInt());
          } else {
