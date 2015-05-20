@@ -9,6 +9,7 @@ PROTOS = VAF.proto
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 include(QtOpenCV.pri)
+add_opencv_modules(core video imgproc)
 
 
 QT       += core

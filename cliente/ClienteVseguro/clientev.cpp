@@ -1,9 +1,13 @@
 #include "clientev.h"
 #include "ui_clientev.h"
 
+typedef std::vector<cv::Mat> ImagesType;
+typedef std::vector<std::vector<cv::Point> > ContoursType;
+
 ClienteV::ClienteV(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::ClienteV)
+    ui(new Ui::ClienteV),
+    backgroundSubtractor(1000,15,false)
 {
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     ui->setupUi(this);
@@ -320,8 +324,40 @@ void ClienteV::emitir(const QImage &image, const int &pos){
 void ClienteV::image_s(const QImage &image, const int &pos)
 {
 
-  QPixmap pixmap;
-  pixmap=pixmap.fromImage(image);
+    cv::Mat imagen;
+    imagen=QtOcv::image2Mat(image);
+    //backgroundSubtractor.nmixtures = 3;
+    //for (ImagesTypes::const_iterator i = images.begin(); i < images.end(); ++i) {
+        // Sustracción del fondo:
+        //  1. El objeto sustractor compara la imagen en i con su
+        //     estimación del fondo y devuelve en foregroundMask una
+        //     máscara (imagen binaria) con un 1 en los píxeles de
+        //     primer plano.
+        //  2. El objeto sustractor actualiza su estimación del fondo
+        //     usando la imagen en i.
+        cv::Mat foregroundMask;
+        backgroundSubtractor(imagen, foregroundMask);
+        // Operaciones morfolóficas para eliminar las regiones de
+        // pequeño tamaño. Erode() las encoge y dilate() las vuelve a
+        // agrandar.
+        cv::erode(foregroundMask, foregroundMask, cv::Mat(),cv::Point(-1,-1),10);
+        cv::dilate(foregroundMask, foregroundMask, cv::Mat(),cv::Point(-1,-1),10);
+        // Obtener los contornos que bordean las regiones externas
+        // (CV_RETR_EXTERNAL) encontradas. Cada contorno es un vector
+        // de puntos y se devuelve uno por región en la máscara.
+        ContoursType contours;
+        cv::findContours(foregroundMask, contours, CV_RETR_EXTERNAL,
+                         CV_CHAIN_APPROX_NONE);
+        // Aquí va el código ódigo que usa los contornos encontrados...
+        // P. ej. usar cv::boundingRect() para obtener el cuadro
+        // delimitador de cada uno y pintarlo en la imagen original
+        for(int i=0; i<contours.size();i++){
+            cv::Rect rect=cv::boundingRect(contours[i]);
+            cv::rectangle(imagen, rect, CV_RGB(255,0,0));
+        }
+
+        QPixmap pixmap;
+        pixmap=pixmap.fromImage(QtOcv::mat2Image(imagen));
 
   ((QLabel*)ui->gridLayout->itemAt(pos)->widget())->setPixmap(pixmap);
   if(settings.value("transmitir")==true){

@@ -1,6 +1,10 @@
 #include "clientecli.h"
 
-ClienteCLI::ClienteCLI()
+typedef std::vector<cv::Mat> ImagesType;
+typedef std::vector<std::vector<cv::Point> > ContoursType;
+
+ClienteCLI::ClienteCLI() :
+    backgroundSubtractor(1000,15,false)
 {
     devices = QCamera::availableDevices();
     NCamaras=devices.size();
@@ -188,6 +192,30 @@ void ClienteCLI::emitir(const QImage &image, int id){
     //optional uint32  TImagen=8;
     //required string  imagen=9;
 if (conexion->isEncrypted()){
+    cv::Mat imagenmat;
+    imagenmat=QtOcv::image2Mat(image);
+    //backgroundSubtractor.nmixtures = 3;
+    //for (ImagesTypes::const_iterator i = images.begin(); i < images.end(); ++i) {
+    // Sustracción del fondo:
+    //  1. El objeto sustractor compara la imagen en i con su
+    //     estimación del fondo y devuelve en foregroundMask una
+    //     máscara (imagen binaria) con un 1 en los píxeles de
+    //     primer plano.
+    //  2. El objeto sustractor actualiza su estimación del fondo
+    //     usando la imagen en i.
+    cv::Mat foregroundMask;
+    backgroundSubtractor(imagenmat, foregroundMask);
+    // Operaciones morfolóficas para eliminar las regiones de
+    // pequeño tamaño. Erode() las encoge y dilate() las vuelve a
+    // agrandar.
+    cv::erode(foregroundMask, foregroundMask, cv::Mat(),cv::Point(-1,-1),10);
+    cv::dilate(foregroundMask, foregroundMask, cv::Mat(),cv::Point(-1,-1),10);
+    // Obtener los contornos que bordean las regiones externas
+    // (CV_RETR_EXTERNAL) encontradas. Cada contorno es un vector
+    // de puntos y se devuelve uno por región en la máscara.
+    ContoursType contours;
+    cv::findContours(foregroundMask, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+
     QBuffer buffer;
     QImageWriter writer;
     std::string spaquete;

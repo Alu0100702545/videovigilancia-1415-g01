@@ -25,6 +25,11 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <QSslSocket>
+#include <cvmatandqimage.h>
+#include <opencv2/core/core.hpp>
+#include <opencv2/video/video.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 
 #define NPROTOCOLO "VAF"
@@ -81,6 +86,7 @@ private:
     QString* NombrePC;
     int sigTermSd[2];
     QSocketNotifier *sigTermNotifier;
+    cv::BackgroundSubtractorMOG2 backgroundSubtractor;
 };
 
 #endif // CLIENTECLI_H
