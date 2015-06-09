@@ -19,9 +19,13 @@ ClienteCLI::ClienteCLI() :
     QString sometext(getenv("SESSION_MANAGER"));
     QStringList query = sometext.split(rx);
 
-    NombrePC=new QString(getenv("USER"));
-    NombrePC->append("@");
-    NombrePC->append(query.at(1));
+    QRegExp rx("(\\,|\\/|\\:|\\t)");
+    QString sometext(getenv("SESSION_MANAGER"));
+    QStringList query = sometext.split(rx);
+    QString NnombrePC(getenv("USER"));
+    NnombrePC.append("@");
+    NnombrePC.append(query.at(1));
+    nombrePC=NnombrePC.toStdString();
 
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, sigTermSd))
         qFatal("Couldn't create TERM socketpair");
@@ -182,37 +186,13 @@ void ClienteCLI::capturar()
 
 void ClienteCLI::emitir(const QImage &image, int id){
 
-    //required string protocolo = 1;
-    //required bytes  version = 2;
-    //optional uint32  Tnombrecamara = 3 ;
-    //required string  nombrecamara = 4;
-    //optional uint32  TnombrePC = 5 ;
-    //required string  nombrePC = 6;
-    //required string  timestamp = 7;
-    //optional uint32  TImagen=8;
-    //required string  imagen=9;
 if (conexion->isEncrypted()){
     cv::Mat imagenmat;
     imagenmat=QtOcv::image2Mat(image);
-    //backgroundSubtractor.nmixtures = 3;
-    //for (ImagesTypes::const_iterator i = images.begin(); i < images.end(); ++i) {
-    // Sustracción del fondo:
-    //  1. El objeto sustractor compara la imagen en i con su
-    //     estimación del fondo y devuelve en foregroundMask una
-    //     máscara (imagen binaria) con un 1 en los píxeles de
-    //     primer plano.
-    //  2. El objeto sustractor actualiza su estimación del fondo
-    //     usando la imagen en i.
     cv::Mat foregroundMask;
     backgroundSubtractor(imagenmat, foregroundMask);
-    // Operaciones morfolóficas para eliminar las regiones de
-    // pequeño tamaño. Erode() las encoge y dilate() las vuelve a
-    // agrandar.
     cv::erode(foregroundMask, foregroundMask, cv::Mat(),cv::Point(-1,-1),10);
     cv::dilate(foregroundMask, foregroundMask, cv::Mat(),cv::Point(-1,-1),10);
-    // Obtener los contornos que bordean las regiones externas
-    // (CV_RETR_EXTERNAL) encontradas. Cada contorno es un vector
-    // de puntos y se devuelve uno por región en la máscara.
     ContoursType contours;
     cv::findContours(foregroundMask, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
 
@@ -221,64 +201,59 @@ if (conexion->isEncrypted()){
     std::string spaquete;
     VAF paquete;
 
+    //PROTOCOLO Y VERSION
     paquete.set_protocolo(NPROTOCOLO);
     paquete.set_version(VPROTOCOLO);
 
-    //QString dprotocolo(paquete.protocolo().c_str());
-    //QString diversion(paquete.version().c_str());
-    //qDebug() << dprotocolo << diversion;
-
-    std::string nombrecamara((QCamera::deviceDescription(devices[id])).toStdString());
+    //NOMBRE CAMARA
+    std::string nombrecamara((QCamera::deviceDescription(devices[ListaCamaras->value(pos).id])).toStdString());
     paquete.set_tnombrecamara(sizeof(nombrecamara));
     paquete.set_nombrecamara(nombrecamara);
 
-    //qint32 dtnombrecamara(paquete.tnombrecamara());
-    //QString dnombrecamara(paquete.nombrecamara().c_str());
-    //qDebug() << dnombrecamara << dtnombrecamara;
+    //NOMBRE PC
+    paquete.set_tnombrepc(sizeof(nombrePC));
+    paquete.set_nombrepc(nombrePC);
 
-    paquete.set_tnombrepc(sizeof(NombrePC->toStdString()));
-    paquete.set_nombrepc(NombrePC->toStdString());
-
-    //qint32 dtnombrepc(paquete.tnombrepc());
-    //QString dnombrepc(paquete.nombrepc().c_str());
-    //qDebug() << dnombrepc << dtnombrepc;
-
+    //TIMESTAMP
     paquete.set_timestamp((QTime::currentTime().toString("hh:mm:ss:zzz")).toStdString());
-    paquete.set_datestamp((QDate::currentDate().toString("dd.MM.yyyy")).toStdString());
 
-    //QString dtime(paquete.timestamp().c_str());
-    //qDebug() << dtime;
+    //DATESTAMP
+    paquete.set_datestamp((QDate::currentDate().toString("dd.MM.yyyy")).toStdString());
     writer.setDevice(&buffer);
     writer.setFormat("jpeg");
     writer.setCompression(70);
     writer.write(image);
+
+    //IMAGEN
     QByteArray bimagen = buffer.buffer();
-    //qDebug()<< "imagen:"<< bimagen.size();
-    QString imagen(bimagen);
+    qDebug()<< "imagen:"<< bimagen.size();
     paquete.set_timagen(bimagen.size());
     paquete.set_imagen(bimagen.data(),bimagen.size());
 
-    //qint32 dtimagen((paquete.timagen()));
-    //QString dimagen(paquete.imagen().c_str());
-    //qDebug() << dimagen << dtimagen;
+    //ROI
+    for(int i=0; i<contours.size();i++){
+        ROI* roi=paquete.add_roi();
+        roi->set_x1=contours[i][1].x;
+        roi->set_y1=contours[i][1].y;
+        roi->set_x2=contours[i][2].x;
+        roi->set_y2=contours[i][2].y;
+    }
 
+    //SERIALIZAMOS
     paquete.SerializeToString(&spaquete);
 
+    //PAQUETE BINARIO Y TAMAÑO
     QByteArray bpaquete(spaquete.c_str(),spaquete.size());
     qint32 tbpaquete = bpaquete.size();
-    //qDebug() << "TBSIZE: " << tbpaquete;
-    //QByteArray btbpaquete;
-    //btbpaquete.append((const char*)&tbpaquete,sizeof(qint32));
-    //btbpaquete.append('\n');
-    //qDebug() << "paquete VAF"<< QString::fromStdString(spaquete);
+    qDebug() << "TBSIZE: " << tbpaquete;
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_0);
     out << (quint32)tbpaquete;
-    conexion ->write(block);
-    //qDebug() << "sizeof mandado OK";
-    conexion->write(bpaquete);
-    //qDebug() << "bpaquete mandado OK";
+
+    //ENVIO
+    conexion ->write(block); //TAMAÑO
+    conexion->write(bpaquete); //PAQUETE
     }
 }
 

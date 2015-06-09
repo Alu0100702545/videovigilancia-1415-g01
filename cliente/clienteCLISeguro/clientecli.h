@@ -83,7 +83,7 @@ private:
     QVector<CAM> *ListaCamaras;
     QList<QByteArray> devices;
     QSslSocket *conexion;
-    QString* NombrePC;
+    std::string nombrePC;
     int sigTermSd[2];
     QSocketNotifier *sigTermNotifier;
     cv::BackgroundSubtractorMOG2 backgroundSubtractor;
