@@ -12,12 +12,14 @@
 #include <QDirIterator>
 #include <iostream>
 #include <QSslSocket>
+#include <syslog.h>
+#include <unistd.h>
 class clienteT : public QThread
 {
 
     Q_OBJECT
 public:
-    clienteT(qintptr socketDescriptor, QSqlDatabase &bdd,QObject *parent);
+    clienteT(qintptr socketDescriptor, QSqlDatabase &bdd,QString RutadatosVariables,QString Rutacertificadoclave,QObject *parent);
         //: QThread(parent), socketDescriptor_(socketDescriptor){}
     void run();
     //~clienteT();
@@ -33,6 +35,9 @@ private:
     QSqlDatabase bddc;
     VAF paquete;
     qint64 contador;
+    QString Rutadata, Rutacert;
+
+
 };
 
 #endif // CLIENTET_H

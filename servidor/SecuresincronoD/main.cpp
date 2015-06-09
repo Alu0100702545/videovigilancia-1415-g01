@@ -37,7 +37,7 @@ void Signal_Handler(int sig) /* signal handler function */
              /* rehash the server */
              servidor->OpcionesLimpieza();
              delete servidor;
-             servidor =new servidorvsincrono;
+             //servidor =new servidorvsincrono;
              servidor->inicioServer();
              syslog(LOG_ERR, "SIGHUP");
          break;
@@ -72,6 +72,14 @@ int main(int argc, char *argv[])
     //HIJO
 
     umask(0);
+
+    qDebug() <<"existe pem:"<<QFile::exists( QString(APP_CERTCLA)+"/"+"videovigilancia.crt");
+    qDebug() <<"existe pem:"<<QFile::exists( QString(APP_CERTCLA)+"/"+"videovigilancia.key");
+
+
+
+
+
     close(STDIN_FILENO); // fd 0
     close(STDOUT_FILENO); // fd 1
     close(STDERR_FILENO); // fd 2
@@ -80,8 +88,37 @@ int main(int argc, char *argv[])
     int fd1 = open("/dev/null", O_WRONLY); // fd0 == 1
     int fd2 = open("/dev/null", O_WRONLY); // fd0 == 2
     //syslog(LOG_ERR, "PASADOS A FICHERO");
-     QDir directorio;
-     directorio.mkpath(QString(APP_VARDIR));
+    QDir directorio;
+    QString *RutadatosVariables=NULL;
+    QString *Rutacertificadoclave=NULL;
+    int puerto=-1;
+    //directorio.mkpath(QString(APP_VARDIR));
+    if(directorio.exists(QString(APP_CONFFILE))){
+        QFile file(QString(APP_CONFFILE));
+        if (file.open(QIODevice::ReadOnly)){
+            qDebug() << "Leyendo configuracion desde fichero...";
+            QTextStream configuracion(&file);
+            RutadatosVariables= new QString(configuracion.readLine());
+            Rutacertificadoclave= new QString(configuracion.readLine());
+            puerto=(configuracion.readLine()).toInt();
+
+
+        }else
+            syslog(LOG_ERR, "Archivo de configuracion no se pudo abrir");
+        file.close();
+    }else{
+        syslog(LOG_ERR, "No hay archivo de configuracion");
+
+    }
+
+    if (RutadatosVariables==NULL)
+        RutadatosVariables=new QString(APP_VARDIR);
+    if (Rutacertificadoclave==NULL)
+        Rutacertificadoclave=new QString(APP_CERTCLA);
+    if (puerto==-1)
+        puerto=33333;
+    directorio.mkpath(*RutadatosVariables);
+    directorio.mkpath(*Rutacertificadoclave);
     pid_t sid;
     // Intentar crear una nueva sesión
     sid = setsid();
@@ -111,7 +148,9 @@ int main(int argc, char *argv[])
         syslog(LOG_ERR, "No existe el grupo");
 
     passwd* user = getpwnam("midemonio");
-    const char* myChar = QString(APP_VARDIR).toStdString().c_str();
+    const char* myChar =RutadatosVariables->toStdString().c_str();
+    chown(myChar, user->pw_uid,group->gr_gid);
+    myChar =Rutacertificadoclave->toStdString().c_str();
     chown(myChar, user->pw_uid,group->gr_gid);
     syslog(LOG_ERR, "GETPWNAM?");
     if (user!=NULL){
@@ -125,7 +164,8 @@ int main(int argc, char *argv[])
 
     syslog(LOG_ERR, "TUTU");
     //===============================================================
-    servidor=new servidorvsincrono;
+    servidor=new servidorvsincrono(*RutadatosVariables,*Rutacertificadoclave, puerto);
+
     QCoreApplication::setSetuidAllowed(true);
      QCoreApplication a(argc, argv);
      //syslog(LOG_ERR, "En serio tienes problema aqui?");

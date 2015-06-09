@@ -1,14 +1,18 @@
 #include "servidorvsincrono.h"
 
-servidorvsincrono::servidorvsincrono(QObject *parent) : QObject(parent),serverS(NULL)
+servidorvsincrono::servidorvsincrono(QString RutadatosVariables,QString Rutacertificadoclave,int  Puerto, QObject *parent) : QObject(parent),serverS(NULL)
 {
 
     //server->setMaxPendingConnections(10);
     QDir directorio;
+    rutas = new QSettings;
+    rutas->setValue("RUTADATOS",RutadatosVariables);
+    rutas->setValue("RUTACERT",Rutacertificadoclave);
+    rutas->setValue("PORT",Puerto);
     Vdb=QSqlDatabase::addDatabase("QSQLITE", "SQLITE");
-    directorio.mkpath(QString(APP_VARDIR)+"/BDD");
-    directorio.mkpath(QString(APP_VARDIR)+ "/clientes");
-    Vdb.setDatabaseName(QString(APP_VARDIR)+"/BDD/"+"videovigilancia.sqlite");
+    directorio.mkpath(rutas->value("RUTADATOS").toString()+"/BDD");
+    directorio.mkpath(rutas->value("RUTADATOS").toString()+ "/clientes");
+    Vdb.setDatabaseName(rutas->value("RUTADATOS").toString()+"/BDD/"+"videovigilancia.sqlite");
     //Vdb.setDatabaseName("videovigilancia.sqlite");
     bool algo = Vdb.open();
     if (!algo) {
@@ -39,7 +43,7 @@ servidorvsincrono::servidorvsincrono(QObject *parent) : QObject(parent),serverS(
 
     QStringList table=Vdb.tables();
     qDebug() << table;
-    serverS= new server(Vdb,this);
+    serverS= new server(Vdb,rutas->value("RUTADATOS").toString(),rutas->value("RUTACERT").toString(),this);
 
 
 }
@@ -52,12 +56,9 @@ servidorvsincrono::~servidorvsincrono()
 void servidorvsincrono::inicioServer()
 {
 
-
-
-
-    serverS->listen(QHostAddress::AnyIPv4,33333);
+    serverS->listen(QHostAddress::AnyIPv4,rutas->value("PORT").toInt());
     //connect(server,SIGNAL(newConnection()),this,SLOT(conexionesPen()));
-
+    syslog(LOG_ERR, "ESCUCHANDO");
 }
 void servidorvsincrono::OpcionesLimpieza()
 {
@@ -76,17 +77,17 @@ void servidorvsincrono::OpcionesLimpieza()
 
         }
         query.exec("DROP TABLE regvaf");
-        directorio.remove(QString(APP_VARDIR)+"/BDD/"+"videovigilancia.sqlite");
+        directorio.remove(rutas->value("RUTADATOS").toString()+"/BDD/"+"videovigilancia.sqlite");
         QStringList all_dirs;
-        all_dirs << APP_VARDIR;
-        QDirIterator directories(APP_VARDIR, QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+        all_dirs << rutas->value("RUTADATOS").toString();
+        QDirIterator directories(rutas->value("RUTADATOS").toString(), QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
         while(directories.hasNext()){
             directories.next();
             all_dirs << directories.filePath();
         }
         //qDebug()<< all_dirs;
         while(!all_dirs.empty()){
-            if (all_dirs.back()== APP_VARDIR)
+            if (all_dirs.back()== rutas->value("RUTADATOS").toString())
                 all_dirs.pop_back();
             else{
             directorio.rmpath(all_dirs.back());

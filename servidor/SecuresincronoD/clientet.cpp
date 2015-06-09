@@ -1,13 +1,16 @@
 #include "clientet.h"
 
 
-clienteT::clienteT(qintptr socketDescriptor, QSqlDatabase &bdd,QObject *parent):
+clienteT::clienteT(qintptr socketDescriptor, QSqlDatabase &bdd,QString RutadatosVariables,QString Rutacertificadoclave,QObject *parent):
     QThread(parent),
     socketDescriptor_(socketDescriptor),
     bddc(bdd),
     contador(0)
 {
     Tpaquete =0;
+    Rutadata=RutadatosVariables;
+    Rutacert=Rutacertificadoclave;
+    syslog(LOG_ERR, "CREE EL CLIENTE");
     paquete.Clear();
     if (!bddc.open()) {
        qDebug() <<"No se pudo acceder a los datos";
@@ -25,32 +28,37 @@ void clienteT::run()
         QSslSocket tcpSocket;
         // Inicializarlo con el socket nativo de la conexión con el cliente
         if (tcpSocket.setSocketDescriptor(socketDescriptor_)) {
-             QFile fileCert("/home/fabix/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.crt");
+             QFile fileCert(Rutacert+"/"+"videovigilancia.crt");
           connect(&tcpSocket,SIGNAL(sslErrors(QList<QSslError>)),&tcpSocket,SLOT(ignoreSslErrors()));
 
-          qDebug() <<"existe pem:"<<QFile::exists("/home/fabix/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.crt");
+          qDebug() <<"existe pem:"<<QFile::exists(Rutacert+"/"+"videovigilancia.crt");
           qDebug() <<" ceritifado abierto: " <<fileCert.open(QIODevice::ReadOnly);
           fileCert.close();
-          QFile algo("/home/fabix/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.key");
+          QFile algo(Rutacert+"/"+"videovigilancia.key");
           qDebug() <<" Key abierta: " <<algo.open(QIODevice::ReadOnly);
           algo.close();
           tcpSocket.setProtocol(QSsl::AnyProtocol);
           tcpSocket.ignoreSslErrors();
           //tcpSocket.addDefaultCaCertificates("")
-          tcpSocket.setPrivateKey("/home/fabix/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.key");
+          tcpSocket.setPrivateKey(Rutacert+"/"+"videovigilancia.key");
           tcpSocket.setPeerVerifyMode(QSslSocket::QueryPeer);
-          tcpSocket.addCaCertificates("/home/fabix/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.crt");
-          tcpSocket.setLocalCertificate("/home/fabix/Documentos/SOA/Proyecto_Videovigilancia/servidor/videovigilancia.crt");
+          tcpSocket.addCaCertificates(Rutacert+"/"+"videovigilancia.crt");
+          tcpSocket.setLocalCertificate(Rutacert+"/"+"videovigilancia.crt");
           tcpSocket.startServerEncryption();
           qDebug() <<"certificado es nulo ?: "<<tcpSocket.localCertificate().isNull();
           qDebug() <<"soy valido ?: "<<tcpSocket.isValid();
           qDebug() <<"estoy encriptado ?: "<<tcpSocket.isEncrypted();
           qDebug() << "nuevaConexion";
+
+
+
           tcpSocket.waitForEncrypted();
           qDebug() <<"estoy encriptado ?: "<<tcpSocket.isEncrypted();
-
+            if (tcpSocket.isEncrypted())
+                syslog(LOG_ERR, "ENCRIPTADO");
         } else {
             emit error(tcpSocket.error());
+            syslog(LOG_ERR, "ERROR CONECTANDO");
             return;
 
         }
@@ -187,12 +195,12 @@ void clienteT::almacenamiento(VAF &paquete)
                 time.substr(18,time.size()-18));
 
 
-    QString direct= QString(APP_VARDIR) +
+    QString direct=  Rutadata +
             "/"+"clientes/" +pc+"/"+camara+"/"+date+"/"+hora+
             "/"+ minutos+"/"+segundos+"/" +segundosMs +".jpeg";
     query.bindValue(":DIRECTORIO",direct);
 
-    directorio.mkpath(QString(APP_VARDIR) +"/"+"clientes/" +pc+"/"+camara+"/"+date+"/"+hora+
+    directorio.mkpath( Rutadata +"/"+"clientes/" +pc+"/"+camara+"/"+date+"/"+hora+
                       "/"+ minutos+"/"+segundos);
 
 

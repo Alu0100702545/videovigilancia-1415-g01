@@ -52,8 +52,8 @@ unix {
 
  DEFINES += APP_DATADIR="$$DATADIR"
  DEFINES += APP_VARDIR=\\\"$$VARDIR\\\"
- DEFINES += APP_CONFFILE="$$CONFDIR/$${TARGET}.ini"
-
+ DEFINES += APP_CONFFILE=\\\"$$CONFDIR/$${TARGET}.ini\\\"
+ DEFINES += APP_CERTCLA=\\\"$$CONFDIR/$${TARGET}\\\"
  # Install
  #
  INSTALLS += target config desktop vardir
@@ -74,6 +74,6 @@ unix {
 
  ## Crear directorio de archivos variables
  vardir.path = $$VARDIR
- vardir.extra = mkdir -p $$VARDIR/clientes && mkdir -p $$VARDIR/BDD
+ #vardir.extra = mkdir -p $$VARDIR/clientes && mkdir -p $$VARDIR/BDD
  vardir.commands = true
 }
