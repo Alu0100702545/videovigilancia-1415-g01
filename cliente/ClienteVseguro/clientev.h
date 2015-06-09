@@ -70,7 +70,7 @@ private slots:
 
     void image_s(const QImage &, const int &);
 
-    void emitir(const QImage &image, const int &pos);
+    void emitir(const QImage &image, const int &pos, ContoursType contours);
 
     void actualizar_puerto(int puerto);
 

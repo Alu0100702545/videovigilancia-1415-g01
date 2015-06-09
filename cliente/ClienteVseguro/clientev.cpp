@@ -235,89 +235,66 @@ void ClienteV::on_actionCapturar_triggered()
     }
 }
 
-void ClienteV::emitir(const QImage &image, const int &pos){
-    /*
-    required string protocolo = 1;
-    required bytes  version = 2;
-    optional uint32  Tnombrecamara = 3 ;
-    required string  nombrecamara = 4;
-    optional uint32  TnombrePC = 5 ;
-    required string  nombrePC = 6;
-    required string  timestamp = 7;
-    optional uint32  TImagen=8;
-    required string  imagen=9;
-    */
-
+void ClienteV::emitir(const QImage &image, const int &pos, ContoursType contours){
 
     QBuffer buffer;
     QImageWriter writer;
     std::string spaquete;
     VAF paquete;
 
+    //PROTOCOLO Y VERSION
     paquete.set_protocolo(NPROTOCOLO);
     paquete.set_version(VPROTOCOLO);
 
-    //QString dprotocolo(paquete.protocolo().c_str());
-    //QString diversion(paquete.version().c_str());
-    //qDebug() << dprotocolo << diversion;
-
+    //NOMBRE CAMARA
     std::string nombrecamara((QCamera::deviceDescription(devices[ListaCamaras->value(pos).id])).toStdString());
     paquete.set_tnombrecamara(sizeof(nombrecamara));
     paquete.set_nombrecamara(nombrecamara);
 
-    //qint32 dtnombrecamara(paquete.tnombrecamara());
-    //QString dnombrecamara(paquete.nombrecamara().c_str());
-
-    //qDebug() << dnombrecamara << dtnombrecamara;
-
+    //NOMBRE PC
     paquete.set_tnombrepc(sizeof(nombrePC));
     paquete.set_nombrepc(nombrePC);
 
-    //qint32 dtnombrepc(paquete.tnombrepc());
-    //QString dnombrepc(paquete.nombrepc().c_str());
-    //qDebug() << dnombrepc << dtnombrepc;
-
+    //TIMESTAMP
     paquete.set_timestamp((QTime::currentTime().toString("hh:mm:ss:zzz")).toStdString());
 
-    QString dtime(paquete.timestamp().c_str());
-    //qDebug() << dtime;
-
+    //DATESTAMP
     paquete.set_datestamp((QDate::currentDate().toString("dd.MM.yyyy")).toStdString());
     writer.setDevice(&buffer);
     writer.setFormat("jpeg");
     writer.setCompression(70);
     writer.write(image);
+
+    //IMAGEN
     QByteArray bimagen = buffer.buffer();
     qDebug()<< "imagen:"<< bimagen.size();
-    //QString imagen(bimagen);
     paquete.set_timagen(bimagen.size());
     paquete.set_imagen(bimagen.data(),bimagen.size());
 
-    //qint32 dtimagen((paquete.timagen()));
-    //QString dimagen(paquete.imagen().c_str());
-    //qDebug() << dimagen << dtimagen;
+    //ROI
+    for(int i=0; i<contours.size();i++){
+        ROI* roi=paquete.add_roi();
+        roi->set_x1=contours[i][1].x;
+        roi->set_y1=contours[i][1].y;
+        roi->set_x2=contours[i][2].x;
+        roi->set_y2=contours[i][2].y;
+    }
 
+    //SERIALIZAMOS
     paquete.SerializeToString(&spaquete);
 
+    //PAQUETE BINARIO Y TAMAÑO
     QByteArray bpaquete(spaquete.c_str(),spaquete.size());
     qint32 tbpaquete = bpaquete.size();
     qDebug() << "TBSIZE: " << tbpaquete;
-    //QByteArray btbpaquete;
-    //btbpaquete.append((const char*)&tbpaquete,sizeof(qint32));
-//    btbpaquete.append('\n');
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_0);
-    //qDebug() << "Size: " << btbpaquete.toInt() << "Paquete: " << bpaquete;
     out << (quint32)tbpaquete;
-    //out << tbpaquete;
-    //out.device()->seek(0);
-    //conexion->write(btbpaquete);
-    conexion ->write(block);
-    //conexion->write("\n");
-    //qDebug() << "sizeof mandado OK";
-    conexion->write(bpaquete);
-    //qDebug() << "bpaquete mandado OK";
+
+    //ENVIO
+    conexion ->write(block); //TAMAÑO
+    conexion->write(bpaquete); //PAQUETE
 
 }
 
@@ -363,7 +340,7 @@ void ClienteV::image_s(const QImage &image, const int &pos)
   if(settings.value("transmitir")==true){
     //qDebug() << "CONNECT OK";
       if(conexion->isEncrypted())
-        emitir(image,pos);
+        emitir(image,pos,contours);
   }
 }
 void ClienteV::error(QAbstractSocket::SocketError algo)
