@@ -34,10 +34,10 @@ servidorvsincrono::servidorvsincrono(QString RutadatosVariables,QString Rutacert
     query.exec("CREATE TABLE IF NOT EXISTS ROI "
                "("
                " DIRECTORIO VARCHAR(2000),"
-               " ANCHO INT(4),"
-               " ALTO  INT(4),"
-               " CRX  INT(4),"
-               " CRY  INT(4),"
+               " CX1 INT(4),"
+               " CX2  INT(4),"
+               " CY1  INT(4),"
+               " CY2  INT(4),"
                " PRIMARY KEY (DIRECTORIO,ANCHO,ALTO,CRX,CRY),"
                " FOREIGN KEY (DIRECTORIO) REFERENCES regvaf ON DELETE CASCADE)");
 

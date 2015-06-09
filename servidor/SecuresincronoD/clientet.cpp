@@ -204,31 +204,24 @@ void clienteT::almacenamiento(VAF &paquete)
                       "/"+ minutos+"/"+segundos);
 
 
-    //query.bindValue(":DIRECTORIO","algo");
+
     qDebug() << query.exec();
-    //query.exec("SELECT nombre FROM contactos");
+
 
 
     qDebug() << im.save(direct);
     //Limpieza del paquete
-    paquete.Clear();
-    query.prepare("INSERT INTO ROI (DIRECTORIO,ANCHO,ALTO,CRX,CRY) "
-                  "VALUES (:DIRECTORIO,:ANCHO,:ALTO,:CRX,:CRY)");
-    query.bindValue(":DIRECTORIO",direct);
-    query.bindValue(":ANCHO",1);
-    query.bindValue(":ALTO",2);
-    query.bindValue(":CRX",3);
-    query.bindValue(":CRY",4);
-     query.exec() ;
-     query.prepare("INSERT INTO ROI (DIRECTORIO,ANCHO,ALTO,CRX,CRY) "
-                   "VALUES (:DIRECTORIO,:ANCHO,:ALTO,:CRX,:CRY)");
-     query.bindValue(":DIRECTORIO",direct);
-     query.bindValue(":ANCHO",2);
-     query.bindValue(":ALTO",3);
-     query.bindValue(":CRX",4);
-     query.bindValue(":CRY",5);
-      query.exec() ;
-
-
+    paquete.roi_size() ;
+    for(int i=0;i <paquete.roi_size();i++){
+        query.prepare("INSERT INTO ROI (DIRECTORIO,CX1,CX2,CY1,CY2) "
+                      "VALUES (:DIRECTORIO,:CX1,:CX2,:CY1,:CY2)");
+        query.bindValue(":DIRECTORIO",direct);
+        query.bindValue(":CX1",paquete.roi(i).x1());
+        query.bindValue(":CX2",paquete.roi(i).x2());
+        query.bindValue(":CY1",paquete.roi(i).y1());
+        query.bindValue(":CY2",paquete.roi(i).y2());
+        query.exec() ;
+    }
+ paquete.Clear();
 }
 

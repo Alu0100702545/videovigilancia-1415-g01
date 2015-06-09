@@ -1,6 +1,11 @@
 //Paquete VAF.proto
 
-
+message ROI{
+    optional uint32 x1=1;
+    optional uint32 x2=2;
+    optional uint32 y1=3;
+    optional uint32 y2=4;
+}
 
 message VAF {
     required string protocolo = 1;
@@ -13,4 +18,5 @@ message VAF {
     optional uint32  TImagen=8;
     required bytes  imagen=9;
     optional string datestamp=10;
+    repeated ROI roi=11;
 }

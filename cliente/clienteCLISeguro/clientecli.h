@@ -35,6 +35,9 @@
 #define NPROTOCOLO "VAF"
 #define VPROTOCOLO "1"
 
+typedef std::vector<cv::Mat> ImagesType;
+typedef std::vector<std::vector<cv::Point> > ContoursType;
+
 struct CAM{
     QCamera *Camera = NULL;
     CaptureBuffer *captureBuffer = NULL;

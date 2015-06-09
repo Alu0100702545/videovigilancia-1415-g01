@@ -1,8 +1,7 @@
 #include "clientev.h"
 #include "ui_clientev.h"
 
-typedef std::vector<cv::Mat> ImagesType;
-typedef std::vector<std::vector<cv::Point> > ContoursType;
+
 
 ClienteV::ClienteV(QWidget *parent) :
     QMainWindow(parent),
@@ -274,10 +273,10 @@ void ClienteV::emitir(const QImage &image, const int &pos, ContoursType contours
     //ROI
     for(int i=0; i<contours.size();i++){
         ROI* roi=paquete.add_roi();
-        roi->set_x1=contours[i][1].x;
-        roi->set_y1=contours[i][1].y;
-        roi->set_x2=contours[i][2].x;
-        roi->set_y2=contours[i][2].y;
+        roi->set_x1(contours[i][1].x);
+        roi->set_y1(contours[i][1].y);
+        roi->set_x2(contours[i][2].x);
+        roi->set_y2(contours[i][2].y);
     }
 
     //SERIALIZAMOS
@@ -339,7 +338,7 @@ void ClienteV::image_s(const QImage &image, const int &pos)
   ((QLabel*)ui->gridLayout->itemAt(pos)->widget())->setPixmap(pixmap);
   if(settings.value("transmitir")==true){
     //qDebug() << "CONNECT OK";
-      if(conexion->isEncrypted())
+      if(conexion->isEncrypted()&&(contours.size()>0))
         emitir(image,pos,contours);
   }
 }

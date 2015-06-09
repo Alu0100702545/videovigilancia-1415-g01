@@ -15,9 +15,6 @@ ClienteCLI::ClienteCLI() :
     //errors.append(QSslError::SelfSignedCertificate);
     connect(conexion,SIGNAL(sslErrors(QList<QSslError>)),conexion,SLOT(ignoreSslErrors()));
 
-    QRegExp rx("(\\,|\\/|\\:|\\t)");
-    QString sometext(getenv("SESSION_MANAGER"));
-    QStringList query = sometext.split(rx);
 
     QRegExp rx("(\\,|\\/|\\:|\\t)");
     QString sometext(getenv("SESSION_MANAGER"));
@@ -186,7 +183,6 @@ void ClienteCLI::capturar()
 
 void ClienteCLI::emitir(const QImage &image, int id){
 
-if (conexion->isEncrypted()){
     cv::Mat imagenmat;
     imagenmat=QtOcv::image2Mat(image);
     cv::Mat foregroundMask;
@@ -196,6 +192,7 @@ if (conexion->isEncrypted()){
     ContoursType contours;
     cv::findContours(foregroundMask, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
 
+ if(conexion->isEncrypted()&&(contours.size()>0)){
     QBuffer buffer;
     QImageWriter writer;
     std::string spaquete;
@@ -206,7 +203,7 @@ if (conexion->isEncrypted()){
     paquete.set_version(VPROTOCOLO);
 
     //NOMBRE CAMARA
-    std::string nombrecamara((QCamera::deviceDescription(devices[ListaCamaras->value(pos).id])).toStdString());
+    std::string nombrecamara((QCamera::deviceDescription(devices[id])).toStdString());
     paquete.set_tnombrecamara(sizeof(nombrecamara));
     paquete.set_nombrecamara(nombrecamara);
 
@@ -226,17 +223,17 @@ if (conexion->isEncrypted()){
 
     //IMAGEN
     QByteArray bimagen = buffer.buffer();
-    qDebug()<< "imagen:"<< bimagen.size();
+    //qDebug()<< "imagen:"<< bimagen.size();
     paquete.set_timagen(bimagen.size());
     paquete.set_imagen(bimagen.data(),bimagen.size());
 
     //ROI
     for(int i=0; i<contours.size();i++){
         ROI* roi=paquete.add_roi();
-        roi->set_x1=contours[i][1].x;
-        roi->set_y1=contours[i][1].y;
-        roi->set_x2=contours[i][2].x;
-        roi->set_y2=contours[i][2].y;
+        roi->set_x1(contours[i][1].x);
+        roi->set_y1(contours[i][1].y);
+        roi->set_x2(contours[i][2].x);
+        roi->set_y2(contours[i][2].y);
     }
 
     //SERIALIZAMOS
@@ -245,7 +242,7 @@ if (conexion->isEncrypted()){
     //PAQUETE BINARIO Y TAMAÑO
     QByteArray bpaquete(spaquete.c_str(),spaquete.size());
     qint32 tbpaquete = bpaquete.size();
-    qDebug() << "TBSIZE: " << tbpaquete;
+    //qDebug() << "TBSIZE: " << tbpaquete;
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_0);
