@@ -14,6 +14,7 @@
 #include <QSslSocket>
 #include <syslog.h>
 #include <unistd.h>
+#include <QTimer>
 class clienteT : public QThread
 {
 
@@ -36,8 +37,10 @@ private:
     VAF paquete;
     qint64 contador;
     QString Rutadata, Rutacert;
-
-
+    QVector<int> timerbasedatos;
+    QVector<int> timerrecepcionpaquetes;
+    QTimer timerpaquete;
+    QTimer timerbdd;
 };
 
 #endif // CLIENTET_H

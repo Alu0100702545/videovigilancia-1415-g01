@@ -21,6 +21,7 @@
 #include <QBuffer>
 #include <QImageWriter>
 #include <QHostInfo>
+
 #include <openssl/ssl.h>
 #include <cvmatandqimage.h>
 #include <opencv2/core/core.hpp>

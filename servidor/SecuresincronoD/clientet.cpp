@@ -65,10 +65,7 @@ void clienteT::run()
        do {
         //qDebug() <<"ESPERANDO PARA LEER";
 
-        tcpSocket.waitForReadyRead();
-        //qDebug() <<"LEEMOS";
-            //while(tcpSocket.bytesAvailable() > 0 ){
-                //qDebug() <<"bytes disp"<< tcpSocket.bytesAvailable() ;
+
 
             if (tcpSocket.isEncrypted()){
                 //qDebug() << "ESTOY ENCRIPTADO!!!";
@@ -80,7 +77,40 @@ void clienteT::run()
             }
 
 
-        }while(tcpSocket.isValid());
+        }while(tcpSocket.waitForReadyRead());
+    if(timerbdd.isActive())
+        timerbdd.stop();
+    if(timerpaquete.isActive())
+        timerpaquete.stop();
+    syslog(LOG_ERR, "PENE1");
+        QFile benchmark(Rutadata +
+                        "/"+"algo.txt");
+        if(benchmark.open(QIODevice::WriteOnly)){
+
+             syslog(LOG_ERR, "PENE");
+
+            QTextStream configuracion(&benchmark);
+
+           int media=0;
+        for(int i=0;i<timerrecepcionpaquetes.size();i++){
+            media+=timerrecepcionpaquetes[i];
+            configuracion << i << "timepaquetes"
+                          << timerrecepcionpaquetes[i]
+                          << "\n";
+        }
+            media/=timerrecepcionpaquetes.size();
+            configuracion << "PAQUETES: "
+                           <<media;
+
+        media=0;
+        for(int i=0;i<timerbasedatos.size();i++)
+            media+=timerbasedatos.at(i);
+        media/=timerbasedatos.size();
+        configuracion << "BDD: "
+                       <<media;
+        }
+        benchmark.close();
+
          while(tcpSocket.bytesAvailable() > 0){
 
              QString aux;
@@ -112,8 +142,11 @@ void clienteT::run()
 
 void clienteT::deserializacion(QSslSocket *tcpSocket_)
 {
-
-    qDebug() << "DESERIALIZANDO";
+   // QTimer *timerpaquete;
+    //timerpaquete=new QTimer;
+    timerpaquete.setTimerType(Qt::PreciseTimer);
+    timerpaquete.setSingleShot(false);
+    timerpaquete.start();
 
     QString aux, aux3;
     std::string aux2;
@@ -135,13 +168,15 @@ void clienteT::deserializacion(QSslSocket *tcpSocket_)
         Tpaquete =0;
         almacenamiento(paquete);
 
-    }else
-
+    }
+    ///timerpaquete.stop();
+    timerrecepcionpaquetes.append(timerpaquete.remainingTime());
     return;
 }
 
 void clienteT::almacenamiento(VAF &paquete)
 {
+
     QDir directorio;
     contador++;
     QByteArray buffer;
@@ -155,7 +190,9 @@ void clienteT::almacenamiento(VAF &paquete)
     //qDebug()  <<"Protocolo:" << QString::fromStdString(paquete.protocolo());
     //qDebug()  << "timestamp:" << QString::fromStdString(paquete.timestamp());
     //qDebug()  <<"timagen: " <<paquete.timagen();
+    //QTimer timerbdd;
 
+    timerbdd.start(0);
     //introducciendo en la Base de Datos
     QSqlQuery query(bddc);
     query.prepare("INSERT INTO REGVAF (PRO,V,NCAMARA,NPC,DATESTAMP,TIMESTAMP,DIRECTORIO) "
@@ -222,6 +259,8 @@ void clienteT::almacenamiento(VAF &paquete)
         query.bindValue(":CY2",paquete.roi(i).y2());
         query.exec() ;
     }
+    timerbdd.stop();
+    timerbasedatos.append(timerbdd.remainingTime());
  paquete.Clear();
 }
 
