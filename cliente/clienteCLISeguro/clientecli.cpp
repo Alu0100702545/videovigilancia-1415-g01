@@ -223,12 +223,12 @@ void ClienteCLI::emitir(const QImage &image, int id){
 
     //IMAGEN
     QByteArray bimagen = buffer.buffer();
-    //qDebug()<< "imagen:"<< bimagen.size();
+
     paquete.set_timagen(bimagen.size());
     paquete.set_imagen(bimagen.data(),bimagen.size());
 
     //ROI
-    for(int i=0; i<contours.size();i++){
+    for(unsigned int i=0; i<contours.size();i++){
         ROI* roi=paquete.add_roi();
         roi->set_x1(contours[i][1].x);
         roi->set_y1(contours[i][1].y);
@@ -242,7 +242,7 @@ void ClienteCLI::emitir(const QImage &image, int id){
     //PAQUETE BINARIO Y TAMAÑO
     QByteArray bpaquete(spaquete.c_str(),spaquete.size());
     qint32 tbpaquete = bpaquete.size();
-    //qDebug() << "TBSIZE: " << tbpaquete;
+
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_0);

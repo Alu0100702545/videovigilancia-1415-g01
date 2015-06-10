@@ -13,21 +13,23 @@
 #include <unistd.h>
 #include <grp.h>
 
-/*void Signal_Handler(int sig) /* signal handler function
+/*void Signal_Handler(int sig) // signal handler function
     {
         switch(sig){
             case SIGHUP:
-                /* rehash the server
+                // rehash the server
                 syslog(LOG_ERR, "SIGHUP");
                 break;
             case SIGTERM:
-                /* finalize the server
+                //finalize the server
                 syslog(LOG_ERR, "SIGTERM");
                 exit(0);
                 break;
         }
     }*/
-
+QString *RutadatosVariables=NULL;
+QString *Rutacertificadoclave=NULL;
+int puerto=-1;
 Servidor *server;
 void Signal_Handler(int sig) /* signal handler function */
  {
@@ -36,7 +38,7 @@ void Signal_Handler(int sig) /* signal handler function */
              /* rehash the server */
              server->OpcionesLimpieza();
              delete server;
-             server =new Servidor;
+             server=new Servidor(*RutadatosVariables,*Rutacertificadoclave, puerto);
              server->inicioServer();
              syslog(LOG_ERR, "SIGHUP");
          break;
@@ -63,7 +65,7 @@ int main(int argc, char *argv[])
     }
     // Si pid es > 0, estamos en el proceso padre
     if (pid > 0) {
-        qDebug() << "KILL THE FATHER";
+
         // Terminar el proceso
         exit(0);
     }
@@ -72,13 +74,35 @@ int main(int argc, char *argv[])
     close(STDIN_FILENO); // fd 0
     close(STDOUT_FILENO); // fd 1
     close(STDERR_FILENO); // fd 2
-    //syslog(LOG_ERR, "DESCRIPTORES CERRADOS!");
+
     int fd0 = open("/dev/null", O_RDONLY); // fd0 == 0
     int fd1 = open("/dev/null", O_WRONLY); // fd0 == 1
     int fd2 = open("/dev/null", O_WRONLY); // fd0 == 2
-    //syslog(LOG_ERR, "PASADOS A FICHERO");
+
     QDir directorio;
-    directorio.mkpath(QString(APP_VARDIR));
+    if(directorio.exists(QString(APP_CONFFILE))){
+        QFile file(QString(APP_CONFFILE));
+        if (file.open(QIODevice::ReadOnly)){
+            QTextStream configuracion(&file);
+            RutadatosVariables= new QString(configuracion.readLine());
+            Rutacertificadoclave= new QString(configuracion.readLine());
+            puerto=(configuracion.readLine()).toInt();
+        }else
+            syslog(LOG_ERR, "Archivo de configuracion no se pudo abrir");
+        file.close();
+    }else{
+        syslog(LOG_ERR, "No hay archivo de configuracion");
+
+    }
+
+    if (RutadatosVariables==NULL)
+        RutadatosVariables=new QString(APP_VARDIR);
+    if (Rutacertificadoclave==NULL)
+        Rutacertificadoclave=new QString(APP_CERTCLA);
+    if (puerto==-1)
+        puerto=33333;
+    directorio.mkpath(*RutadatosVariables);
+    directorio.mkpath(*Rutacertificadoclave);
     pid_t sid;
     // Intentar crear una nueva sesión
     sid = setsid();
@@ -93,7 +117,7 @@ int main(int argc, char *argv[])
         exit(12);
     }
 
-    // Cambiar el usuario efectivo del proceso a 'midemonio'
+
 
     // Cambiar el grupo efectivo del proceso a 'midemonio'
     group* group = getgrnam("midemonio");
@@ -102,34 +126,32 @@ int main(int argc, char *argv[])
     if(group!=NULL){
         if(setegid(group->gr_gid)!=0){
             syslog(LOG_ERR, "ERROR EN SETEGID");
-            syslog(LOG_ERR, strerror(errno));
+            //syslog(LOG_ERR, strerror(errno));
         }
     }
     else
         syslog(LOG_ERR, "No existe el grupo");
 
     passwd* user = getpwnam("midemonio");
-    const char* myChar = QString(APP_VARDIR).toStdString().c_str();
+    const char* myChar =RutadatosVariables->toStdString().c_str();
     chown(myChar, user->pw_uid,group->gr_gid);
-    syslog(LOG_ERR, "GETPWNAM?");
+    myChar =Rutacertificadoclave->toStdString().c_str();
+    chown(myChar, user->pw_uid,group->gr_gid);
+    // Cambiar el usuario efectivo del proceso a 'midemonio'
     if (user!=NULL){
         if(seteuid(user->pw_uid)!=0){
             syslog(LOG_ERR, "ERROR EN SETEUID");
-            syslog(LOG_ERR, strerror(errno));
+            //syslog(LOG_ERR, strerror(errno));
         }
     }
     else
         syslog(LOG_ERR, "No existe el usuario");
 
-    syslog(LOG_ERR, "TUTU");
+
     //===============================================================
-    server=new Servidor;
+    server=new Servidor(*RutadatosVariables,*Rutacertificadoclave, puerto);
     QCoreApplication::setSetuidAllowed(true);
     QCoreApplication a(argc, argv);
-    syslog(LOG_ERR, "BUCLE DE MENSAJES");
-
-    //syslog(LOG_ERR, "En serio tienes problema aqui?");
-    //server.OpcionesLimpieza();
     server->inicioServer();
     signal(SIGHUP,Signal_Handler); /* hangup signal */
     signal(SIGTERM,Signal_Handler); /* software termination signal from kill */

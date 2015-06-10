@@ -10,17 +10,11 @@ clienteT::clienteT(qintptr socketDescriptor, QSqlDatabase &bdd,QString Rutadatos
     Tpaquete =0;
     Rutadata=RutadatosVariables;
     Rutacert=Rutacertificadoclave;
-    syslog(LOG_ERR, "CREE EL CLIENTE");
     paquete.Clear();
     if (!bddc.open()) {
-       qDebug() <<"No se pudo acceder a los datos";
+        syslog(LOG_ERR, "NO SE PUDO ABRIR LA BDD . CERRANDO SERVIDOR");
        exit(1);
     }
-
-
-
-
-
 }
 
 void clienteT::run()
@@ -28,30 +22,16 @@ void clienteT::run()
         QSslSocket tcpSocket;
         // Inicializarlo con el socket nativo de la conexión con el cliente
         if (tcpSocket.setSocketDescriptor(socketDescriptor_)) {
-             QFile fileCert(Rutacert+"/"+"videovigilancia.crt");
-          connect(&tcpSocket,SIGNAL(sslErrors(QList<QSslError>)),&tcpSocket,SLOT(ignoreSslErrors()));
 
-          qDebug() <<"existe pem:"<<QFile::exists(Rutacert+"/"+"videovigilancia.crt");
-          qDebug() <<" ceritifado abierto: " <<fileCert.open(QIODevice::ReadOnly);
-          fileCert.close();
-          QFile algo(Rutacert+"/"+"videovigilancia.key");
-          qDebug() <<" Key abierta: " <<algo.open(QIODevice::ReadOnly);
-          algo.close();
+          connect(&tcpSocket,SIGNAL(sslErrors(QList<QSslError>)),&tcpSocket,SLOT(ignoreSslErrors()));
           tcpSocket.setProtocol(QSsl::AnyProtocol);
           tcpSocket.ignoreSslErrors();
-          //tcpSocket.addDefaultCaCertificates("")
+
           tcpSocket.setPrivateKey(Rutacert+"/"+"videovigilancia.key");
           tcpSocket.setPeerVerifyMode(QSslSocket::QueryPeer);
           tcpSocket.addCaCertificates(Rutacert+"/"+"videovigilancia.crt");
           tcpSocket.setLocalCertificate(Rutacert+"/"+"videovigilancia.crt");
           tcpSocket.startServerEncryption();
-          qDebug() <<"certificado es nulo ?: "<<tcpSocket.localCertificate().isNull();
-          qDebug() <<"soy valido ?: "<<tcpSocket.isValid();
-          qDebug() <<"estoy encriptado ?: "<<tcpSocket.isEncrypted();
-          qDebug() << "nuevaConexion";
-
-
-
           tcpSocket.waitForEncrypted();
           qDebug() <<"estoy encriptado ?: "<<tcpSocket.isEncrypted();
             if (tcpSocket.isEncrypted())
@@ -63,53 +43,53 @@ void clienteT::run()
 
         }
        do {
-        //qDebug() <<"ESPERANDO PARA LEER";
-
-
-
-            if (tcpSocket.isEncrypted()){
-                //qDebug() << "ESTOY ENCRIPTADO!!!";
-                   deserializacion(&tcpSocket);
+          if (tcpSocket.isEncrypted()){
+              deserializacion(&tcpSocket);
 
             }else{
-                qDebug() << "O NO T_T";
+
                 return;
             }
-
-
         }while(tcpSocket.waitForReadyRead());
-    if(timerbdd.isActive())
-        timerbdd.stop();
-    if(timerpaquete.isActive())
-        timerpaquete.stop();
-    syslog(LOG_ERR, "PENE1");
+    //Calculo de Medias para el Benchmark
         QFile benchmark(Rutadata +
-                        "/"+"algo.txt");
+                        "/"+ QString::number(tcpSocket.socketDescriptor())+".txt");
         if(benchmark.open(QIODevice::WriteOnly)){
 
-             syslog(LOG_ERR, "PENE");
-
             QTextStream configuracion(&benchmark);
+            int counter=0;
+            int media=0;
+            for(int i=0;i<timerrecepcionpaquetes.size()+counter && i-counter <25;i++){
 
-           int media=0;
-        for(int i=0;i<timerrecepcionpaquetes.size();i++){
-            media+=timerrecepcionpaquetes[i];
-            configuracion << i << "timepaquetes"
-                          << timerrecepcionpaquetes[i]
+                if (timerrecepcionpaquetes[i]!=0){
+                        media+=timerrecepcionpaquetes[i];
+                }else
+                    counter++;
+
+            }
+            configuracion <<"Numero de pruebas sobre todo el proceso de paquetes capturados: "
+                          << NP
                           << "\n";
-        }
-            media/=timerrecepcionpaquetes.size();
-            configuracion << "PAQUETES: "
-                           <<media;
+            media/=NP;
+            configuracion << "Media de ms sobre el proceso de paquetes capturados : "
+                          <<media
+                          <<"\n";
 
-        media=0;
-        for(int i=0;i<timerbasedatos.size();i++)
-            media+=timerbasedatos.at(i);
-        media/=timerbasedatos.size();
-        configuracion << "BDD: "
-                       <<media;
-        }
-        benchmark.close();
+            media=0;
+            for(int i=0+counter;i<timerbasedatos.size()+counter && i-counter<25;i++){
+                    media+=timerbasedatos.at(i);
+            }
+            configuracion <<" Numero de pruebas en la bdd "
+                            << NP
+                            << "\n";
+
+
+            media/=NP;
+            configuracion << "Media ms en la bdd: "
+                            <<media
+                            <<"\n";
+            }
+          benchmark.close();
 
          while(tcpSocket.bytesAvailable() > 0){
 
@@ -122,8 +102,7 @@ void clienteT::run()
               {
                   in >> Tpaquete;
                   aux=QString::number(Tpaquete);
-                  qDebug() <<"tamaño paquete:"<< aux;
-                 //Teniendo el tamaño de paquete lo leemos del buffer
+                  //Teniendo el tamaño de paquete lo leemos del buffer
               } if ((Tpaquete !=0) && (tcpSocket.bytesAvailable() >=Tpaquete )){
                  algo=tcpSocket.read(Tpaquete);
                  paquete.ParseFromString(algo.toStdString());
@@ -142,24 +121,17 @@ void clienteT::run()
 
 void clienteT::deserializacion(QSslSocket *tcpSocket_)
 {
-   // QTimer *timerpaquete;
-    //timerpaquete=new QTimer;
-    timerpaquete.setTimerType(Qt::PreciseTimer);
-    timerpaquete.setSingleShot(false);
-    timerpaquete.start();
 
-    QString aux, aux3;
-    std::string aux2;
+    timerpaquete.restart();
+    timerpaquete.start();
     QByteArray algo;
     QDataStream in(tcpSocket_);
     in.setVersion(QDataStream::Qt_4_0);
         //Recojiendo en tamaño del paquete
-    //qDebug() <<"bytes disponibles"<< tcpSocket_->bytesAvailable() ;
+
      if(tcpSocket_->bytesAvailable() >= (int)(sizeof(qint32))&& (Tpaquete==0))
      {
          in >> Tpaquete;
-         aux=QString::number(Tpaquete);
-         qDebug() <<"tamaño paquete:"<< aux;
         //Teniendo el tamaño de paquete lo leemos del buffer
      }
      if ((Tpaquete !=0) && (tcpSocket_->bytesAvailable() >=Tpaquete )){
@@ -169,8 +141,8 @@ void clienteT::deserializacion(QSslSocket *tcpSocket_)
         almacenamiento(paquete);
 
     }
-    ///timerpaquete.stop();
-    timerrecepcionpaquetes.append(timerpaquete.remainingTime());
+
+    timerrecepcionpaquetes.append(timerpaquete.elapsed());
     return;
 }
 
@@ -185,14 +157,8 @@ void clienteT::almacenamiento(VAF &paquete)
     im.loadFromData(buffer, "JPEG");
 
    //control de paquetes
-    //qDebug() <<"nombre camara:"<< QString::fromStdString(paquete.nombrecamara());
-    //qDebug()  << "nombre pc:"<< QString::fromStdString(paquete.nombrepc());
-    //qDebug()  <<"Protocolo:" << QString::fromStdString(paquete.protocolo());
-    //qDebug()  << "timestamp:" << QString::fromStdString(paquete.timestamp());
-    //qDebug()  <<"timagen: " <<paquete.timagen();
-    //QTimer timerbdd;
-
-    timerbdd.start(0);
+    timerbdd.restart();
+    timerbdd.start();
     //introducciendo en la Base de Datos
     QSqlQuery query(bddc);
     query.prepare("INSERT INTO REGVAF (PRO,V,NCAMARA,NPC,DATESTAMP,TIMESTAMP,DIRECTORIO) "
@@ -217,9 +183,6 @@ void clienteT::almacenamiento(VAF &paquete)
 
     std::string time= QString::fromStdString(paquete.timestamp()).toUtf8().toHex().toStdString();
 
-    //qDebug() <<QString::fromStdString(paquete.timestamp());
-    //qDebug() << QString::fromStdString(time);
-
     QString hora= QString::fromStdString(
                 time.substr(0,6));
 
@@ -231,7 +194,6 @@ void clienteT::almacenamiento(VAF &paquete)
     QString segundosMs=QString::fromStdString(
                 time.substr(18,time.size()-18));
 
-
     QString direct=  Rutadata +
             "/"+"clientes/" +pc+"/"+camara+"/"+date+"/"+hora+
             "/"+ minutos+"/"+segundos+"/" +segundosMs +".jpeg";
@@ -239,15 +201,8 @@ void clienteT::almacenamiento(VAF &paquete)
 
     directorio.mkpath( Rutadata +"/"+"clientes/" +pc+"/"+camara+"/"+date+"/"+hora+
                       "/"+ minutos+"/"+segundos);
-
-
-
-    qDebug() << query.exec();
-
-
-
-    qDebug() << im.save(direct);
-    //Limpieza del paquete
+    query.exec();
+    im.save(direct);
     paquete.roi_size() ;
     for(int i=0;i <paquete.roi_size();i++){
         query.prepare("INSERT INTO ROI (DIRECTORIO,CX1,CX2,CY1,CY2) "
@@ -259,8 +214,8 @@ void clienteT::almacenamiento(VAF &paquete)
         query.bindValue(":CY2",paquete.roi(i).y2());
         query.exec() ;
     }
-    timerbdd.stop();
-    timerbasedatos.append(timerbdd.remainingTime());
- paquete.Clear();
+
+    timerbasedatos.append(timerbdd.elapsed());
+    paquete.Clear();
 }
 

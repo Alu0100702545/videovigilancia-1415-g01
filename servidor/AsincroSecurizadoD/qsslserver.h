@@ -9,8 +9,9 @@ class QSslServer : public QTcpServer
 
 private:
     QSqlDatabase Vdb;
+    QString Rutadatos, Rutacert;
 public:
-    QSslServer(QObject *parent , QSqlDatabase &Vdba);
+    QSslServer(QObject *parent , QSqlDatabase &Vdba,QString RutadatosVariables,QString Rutacertificadoclave);
 
 
 public slots:

@@ -3,6 +3,7 @@
 
 #include <QTcpSocket>
 #include <QTcpServer>
+#include <QSettings>
 #include "client.h"
 #include "qsslserver.h"
 
@@ -15,13 +16,15 @@ private:
     QSqlDatabase Vdb;
     QMap<qintptr,client*> clients;
     QSettings settings;
+
+    QSettings *rutas;
 signals:
 
     void algo();
 
 public:
     void OpcionesLimpieza();
-    Servidor();
+    Servidor(QString RutadatosVariables,QString Rutacertificadoclave,int  Puerto);
     void inicioServer();
 
 

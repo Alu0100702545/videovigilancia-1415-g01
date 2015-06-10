@@ -39,31 +39,28 @@ void Servidor::OpcionesLimpieza()
     }
 }
 
-Servidor::Servidor():
+Servidor::Servidor(QString RutadatosVariables,QString Rutacertificadoclave,int  Puerto):
 server(NULL)
 {
 
-    if (settings.value("PORT").isNull())
-        settings.setValue("PORT",33333);
-
     QDir directorio;
+    rutas = new QSettings;
+    rutas->setValue("RUTADATOS",RutadatosVariables);
+    rutas->setValue("RUTACERT",Rutacertificadoclave);
+    rutas->setValue("PORT",Puerto);
     Vdb=QSqlDatabase::addDatabase("QSQLITE", "SQLITE");
-    directorio.mkpath(QString(APP_VARDIR)+"/BDD");
-    directorio.mkpath(QString(APP_VARDIR)+ "/clientes");
-    Vdb.setDatabaseName(QString(APP_VARDIR)+"/BDD/"+"videovigilancia.sqlite");
+    directorio.mkpath(rutas->value("RUTADATOS").toString()+"/BDD");
+    directorio.mkpath(rutas->value("RUTADATOS").toString()+ "/clientes");
+    Vdb.setDatabaseName(rutas->value("RUTADATOS").toString()+"/BDD/"+"videovigilancia.sqlite");
     bool algo = Vdb.open();
     if (!algo) {
-        qDebug() << Vdb.lastError().text();
-        qDebug() << QSqlDatabase::drivers();
+        syslog(LOG_ERR, "NO SE PUDO ABRIR LA BDD . CERRANDO SERVIDOR");
         exit(1);
     }
-    server= new QSslServer(this,Vdb);
-    server->setMaxPendingConnections(10);
     QSqlQuery query(Vdb);
 
     query.exec("CREATE TABLE IF NOT EXISTS regvaf "
-               "("
-               " PRO VARCHAR(5),"
+               "(PRO VARCHAR(5),"
                " V VARBINARY(1),"
                " NCAMARA VARCHAR(60),"
                " NPC VARCHAR(60),"
@@ -74,26 +71,26 @@ server(NULL)
     query.exec("CREATE TABLE IF NOT EXISTS ROI "
                "("
                " DIRECTORIO VARCHAR(2000),"
-               " ANCHO INT(4),"
-               " ALTO  INT(4),"
-               " CRX  INT(4),"
-               " CRY  INT(4),"
-               " PRIMARY KEY (DIRECTORIO,ANCHO,ALTO,CRX,CRY),"
+               " CX1 INT(4),"
+               " CX2  INT(4),"
+               " CY1  INT(4),"
+               " CY2  INT(4),"
+               " PRIMARY KEY (DIRECTORIO,CX1,CX2,CY1,CY2),"
                " FOREIGN KEY (DIRECTORIO) REFERENCES regvaf ON DELETE CASCADE)");
-
-
 
     QStringList table=Vdb.tables();
     qDebug() << table;
+
+
+
+    server= new QSslServer(this,Vdb,rutas->value("RUTADATOS").toString(),rutas->value("RUTACERT").toString());
+    server->setMaxPendingConnections(10);
 
 }
 
 void Servidor::inicioServer()
 {
     server->listen(QHostAddress::AnyIPv4,settings.value("PORT").toInt());
-    //connect(server,SIGNAL(newConnection()),this,SLOT(conexionesPen()));
-    //connect(server,SIGNAL(newConnection()),this,SLOT(fallos()));
-    qDebug() << "ESCUCHANDO";
 
 }
 
@@ -101,7 +98,6 @@ void Servidor::actualizar_puerto(int puerto)
 {
     settings.setValue("PORT",puerto);
     server->close();
-
     server->listen(QHostAddress::AnyIPv4,settings.value("PORT").toInt());
 
 

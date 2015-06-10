@@ -26,13 +26,14 @@
 #include <iostream>
 #include <QSslSocket>
 #include <openssl/ssl.h>
+#include <QTime>
 
-
+#define NP 30
 class client : public QObject
 {
     Q_OBJECT
 public:
-    explicit client(QSslSocket* tcpSocket,QSqlDatabase &bdd,QObject *parent = 0);
+    explicit client(QSslSocket* tcpSocket,QSqlDatabase &bdd,QString RutadatosVariables,QObject *parent = 0);
     ~client();
     QSslSocket *get_tcp();
     qintptr getsocketDescriptor();
@@ -50,9 +51,13 @@ private:
      QSslSocket *tcpSocket_;
      qint32 Tpaquete;
      QSqlDatabase bddc;
+     QString Rutadata;
      VAF paquete;
      void almacenamiento(VAF);
      qintptr socket;
+     QVector<int> timerbasedatos;
+     QVector<int> timerrecepcionpaquetes;
+
 
 };
 

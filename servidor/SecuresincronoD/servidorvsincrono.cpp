@@ -16,8 +16,7 @@ servidorvsincrono::servidorvsincrono(QString RutadatosVariables,QString Rutacert
     //Vdb.setDatabaseName("videovigilancia.sqlite");
     bool algo = Vdb.open();
     if (!algo) {
-        //qDebug() << Vdb.lastError();
-        qDebug() << QSqlDatabase::drivers();
+        syslog(LOG_ERR, "NO SE PUDO ABRIR LA BDD . CERRANDO SERVIDOR");
         exit(1);
     }
     QSqlQuery query(Vdb);
@@ -38,7 +37,7 @@ servidorvsincrono::servidorvsincrono(QString RutadatosVariables,QString Rutacert
                " CX2  INT(4),"
                " CY1  INT(4),"
                " CY2  INT(4),"
-               " PRIMARY KEY (DIRECTORIO,ANCHO,ALTO,CRX,CRY),"
+               " PRIMARY KEY (DIRECTORIO,CX1,CX2,CY1,CY2),"
                " FOREIGN KEY (DIRECTORIO) REFERENCES regvaf ON DELETE CASCADE)");
 
     QStringList table=Vdb.tables();
@@ -57,15 +56,11 @@ void servidorvsincrono::inicioServer()
 {
 
     serverS->listen(QHostAddress::AnyIPv4,rutas->value("PORT").toInt());
-    //connect(server,SIGNAL(newConnection()),this,SLOT(conexionesPen()));
-    syslog(LOG_ERR, "ESCUCHANDO");
 }
 void servidorvsincrono::OpcionesLimpieza()
 {
     int limpieza=1;
-    std::cout <<"Desea hacer limpieza del directorio variable(1 caso afirmativo)"<< std::endl;
-    std::cin >> limpieza;
-    QDir directorio;
+     QDir directorio;
     if (limpieza==1){
     //qDebug() << ;
         QSqlQuery query(Vdb);

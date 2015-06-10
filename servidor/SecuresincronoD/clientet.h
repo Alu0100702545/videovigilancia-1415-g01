@@ -15,15 +15,16 @@
 #include <syslog.h>
 #include <unistd.h>
 #include <QTimer>
+#include <QTime>
+#define NP 30
 class clienteT : public QThread
 {
 
     Q_OBJECT
 public:
     clienteT(qintptr socketDescriptor, QSqlDatabase &bdd,QString RutadatosVariables,QString Rutacertificadoclave,QObject *parent);
-        //: QThread(parent), socketDescriptor_(socketDescriptor){}
+
     void run();
-    //~clienteT();
     void deserializacion(QSslSocket * tcpSocket_);
     void almacenamiento(VAF &paquete);
 signals:
@@ -39,8 +40,8 @@ private:
     QString Rutadata, Rutacert;
     QVector<int> timerbasedatos;
     QVector<int> timerrecepcionpaquetes;
-    QTimer timerpaquete;
-    QTimer timerbdd;
+    QTime timerpaquete;
+    QTime timerbdd;
 };
 
 #endif // CLIENTET_H

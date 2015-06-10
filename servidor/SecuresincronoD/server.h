@@ -18,7 +18,7 @@ protected:
 private:
      QSqlDatabase bddc;
      QString Rutadatos, Rutacertificado;
-     //QMap<qintptr,clienteT*> clients;
+
 public slots:
 
 };
