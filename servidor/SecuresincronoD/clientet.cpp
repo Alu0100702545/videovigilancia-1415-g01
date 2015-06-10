@@ -55,41 +55,37 @@ void clienteT::run()
         QFile benchmark(Rutadata +
                         "/"+ QString::number(tcpSocket.socketDescriptor())+".txt");
         if(benchmark.open(QIODevice::WriteOnly)){
+           QTextStream configuracion(&benchmark);
 
-            QTextStream configuracion(&benchmark);
-            int counter=0;
-            int media=0;
-            for(int i=0;i<timerrecepcionpaquetes.size()+counter && i-counter <25;i++){
+           int media=0;
+           for(int i=0;i<timerrecepcionpaquetes.size() && i<NP;i++){
+                    media+=timerrecepcionpaquetes[i];
 
-                if (timerrecepcionpaquetes[i]!=0){
-                        media+=timerrecepcionpaquetes[i];
-                }else
-                    counter++;
+           }
 
-            }
-            configuracion <<"Numero de pruebas sobre todo el proceso de paquetes capturados: "
-                          << NP
-                          << "\n";
-            media/=NP;
-            configuracion << "Media de ms sobre el proceso de paquetes capturados : "
-                          <<media
-                          <<"\n";
+           configuracion <<"Numero de pruebas sobre todo el proceso de paquetes capturados: "
+                         << NP
+                         << "\n";
+           media/=NP;
+           configuracion << "Media de ms sobre el proceso de paquetes capturados : "
+                         <<media
+                         <<"\n";
 
-            media=0;
-            for(int i=0+counter;i<timerbasedatos.size()+counter && i-counter<25;i++){
-                    media+=timerbasedatos.at(i);
-            }
-            configuracion <<" Numero de pruebas en la bdd "
-                            << NP
-                            << "\n";
+           media=0;
+           for(int i=0;i<timerbasedatos.size() && i <NP;i++){
+               media+=timerbasedatos[i];
+           }
+           configuracion <<" Numero de pruebas en la bdd "
+                           << NP
+                           << "\n";
 
 
-            media/=NP;
-            configuracion << "Media ms en la bdd: "
-                            <<media
-                            <<"\n";
-            }
-          benchmark.close();
+           media/=NP;
+           configuracion << "Media ms en la bdd: "
+                           <<media
+                           <<"\n";
+           }
+        benchmark.close();
 
          while(tcpSocket.bytesAvailable() > 0){
 
@@ -141,8 +137,8 @@ void clienteT::deserializacion(QSslSocket *tcpSocket_)
         almacenamiento(paquete);
 
     }
-
-    timerrecepcionpaquetes.append(timerpaquete.elapsed());
+     if ( timerpaquete.elapsed()>1)
+           timerrecepcionpaquetes.append(timerpaquete.elapsed());
     return;
 }
 

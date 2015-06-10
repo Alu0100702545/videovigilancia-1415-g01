@@ -33,6 +33,41 @@ qintptr client::getsocketDescriptor()
 
 void client::limpiarbuffer()
 {
+    QFile benchmark(Rutadata +
+                    "/"+ QString::number(tcpSocket_->socketDescriptor())+".txt");
+    if(benchmark.open(QIODevice::WriteOnly)){
+       QTextStream configuracion(&benchmark);
+
+       int media=0;
+       for(int i=0;i<timerrecepcionpaquetes.size() && i<NP;i++){
+                media+=timerrecepcionpaquetes[i];
+
+       }
+
+       configuracion <<"Numero de pruebas sobre todo el proceso de paquetes capturados: "
+                     << NP
+                     << "\n";
+       media/=NP;
+       configuracion << "Media de ms sobre el proceso de paquetes capturados : "
+                     <<media
+                     <<"\n";
+
+       media=0;
+       for(int i=0;i<timerbasedatos.size() && i <NP;i++){
+           media+=timerbasedatos[i];
+       }
+       configuracion <<" Numero de pruebas en la bdd "
+                       << NP
+                       << "\n";
+
+
+       media/=NP;
+       configuracion << "Media ms en la bdd: "
+                       <<media
+                       <<"\n";
+       }
+    benchmark.close();
+
      while(tcpSocket_->bytesAvailable() > 0){
          QByteArray algo;
          QDataStream in(tcpSocket_);
@@ -53,40 +88,6 @@ void client::limpiarbuffer()
 
      }
       tcpSocket_->disconnectFromHost();
-     QFile benchmark(Rutadata +
-                     "/"+ QString::number(tcpSocket_->socketDescriptor())+".txt");
-     if(benchmark.open(QIODevice::WriteOnly)){
-        QTextStream configuracion(&benchmark);
-
-        int media=0;
-        for(int i=0;i<timerrecepcionpaquetes.size() && i<NP;i++){
-                 media+=timerrecepcionpaquetes[i];
-
-        }
-
-        configuracion <<"Numero de pruebas sobre todo el proceso de paquetes capturados: "
-                      << NP
-                      << "\n";
-        media/=NP;
-        configuracion << "Media de ms sobre el proceso de paquetes capturados : "
-                      <<media
-                      <<"\n";
-
-        media=0;
-        for(int i=0;i<timerbasedatos.size() && i <NP;i++){
-            media+=timerbasedatos[i];
-        }
-        configuracion <<" Numero de pruebas en la bdd "
-                        << NP
-                        << "\n";
-
-
-        media/=NP;
-        configuracion << "Media ms en la bdd: "
-                        <<media
-                        <<"\n";
-        }
-     benchmark.close();
 
 }
 
@@ -179,9 +180,6 @@ void client::almacenamiento(VAF paquete)
 
     query.exec();
 
-
-
-    im.save(direct);
     //Limpieza del paquete
     paquete.roi_size() ;
     for(int i=0;i <paquete.roi_size();i++){
@@ -196,7 +194,8 @@ void client::almacenamiento(VAF paquete)
     }
 
     timerbasedatos.append(timerbdd.elapsed());
- paquete.Clear();
+    im.save(direct);
+    paquete.Clear();
 }
 
 
