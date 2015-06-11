@@ -56,6 +56,7 @@ public:
 
 public slots:
     void error(QAbstractSocket::SocketError algo);
+    void reconnecting();
 private slots:
 
     void on_BotonCerrar_clicked();

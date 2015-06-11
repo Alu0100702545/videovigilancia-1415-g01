@@ -14,7 +14,8 @@ ClienteCLI::ClienteCLI() :
     conexion->setProtocol(QSsl::SslV3);
     //errors.append(QSslError::SelfSignedCertificate);
     connect(conexion,SIGNAL(sslErrors(QList<QSslError>)),conexion,SLOT(ignoreSslErrors()));
-
+    connect(conexion,SIGNAL(disconnected()),this,SLOT(reconnecting()));
+    connect(conexion,SIGNAL(disconnected()),conexion,SLOT(deleteLater()));
 
     QRegExp rx("(\\,|\\/|\\:|\\t)");
     QString sometext(getenv("SESSION_MANAGER"));
@@ -251,7 +252,22 @@ void ClienteCLI::emitir(const QImage &image, int id){
     //ENVIO
     conexion ->write(block); //TAMAÑO
     conexion->write(bpaquete); //PAQUETE
-    }
+ }
+}
+
+void ClienteCLI::reconnecting()
+{
+    if (QSslSocket::supportsSsl()) {
+       // connect(conexion, SIGNAL(sslErrors(QList<QSslError>)),conexion,SLOT(ignoreSslErrors()));
+       //connect(socket, SIGNAL(encrypted()), this, SLOT(ready()));
+      conexion->connectToHostEncrypted(settings.value("IP").toString(),settings.value("PORT").toInt());
+     } else {
+       qDebug()<< "No SSL Support"
+         "SSL is not supported by your version of Qt. You must obtain a version of Qt"
+         "that has SSL support enabled. If you believe that your version of Qt has"
+         "SSL support enabled, you may need to install the OpenSSL run-time libraries.";
+     }
+
 }
 
 void ClienteCLI::delete_all(){

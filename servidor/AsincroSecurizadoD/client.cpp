@@ -9,6 +9,7 @@ client::client(QSslSocket *tcpSocket,QSqlDatabase &bdd, QString RutadatosVariabl
     connect(tcpSocket_,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(fallos()));
     connect(tcpSocket_,SIGNAL(sslErrors(QList<QSslError>)),this,SLOT(fallos()));
     connect(tcpSocket_,SIGNAL(disconnected()), this, SLOT(limpiarbuffer()));
+    connect(tcpSocket_,SIGNAL(disconnected()), tcpSocket_, SLOT(deleteLater()));
 
     if (!bddc.open()) {
         syslog(LOG_ERR, "NO SE PUDO ABRIR LA BDD . CERRANDO SERVIDOR");

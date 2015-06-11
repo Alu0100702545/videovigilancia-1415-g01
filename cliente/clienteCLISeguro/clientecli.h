@@ -78,6 +78,7 @@ private slots:
    void emitir(const QImage &image, int id);
 
 public slots:
+   void reconnecting();
    void handleSigTerm();
 
 private:

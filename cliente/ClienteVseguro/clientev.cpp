@@ -22,11 +22,12 @@ ClienteV::ClienteV(QWidget *parent) :
     conexion->setProtocol(QSsl::SslV3);
     errors.append(QSslError::SelfSignedCertificate);
     connect(conexion,SIGNAL(sslErrors(QList<QSslError>)),conexion,SLOT(ignoreSslErrors()));
-     connect(conexion,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(error(QAbstractSocket::SocketError)));
+
+    connect(conexion,SIGNAL(disconnected()),this,SLOT(reconnecting()));
+    connect(conexion,SIGNAL(disconnected()),conexion,SLOT(deleteLater()));
+    connect(conexion,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(error(QAbstractSocket::SocketError)));
 
 
-     //qDebug() << getenv("USERNAME");
-    //qDebug() << getenv("SESSION_MANAGER");
 
     QRegExp rx("(\\,|\\/|\\:|\\t)");
     QString sometext(getenv("SESSION_MANAGER"));
@@ -113,9 +114,7 @@ void ClienteV::on_BotonCapturar_clicked()
 
         conexion->setPeerVerifyMode(QSslSocket::VerifyPeer);
         if (QSslSocket::supportsSsl()) {
-           // connect(conexion, SIGNAL(sslErrors(QList<QSslError>)),conexion,SLOT(ignoreSslErrors()));
-           //connect(socket, SIGNAL(encrypted()), this, SLOT(ready()));
-          conexion->connectToHostEncrypted(settings.value("IP").toString(),settings.value("PORT").toInt());
+            conexion->connectToHostEncrypted(settings.value("IP").toString(),settings.value("PORT").toInt());
          } else {
            QMessageBox::critical(this, "No SSL Support",
              "SSL is not supported by your version of Qt. You must obtain a version of Qt"
@@ -123,8 +122,7 @@ void ClienteV::on_BotonCapturar_clicked()
              "SSL support enabled, you may need to install the OpenSSL run-time libraries.");
          }
     }
-    //qDebug() << NCamaras;
-    //qDebug() << "conexion" <<conexion->errorString();
+
     if(NCamaras==2){
         NLabelsY=1;
         NLabelsX=2;
@@ -271,7 +269,7 @@ void ClienteV::emitir(const QImage &image, const int &pos, ContoursType contours
     paquete.set_imagen(bimagen.data(),bimagen.size());
 
     //ROI
-    for(int i=0; i<contours.size();i++){
+    for(unsigned int i=0; i<contours.size();i++){
         ROI* roi=paquete.add_roi();
         roi->set_x1(contours[i][1].x);
         roi->set_y1(contours[i][1].y);
@@ -327,7 +325,7 @@ void ClienteV::image_s(const QImage &image, const int &pos)
         // Aquí va el código ódigo que usa los contornos encontrados...
         // P. ej. usar cv::boundingRect() para obtener el cuadro
         // delimitador de cada uno y pintarlo en la imagen original
-        for(int i=0; i<contours.size();i++){
+        for(unsigned int i=0; i<contours.size();i++){
             cv::Rect rect=cv::boundingRect(contours[i]);
             cv::rectangle(imagen, rect, CV_RGB(255,0,0));
         }
@@ -350,4 +348,20 @@ void ClienteV::error(QAbstractSocket::SocketError algo)
     int i= algo;
     qDebug() << "que Error"<< conexion->errorString();
     qDebug() <<"error"<< i;
+}
+
+void ClienteV::reconnecting()
+{
+    if(settings.value("transmitir")==true){
+        conexion->setPeerVerifyMode(QSslSocket::VerifyPeer);
+        if (QSslSocket::supportsSsl()) {
+            connect(conexion, SIGNAL(sslErrors(QList<QSslError>)),conexion,SLOT(ignoreSslErrors()));
+            conexion->connectToHostEncrypted(settings.value("IP").toString(),settings.value("PORT").toInt());
+         } else {
+           QMessageBox::critical(this, "No SSL Support",
+             "SSL is not supported by your version of Qt. You must obtain a version of Qt"
+             "that has SSL support enabled. If you believe that your version of Qt has"
+             "SSL support enabled, you may need to install the OpenSSL run-time libraries.");
+         }
+    }
 };

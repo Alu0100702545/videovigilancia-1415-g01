@@ -21,6 +21,7 @@ void server::incomingConnection(qintptr socketDescriptor)
 {
 
         clienteT *thread = new clienteT(socketDescriptor,bddc,Rutadatos,Rutacertificado, this);
+
         connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
         thread->start();
 
