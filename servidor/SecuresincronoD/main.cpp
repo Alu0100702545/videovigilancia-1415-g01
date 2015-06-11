@@ -57,7 +57,7 @@ void Signal_Handler(int sig) /* signal handler function */
 int main(int argc, char *argv[])
 {
     openlog(argv[0], LOG_NOWAIT | LOG_PID, LOG_USER);
-
+    qputenv("QT_LOGGING_RULES", "qt.network.ssl.warning=false");
     pid_t pid;
     // Nos clonamos a nosotros mismos creando un proceso hijo
     pid = fork();

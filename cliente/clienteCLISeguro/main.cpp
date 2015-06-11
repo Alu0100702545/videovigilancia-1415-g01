@@ -3,6 +3,7 @@
 #include <clientecli.h>
 #include <QDebug>
 #include <signal.h>
+ #include <openssl/ssl.h>
 
 ClienteCLI* w;
 
@@ -13,6 +14,7 @@ void signalHandler(int signum)
 
 int main(int argc, char *argv[])
 {
+     qputenv("QT_LOGGING_RULES", "qt.network.ssl.warning=false");
     QCoreApplication a(argc, argv);
 
     QCommandLineParser parser;

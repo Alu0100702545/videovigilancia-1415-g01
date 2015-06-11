@@ -9,6 +9,7 @@ ClienteCLI::ClienteCLI() :
     devices = QCamera::availableDevices();
     NCamaras=devices.size();
     ListaCamaras=new QVector<CAM>;
+
     conexion=new QSslSocket;
     //QList<QSslError> errors;
     conexion->setProtocol(QSsl::SslV3);

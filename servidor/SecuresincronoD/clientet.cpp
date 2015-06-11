@@ -20,7 +20,9 @@ clienteT::clienteT(qintptr socketDescriptor, QSqlDatabase &bdd,QString Rutadatos
 void clienteT::run()
 {
         QSslSocket tcpSocket;
+        QDir directorio;
         // Inicializarlo con el socket nativo de la conexión con el cliente
+      if(directorio.exists(Rutacert+"/"+"videovigilancia.key")&& directorio.exists(Rutacert+"/"+"videovigilancia.crt")){
         if (tcpSocket.setSocketDescriptor(socketDescriptor_)) {
 
           connect(&tcpSocket,SIGNAL(sslErrors(QList<QSslError>)),&tcpSocket,SLOT(ignoreSslErrors()));
@@ -113,8 +115,10 @@ void clienteT::run()
 
         tcpSocket.disconnectFromHost();
         tcpSocket.waitForDisconnected(100);
- }
 
+      }else
+       syslog(LOG_ERR, "NO EXISTEN LOS ARCHIVOS DE CLAVE PRIVADA Y CERTIFICADO, CLIENTE NO CONECTADO");
+}
 void clienteT::deserializacion(QSslSocket *tcpSocket_)
 {
 

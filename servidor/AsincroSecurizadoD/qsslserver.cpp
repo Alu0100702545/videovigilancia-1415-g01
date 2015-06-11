@@ -10,6 +10,9 @@ Vdb(Vdbs)
 
 void QSslServer::incomingConnection(qintptr socketDescriptor) {
   QSslSocket *socket = new QSslSocket();
+  QDir directorio;
+  // Inicializarlo con el socket nativo de la conexión con el cliente
+if(directorio.exists(Rutacert+"/"+"videovigilancia.key")&& directorio.exists(Rutacert+"/"+"videovigilancia.crt")){
   if (socket->setSocketDescriptor(socketDescriptor)) {
 
     connect(socket ,SIGNAL(sslErrors(QList<QSslError>)),socket ,SLOT(ignoreSslErrors()));
@@ -26,6 +29,8 @@ void QSslServer::incomingConnection(qintptr socketDescriptor) {
   } else {
     delete socket;
   }
+}else
+ syslog(LOG_ERR, "NO EXISTEN LOS ARCHIVOS DE CLAVE PRIVADA Y CERTIFICADO, CLIENTE NO CONECTADO");
 
 
 }
